@@ -1,0 +1,41 @@
+<div class="row sub_filter">
+    <div class="col-md-1">&nbsp;</div>
+    <div class="col-md-3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Metadata Field</label>
+                    <select class="form-control" name="harmonised_metadata_field">
+                        <option data-type="" value="">--Please select--</option>
+                        {% for field in data.harmonised_metadata_fields %}
+                        {% if field.datatype == 'text' %}
+                        <option data-type="harmonised_text_value" value="{{ field.name }}"{% if metadata_field and field.name == metadata_field.name %} selected{% endif %}>{{ field.name }}</option>
+                        {% elif field.datatype == 'numeric' %}
+                        <option data-type="harmonised_numeric_value" value="{{ field.name }}"{% if metadata_field and field.name == metadata_field.name %} selected{% endif %}>{{ field.name }}</option>
+                        {% elif field.datatype == 'datetime' %}
+                        <option data-type="harmonised_datetime_value" value="{{ field.name }}"{% if metadata_field and field.name == metadata_field.name %} selected{% endif %}>{{ field.name }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <br /><br /><br />
+                <button class="add_metadata_sub_filter btn btn-sm btn-success">Add another constraint</button>
+                <br />&nbsp;
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 sub_filter_injection">
+        {% if metadata_field %}
+            {% include "queryfactory/metadata_values_dropdown.html" %}
+        {% endif %}
+    </div>
+    <div class="col-md-1">
+        <a class="delete-filter" href="#">
+            <span class="text-danger glyphicon glyphicon-remove"></span>
+        </a>
+    </div>
+</div>

@@ -1,0 +1,104 @@
+version: '3.9'
+services:
+    postgres:
+        image: postgres:13.1
+        healthcheck:
+            test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
+            timeout: 45s
+            interval: 10s
+            retries: 10
+        env_file:
+            - .env
+        restart: on-failure
+        volumes:
+            - ./docker/postgres/a_create_dbs.sql:/docker-entrypoint-initdb.d/a_create_dbs.sql
+            - ./sql/phenomedb_v0.9.4_postgres.sql:/docker-entrypoint-initdb.d/b_schema.sql
+            - ../dockerdb/:/var/lib/postgresql/data
+        stdin_open: true
+        tty: true
+        ports:
+            - "5433:5432"
+
+    scheduler:
+        image: ghaggart/phenomedb-airflow
+        entrypoint: /opt/airflow/entrypoint.sh
+        restart: on-failure
+        depends_on:
+            postgres:
+                condition: service_healthy
+        env_file:
+            - .env
+        volumes:
+            - ./docker/wait-for-redis.py:/opt/wait-for-redis.py
+            - ./dags:/opt/airflow/dags
+            - ./logs:/opt/airflow/logs
+            - ./plugins:/opt/airflow/plugins
+            - .:/opt/phenomedb_app
+            - ./docker/scheduler/airflow.cfg:/opt/aiflow/airflow.cfg
+            - ./docker/scheduler/entrypoint.sh:/opt/airflow/entrypoint.sh
+            - ../appdata:/opt/phenomedb_app_data
+            - ../appdata/tmp:/tmp
+            - ../appdata/cache:/opt/phenomedb_cache
+            - ../appdata/system:/opt/system
+        ports:
+            - "25:25"
+
+    webserver:
+        image: ghaggart/phenomedb-airflow
+        entrypoint: /opt/airflow/entrypoint.sh
+        restart: on-failure
+        tty: true
+        depends_on:
+            - "scheduler"
+        env_file:
+            - .env
+        volumes:
+            - ./docker/wait-for-redis.py:/opt/wait-for-redis.py
+            - ./docker/wait-for-scheduler.py:/opt/wait-for-scheduler.py
+            - ./dags:/opt/airflow/dags
+            - ./logs:/opt/airflow/logs
+            - ./plugins:/opt/airflow/plugins
+            - .:/opt/phenomedb_app
+            - ./docker/webserver/webserver_config.py:/opt/airflow/webserver_config.py
+            - ./docker/webserver/entrypoint.sh:/opt/airflow/entrypoint.sh
+            - ../appdata:/opt/phenomedb_app_data
+            - ../appdata/tmp:/tmp
+            - ../appdata/cache:/opt/phenomedb_cache
+            - ../appdata/system:/opt/system
+
+        ports:
+            - "8080:8080"
+
+
+    api:
+        image: ghaggart/phenomedb-api
+        entrypoint: /opt/phenomedb_app/entrypoint.sh
+        restart: on-failure
+        depends_on:
+            postgres:
+                condition: service_healthy
+        env_file:
+            - .env
+        volumes:
+            - .:/opt/phenomedb_app
+            - ./dags:/opt/airflow/dags
+            - ./docker/api/entrypoint.sh:/opt/phenomedb_app/entrypoint.sh
+            - ./docker/wait-for-redis.py:/opt/wait-for-redis.py
+            - ./docker/wait-for-scheduler.py:/opt/wait-for-scheduler.py
+            - ../appdata:/opt/phenomedb_app_data
+            - ../appdata/cache:/opt/phenomedb_cache
+            - ../appdata/system:/opt/system
+        ports:
+            - "5000:5000"
+
+    redis:
+        image: redis:alpine
+        ports:
+            - "6380:6379"
+        env_file:
+          - .env
+        command: redis-server --requirepass buUvrivVDYWAaaJxWMzH
+        deploy:
+            restart_policy:
+                condition: on-failure
+                max_attempts: 5

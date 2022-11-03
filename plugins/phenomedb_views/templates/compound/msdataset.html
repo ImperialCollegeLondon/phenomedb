@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container">
+	<div class="row col-xs-12">
+	    <h3 class="page-heading"><a class="bc-back" href="{{url_for('.compound', id=data.compound.id)}}">{{data.compound.name}}</a>&nbsp;{{data.chemical_standard_dataset.sourceFile}}</h3>
+	</div>
+	<div class="row col-lg-12">
+		<div class="panel panel-default">
+		    
+			<div class="display-panel panel-body">				  		
+			   	<div class="row">
+					<div class="table-label col-xs-2">SOP</div>
+					<div class="table-value col-xs-10">{{data.chemical_standard_dataset.acquisition_sop}} : {{data.chemical_standard_dataset.ionisation}} : {{data.chemical_standard_dataset.collision_energy}}</div>
+				</div>	
+				<div class="row">
+					<div class="table-label col-xs-2">Acquisition date</div>
+					<div class="table-value col-xs-10">{{data.chemical_standard_dataset.acquired_date}}</div>
+				</div>	
+				<div class="row">
+					<div class="table-label col-xs-2">MZ</div>
+					<div class="table-value col-xs-10">{{data.chemical_standard_peaklist.mz}}</div>
+				</div>	
+				<div class="row">
+					<div class="table-label col-xs-2">Intensities</div>
+					<div class="table-value col-xs-10">{{data.chemical_standard_peaklist.intensity}}</div>
+				</div>	
+				<div class="row">
+					<div class="table-label col-xs-2">Retention times</div>
+					<div class="table-value col-xs-10">{{data.chemical_standard_peaklist.rt_seconds}}</div>
+				</div>						   
+			</div>
+			<div class="display-panel panel">
+				<div class="panel-body">				 		
+					<div class="col-xs-12">
+						<div class="img-responsive" id="chart_1"></div>
+					</div>
+					<div class="col-xs-12">
+						<div class="img-responsive" id="chart_2"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block tail %}
+{{ super() }}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+
+var plotly_settings = {
+    responsive:true,
+    modeBarButtonsToRemove: ['toImage', 'sendDataToCloud'],
+    modeBarButtonsToAdd: [{
+        name: 'toImageSVG',
+        icon: Plotly.Icons.camera,
+        click: function (gd) {
+            Plotly.downloadImage(gd, {format: 'svg'})
+        }
+    }],
+}
+
+	var mz = {{data.chemical_standard_peaklist.mz}};
+	var intensity = {{data.chemical_standard_peaklist.intensity}};
+	var rt = {{data.chemical_standard_peaklist.rt_seconds}};
+ 	var shapes_1 = [];
+ 	var shapes_2 = [];
+ 
+ 	console.log("rt " + rt);
+	for (i = 0; i < mz.length; i++) {    
+		  var s =  {
+		      type: 'line', line: { color: '7f7f7f', width: 1 },
+		      x0: mz[i], y0: 0,
+		      x1: mz[i], y1: intensity[i]    
+		    };
+	  	shapes_1.push(s);
+	 };
+
+	for (i = 0; i < rt.length; i++) {    
+		var s =  {
+			  type: 'line', line: { color: '7f7f7f', width: 1 },
+		      x0: rt[i], y0: 0,
+		      x1: rt[i], y1: mz[i]
+		    };
+	 	shapes_2.push(s);
+	};
+	
+	var layout_1 = {
+    	  shapes: shapes_1,
+		  xaxis: {	range: [0, Math.max(...mz) + 10], title: {text: 'm/z', font: {  size: 18, color: '#7f7f7f'  }  } },
+		  yaxis: {	range: [0, Math.max(...intensity) + 10], title: {text: 'Intensity',  font: {size: 18,color: '#7f7f7f' }  } }
+		};
+	
+	var layout_2 = {
+	  	  shapes: shapes_2,
+		  xaxis: {	range: [0, Math.max(...rt) + 10], title: {text: 'retention time (s)', font: {  size: 18, color: '#7f7f7f'  }  } },
+		  yaxis: {	range: [0, Math.max(...mz) + 10], title: {text: 'm/z',  font: {size: 18,color: '#7f7f7f' }  } }
+		};
+	
+	var dataset_1 = [ {  x: mz, y: intensity, type: 'scatter', mode:'markers' }];
+	var dataset_2 = [ {  x: rt, y: mz, type: 'scatter', mode:'markers' }];
+	
+	Plotly.newPlot('chart_1', dataset_1, layout_1,plotly_settings);
+	Plotly.newPlot('chart_2', dataset_2, layout_2,plotly_settings);
+	
+</script>
+{% endblock %}

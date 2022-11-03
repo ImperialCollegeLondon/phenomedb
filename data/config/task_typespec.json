@@ -1,0 +1,273 @@
+{
+  "compounds.ExportCompoundsToCSV": {
+    "methods": {"type":"dropdown","label": "Methods, ie HPOS-PPR, NOESY-BI-QUANT, LC-QqQ Oxylipins-Targetlynx","options": {"RPOS-PPR": "RPOS-PPR","LPOS-PPR": "LPOS-PPR","LNEG-PPR": "LNEG-PPR","RNEG-PPR": "RNEG-PPR","HPOS-PPR":"HPOS-PPR","BANEG-PPR": "BANEG-PPR","LC-QqQ Bile Acids-TargetLynx": "LC-QqQ Bile Acids-TargetLynx","LC-QqQ Amino Acids-TargetLynx": "LC-QqQ Amino Acids-TargetLynx","LC-QqQ Tryptophan-TargetLynx": "LC-QqQ Tryptophan-TargetLynx","LC-QqQ Oxylipins-TargetLynx": "LC-QqQ Oxylipins-TargetLynx","NOESY-BI-QUANT": "NOESY-BI-QUANT","NOESY-BI-LISA":"NOESY-BI-LISA" },"required":false}
+  },
+  "compounds.ParseKEGGtoPubchemCIDTask": {
+    "output_file_path": {"type":"file_path_remote","label": "Output file path","remote_folder_path": "exports","required": true,"project_folder": false}
+  },
+  "compounds.ParseHMDBXMLtoCSV": {
+    "input_file_path": {"type":"file_upload","label": "Input file path","remote_folder_path": ".","required": true,"project_folder": false},
+    "output_file_path": {"type":"file_upload","label": "Output file path","remote_folder_path": ".","required": true,"project_folder": false}
+  },
+  "compounds.UpdateCompoundRefs": {},
+  "compounds.AddMissingClassyFireClasses": {},
+  "compounds.CleanROIFile": {
+    "roi_file": {"type":"file_upload","label": "roi_file file","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "assay_name": {"type":"dropdown","label": "Assay Name (only for LC-MS)","options": {"LC-QqQ Bile Acids": "LC-QqQ Bile Acids","LC-QqQ Amino Acids": "LC-QqQ Amino Acids","LC-QqQ Tryptophan": "LC-QqQ Tryptophan","LC-QqQ Oxylipins": "LC-QqQ Oxylipins","LPOS": "LPOS","HPOS": "HPOS","RPOS": "RPOS","LNEG": "LNEG","RNEG":"RNEG"},"required":false},
+    "merged_file": {"type":"file_upload","label": "roi_file file","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "replace_fields": {"type": "boolean","label": "replace mismatched fields","required": false},
+    "replace_missing": {"type": "boolean","label": "replace only missing fields","required": false},
+    "fields_to_ignore": {"type":"list","label": "Comma-separated list of columns to ignore","required": false},
+    "fields_to_replace": {"type":"list","label": "Comma-separated list of columns to replace. Leave blank for all.","required": false},
+    "cpds_to_ignore": {"type":"list","label": "Comma-separated list of cpdIDs to ignore.","required": false},
+    "cpds_to_replace": {"type":"list","label": "Comma-separated list of cpdIDs to replace. Leave blank for all.","required": false}
+  },
+  "compounds.ImportROICompounds": {
+    "roi_file": {"type":"file_upload","label": "roi_file file","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "assay_name": {"type":"dropdown","label": "Assay Name (only for LC-MS)","options": {"LC-QqQ Bile Acids": "LC-QqQ Bile Acids","LC-QqQ Amino Acids": "LC-QqQ Amino Acids","LC-QqQ Tryptophan": "LC-QqQ Tryptophan","LC-QqQ Oxylipins": "LC-QqQ Oxylipins","LPOS": "LPOS","HPOS": "HPOS","RPOS": "RPOS","LNEG": "LNEG","RNEG":"RNEG"},"required":false},
+    "roi_version": {"type":"float","label": "ROI version (eg 1.0)","required": true},
+    "update_names": {"type":"float","label": "Update the names to refmet?","required": false}
+  },
+  "compounds.ImportBrukerBILISACompounds": {
+    "lipoprotein_file": {"type":"file_upload","label": "Lipoprotein long names file","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "version": {"type":"float","label": "Version (eg 1.0)","required": true}
+  },
+  "compounds.ImportBrukerBiQuantCompounds": {
+    "biquant_compound_file": {"type":"file_upload","label": "Lipoprotein long names file","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "version": {"type":"float","label": "Version (eg 1.0)","required": true}
+  },
+  "imports.ImportSampleManifest": {
+    "project_name": {"type":"project","label": "Project", "required":true},
+    "sample_manifest_path": {"type":"file_upload","label": "Sample manifest file","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "columns_to_ignore": {"type":"list","label": "Comma-separated list of subject columns to ignore"}
+  },
+  "imports.ImportDataLocations": {
+    "project_name": {"type":"project","label": "Project", "required":true},
+    "data_locations_path": {"type":"file_upload","label": "Data locations file","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "assay_platform": {"type":"dropdown","label": "Assay Platform","options": {"NMR": "NMR","MS": "MS"},"required":true},
+    "assay_name": {"type":"dropdown","label": "Assay Name (only for LC-MS)","options": {"LC-QqQ Bile Acids": "LC-QqQ Bile Acids","LC-QqQ Amino Acids": "LC-QqQ Amino Acids","LC-QqQ Tryptophan": "LC-QqQ Tryptophan","LC-QqQ Oxylipins": "LC-QqQ Oxylipins","LPOS": "LPOS","HPOS": "HPOS","RPOS": "RPOS","LNEG": "LNEG","RNEG":"RNEG"},"required":false},
+    "sample_matrix": {"type":"dropdown","label": "Sample matrix","options": {"serum": "serum","plasma": "plasma","urine": "urine","faecal": "faecal","organic tissue": "organic tissue","cell culture": "cell culture","nasal swab": "nasal swab"},"required": true}
+  },
+  "imports.ImportBrukerIVDRAnnotations": {
+    "project_name": {"type":"project","label": "Project","required":true},
+    "annotation_method": {"type":"dropdown","label": "IVDR annotation method","options": {"BI-QUANT": "Bruker IVDR BI-QUANT","BI-LISA": "Bruker IVDR BI-LISA"},"required": true},
+    "unified_csv_path": {"type":"file_upload","label": "Unified CSV file","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "sample_matrix": {"type":"dropdown","label": "Sample matrix","options": {"Serum": "Serum","Plasma": "Plasma","Urine": "Urine"},"required": true}
+  },
+  "imports.ImportPeakPantherAnnotations": {
+    "project_name": {"type":"project","label": "Project","required":true},
+    "intensity_data_csv_path": {"type":"file_upload","label": "Intensity CSV file","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "sample_metadata_csv_path": {"type":"file_upload","label": "Feature Metadata CSV file","remote_folder_path": "uploads","required": false,"project_folder": false},
+    "roi_csv_path": {"type":"file_upload","label": "PPR ROI CSV file","remote_folder_path": "uploads","required": false,"project_folder": false},
+    "sample_matrix": {"type":"dropdown","label": "Sample matrix","options": {"serum": "serum","plasma": "plasma","urine": "urine","faecal": "faecal","organic tissue": "organic tissue","cell culture": "cell culture","nasal swab": "nasal swab"},"required": true},
+    "assay_name": {"type":"dropdown","label": "Assay","options": {"LPOS": "LPOS","HPOS": "HPOS","RPOS": "RPOS","LNEG": "LNEG","RNEG":"RNEG"},"required": true},
+    "roi_version": {"type":"float","label": "ROI version (eg 1.0)","required": true},
+    "batch_corrected_data_csv_path": {"type":"file_upload","label": "Batch corrected data CSV file","remote_folder_path": "uploads","required": false,"project_folder": false}
+  },
+  "imports.ImportTargetLynxAnnotations": {
+    "project_name": {"type":"project","label": "Project","required": true},
+    "unified_csv_path": {"type":"file_upload","label": "Unified CSV file","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "sop": {"type":"dropdown","label": "SOP","options": {"BileAcidMS": "BileAcidMS","OxylipinMS":"OxylipinMS","AminoAcidMS": "AminoAcidMS","TryptophanMS": "TryptophanMS"},"required": true},
+    "sop_version": {"type":"str","label": "SOP version (eg 1.0)","required": true},
+    "sop_file_path": {"type":"file_path_remote","label": "SOP file","remote_folder_path": "imports","required": false,"project_folder": false},
+    "assay_name": {"type":"dropdown","label": "Assay","options": {"LC-QqQ Bile Acids":"LC-QqQ Bile Acids","LC-QqQ Oxylipins":"LC-QqQ Oxylipins","LC-QqQ Amino Acids":"LC-QqQ Amino Acids","LC-QqQ Tryptophan":"LC-QqQ Tryptophan"},"required": true},
+    "sample_matrix": {"type":"dropdown","label": "Sample matrix","options": {"serum": "serum","plasma": "plasma","urine": "urine","faecal": "faecal","organic tissue": "organic tissue","cell culture": "cell culture","nasal swab": "nasal swab"},"required": true}
+  },
+  "imports.XCMSFeatureImportTaskUnifiedCSV": {
+    "project_name": {"type":"project","label": "Project","required":true},
+    "unified_csv_path": {"type":"file_upload","label": "Unified CSV file","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "assay_name": {"type":"dropdown","label": "Assay","options": {"LPOS": "LPOS","HPOS": "HPOS","RPOS": "RPOS","LNEG": "LNEG","RNEG":"RNEG"},"required": true},
+    "sample_matrix": {"type":"dropdown","label": "Sample matrix","options": {"serum": "serum","plasma": "plasma","urine": "urine","faecal": "faecal","organic tissue": "organic tissue","cell culture": "cell culture","nasal swab": "nasal swab"},"required": true}
+  },
+  "imports.ImportMetabolightsStudy": {
+    "study_folder_path": {"type":"str","label": "Path to the Metabolights study folder","required": true},
+    "study_id": {"type":"str","label": "Metabolights Study ID","required": false}
+  },
+  "imports.ImportMetadata": {
+    "project_name": {"type":"project","label": "Project","required":true},
+    "filepath": {"type":"file_upload","label": "File path","remote_folder_path": "uploads","required": true,"project_folder": false},
+    "id_type": {"type":"dropdown","label": "Match on Subject or Sample?","options": {"subject": "subject","sample": "sample"},"required": true},
+    "id_column": {"type":"str","label": "Column containing the Sample/Subject name to match on (default 'ID_for_matching')","required":true},
+    "columns_to_import": {"type":"list","label": "Specify columns to include", "required": false}
+  },
+  "metadata.HarmoniseMetadataField": {
+    "project_name": {"type":"project","label": "Project","required":true},
+    "metadata_field_name": {"type":"str","label": "Metadata field raw name","required":true},
+    "harmonised_metadata_field_name": {"type":"str","label": "Metadata Curated Field","required":true},
+    "inbuilt_transform_name": {"type":"dropdown","label": "Inbuilt transform function","options": {"Simple Assignment": "simple_assignment","Transform DOB and Sampling Date to Age": "transform_dob_and_sampling_date_to_age"},"required":false},
+    "lambda_function_string": {"type":"lambda","label": "Custom Lambda function eg 'lambda x : x * 2'","required":false}
+  },
+  "cache.CreateSavedQueryDataframeCache": {
+    "saved_query_id": {"type":"float","label": "ID of the SavedQuery","required":true},
+    "output_model": {"type":"str","label": "The model to use, defaults to AnnotatedFeature","required":false},
+    "master_unit": {"type":"str","label": "Master unit to convert units to","required":false},
+    "harmonise_annotations": {"type":"bool","label": "Harmonise annotations?, defaults to False","required":false},
+    "class_type": {"type":"dropdown","label": "Which class source?","options": {"":"","hmdb": "hmdb","classyfire": "classyfire","lipidmaps": "lipidmaps"}, "required": false},
+    "class_level": {"type":"dropdown","label": "Which class level to aggregate?","options": {"":"","kingdom": "kingdom","category": "category","main_class": "main_class","sub_class": "sub_class","direct_parent": "direct_parent"}, "required": false},
+    "aggregate_function": {"type":"dropdown","label": "Which aggregation function?","options": {"":"","mean": "mean","max": "max","min": "min","median": "median","sum": "sum"}, "required": false},
+    "correction_type": {"type":"dropdown","label": "Correction type","options": {"":"","LTR": "Long Term Reference (LTR)","SR": "Study Reference (SR)"},"required":false},
+    "reload_cache": {"type":"dropdown","label": "Reload Cache?","options": {"true": "true","false": "false"},"required":false}
+  },
+  "cache.CreateSavedQuerySummaryStatsCache": {
+    "saved_query_id": {"type":"float","label": "ID of the SavedQuery","required":true}
+  },
+  "analysis.RunPCA": {
+    "saved_query_id": {"type":"float","label": "ID of the SavedQuery","required":true},
+    "max_components": {"type":"float","label": "The max number of Principle Components, defaults to 10","required":false},
+    "transform": {"type":"dropdown","label": "Which transformation to use","options": {"":"","log": "log","sqrt":"sqrt"}, "required": false},
+    "scaling": {"type":"dropdown","label": "Which scaling to use","options": {"":"","med":"median-fold-change","mc": "mean-centred","uv": "unit-variance","pa": "pareto"}, "required": false},
+    "minQ2": {"type":"float","label": "minQ2 for number of PC optimisations, defaults to 10","required":false},
+    "annotations_only": {"type":"bool","label": "Use only those measurements with annotations, defaults to False","required":false},
+    "saved_query_model": {"type":"dropdown","label": "Which query model?","options": {"AnnotatedFeature": "AnnotatedFeature","CompoundClass": "CompoundClass"}, "required": false},
+    "class_type": {"type":"dropdown","label": "Which class source?","options": {"":"","hmdb": "hmdb","classyfire": "classyfire","lipidmaps": "lipidmaps"}, "required": false},
+    "class_level": {"type":"dropdown","label": "Which class level to aggregate?","options": {"":"","kingdom": "kingdom","category": "category","main_class": "main_class","sub_class": "sub_class","direct_parent": "direct_parent"}, "required": false},
+    "aggregate_function": {"type":"dropdown","label": "Which aggregation function?","options": {"":"","mean": "mean","max": "max","min": "min","median": "median","sum": "sum"}, "required": false},
+    "correction_type": {"type":"dropdown","label": "Correction type","options": {"":"","LTR": "Long Term Reference (LTR)","SR": "Study Reference (SR)"},"required":false},
+    "harmonise_annotations": {"type":"dropdown","label": "Harmonise annotations?","options": {"true": "true","false": "false"},"required":false},
+    "reload_cache": {"type":"dropdown","label": "Reload Cache?","options": {"false": "false","true": "true"},"required":false},
+    "upstream_task_run_id": {"type":"float","label": "Upstream task run ID","required":false},
+    "exclude_features_not_in_all_projects": {"type":"dropdown","label": "Exclude features not in all projects?","options": {"true": "true","false": "false"},"required":false},
+    "sample_types": {"type":"list","label": "Which SampleTypes to include? ie StudySample,StudyPool,ExternalReference. Defaults to StudySample,StudyPool", "required": false},
+    "assay_roles": {"type":"list","label": "Which AssayRoles to include? ie Assay,LinearityReference,PrecisionReference. Defaults to Assay,PrecisionReference", "required": false}
+  },
+  "analysis.RunPCPR2": {
+    "saved_query_id": {"type":"float","label": "ID of the SavedQuery","required":true},
+    "pct_threshold": {"type":"float","label": "How much variability do you wish to explain, defaults to 0.95","required":false},
+    "exclude_na_metadata_columns": {"type":"bool","label": "Whether to exclude metadata columns with NA values, defaults to False","required":false},
+    "exclude_na_metadata_samples": {"type":"bool","label": "Whether to exclude samples with NA metadata values, defaults to False", "required": false},
+    "columns_to_include": {"type":"list","label": "Specify columns to explicitly include, defaults to Unique Batch - highly correlated columns must be analysed separately", "required": false},
+    "columns_to_exclude": {"type":"list","label": "Specify columns to explicitly ignore", "required": false},
+    "scaling": {"type":"dropdown","label": "Which scaling to use","options": {"":"","med":"median-fold-change","mc": "mean-centred","uv": "unit-variance","pa": "pareto"}, "required": false},
+    "transform": {"type":"dropdown","label": "Which transformation to use","options": {"":"","log": "log","sqrt":"sqrt"}, "required": false},
+    "include_harmonised_metadata": {"type":"bool","label": "Whether to include harmonised metadata, defaults to True", "required": false},
+    "only_harmonised_metadata": {"type":"bool","label": "Whether to include only harmonised metadata, defaults to True", "required": false},
+    "only_metadata": {"type":"bool","label": "Whether to include only metadata, defaults to True", "required": false},
+    "saved_query_model": {"type":"dropdown","label": "Which query model?","options": {"AnnotatedFeature": "AnnotatedFeature","CompoundClass": "CompoundClass"}, "required": false},
+    "class_type": {"type":"dropdown","label": "Which class source?","options": {"":"","hmdb": "hmdb","classyfire": "classyfire","lipidmaps": "lipidmaps"}, "required": false},
+    "class_level": {"type":"dropdown","label": "Which class level to aggregate?","options": {"":"","kingdom": "kingdom","category": "category","main_class": "main_class","sub_class": "sub_class","direct_parent": "direct_parent"}, "required": false},
+    "aggregate_function": {"type":"dropdown","label": "Which aggregation function?","options": {"":"","mean": "mean","max": "max","min": "min","median": "median","sum": "sum"}, "required": false},
+    "correction_type": {"type":"dropdown","label": "Correction type","options": {"":"","LTR": "Long Term Reference (LTR)","SR": "Study Reference (SR)"},"required":false},
+    "harmonise_annotations": {"type":"dropdown","label": "Harmonise annotations?","options": {"true": "true","false": "false"},"required":false},
+    "reload_cache": {"type":"dropdown","label": "Reload Cache?","options": {"false": "false","true": "true"},"required":false},
+    "upstream_task_run_id": {"type":"float","label": "Upstream task run ID","required":false},
+    "exclude_features_not_in_all_projects": {"type":"dropdown","label": "Exclude features not in all projects?","options": {"true": "true","false": "false"},"required":false},
+    "sample_types": {"type":"list","label": "Which SampleTypes to include? ie StudySample,StudyPool,ExternalReference. Defaults to StudySample", "required": false},
+    "assay_roles": {"type":"list","label": "Which AssayRoles to include? ie Assay,LinearityReference,PrecisionReference. Defaults to Assay", "required": false}
+  },
+  "analysis.RunMWAS": {
+    "saved_query_id": {"type":"float","label": "ID of the SavedQuery","required":true},
+    "model_Y_variable": {"type":"str","label": "Model Y Variable (outcome)","required":false},
+    "model_X_variables": {"type":"list","label": "Model X Variables (covariates)", "required": false},
+    "method": {"type":"dropdown","label": "Which association method to use","options": {"linear":"linear","logistic": "logistic","pearson": "pearson","spearman": "spearman","kendall":"kendall"}, "required": false},
+    "multiple_correction": {"type":"dropdown","label": "Which multiple correction method to use","options": {"":"","BH": "Benjamini and Hochberg", "bonferroni": "Bonferroni", "holm": "Holm", "hochberg": "Hochberg", "hommel": "Hommel", "BY": "Benjamini and Yekutieli", "qvalues": "Q Values"}, "required": false},
+    "exclude_na_metadata_samples": {"type":"bool","label": "Whether to exclude samples with NA metadata values, defaults to False", "required": false},
+    "scaling": {"type":"dropdown","label": "Which scaling to use","options": {"":"","med":"median-fold-change","mc": "mean-centred","uv": "unit-variance","pa": "pareto"}, "required": false},
+    "transform": {"type":"dropdown","label": "Which transformation to use","options": {"":"","log": "log","sqrt":"sqrt"}, "required": false},
+    "saved_query_model": {"type":"dropdown","label": "Which query model?","options": {"AnnotatedFeature": "AnnotatedFeature","CompoundClass": "CompoundClass"}, "required": false},
+    "class_type": {"type":"dropdown","label": "Which class source?","options": {"":"","hmdb": "hmdb","classyfire": "classyfire","lipidmaps": "lipidmaps"}, "required": false},
+    "class_level": {"type":"dropdown","label": "Which class level to aggregate?","options": {"":"","kingdom": "kingdom","category": "category","main_class": "main_class","sub_class": "sub_class","direct_parent": "direct_parent"}, "required": false},
+    "aggregate_function": {"type":"dropdown","label": "Which aggregation function?","options": {"":"","mean": "mean","max": "max","min": "min","median": "median","sum": "sum"}, "required": false},
+    "correction_type": {"type":"dropdown","label": "Correction type","options": {"":"","LTR": "Long Term Reference (LTR)","SR": "Study Reference (SR)"},"required":false},
+    "harmonise_annotations": {"type":"dropdown","label": "Harmonise annotations?","options": {"true": "true","false": "false"},"required":false},
+    "reload_cache": {"type":"dropdown","label": "Reload Cache?","options": {"false": "false","true": "true"},"required":false},
+    "upstream_task_run_id": {"type":"float","label": "Upstream task run ID","required":false},
+    "exclude_features_not_in_all_projects": {"type":"dropdown","label": "Exclude features not in all projects?","options": {"true": "true","false": "false"},"required":false},
+    "model_Y_min": {"type":"float","label": "Model Y min, excludes samples with Y below","required":false},
+    "model_Y_max": {"type":"float","label": "Model Y max, excludes samples with Y above","required":false},
+    "model_Y_ci": {"type":"float","label": "Model Y confidence interval, ie 0.9, excludes samples outside range","required":false}
+  },
+  "analysis.RunNPYCReport": {
+    "saved_query_id": {"type":"float","label": "ID of the SavedQuery","required":true},
+    "report_name": {"type":"dropdown","label": "Which report to run","options": {"multivariate_report": "multivariate_report","feature summary": "feature summary","sample summary": "sample summary","correlation to dilution": "correlation to dilution","batch correction assessment": "batch correction assessment","batch correction summary": "batch correction summary","feature selection": "feature selection","final report": "final report","final report abridged": "final report abridged","final report targeted abridged": "final report targeted abridged"}, "required": true},
+    "with_exclusions": {"type":"bool","label": "If True, only report on features not masked by the sample and feature masks, defaults to False","required":false},
+    "with_artifactual_filtering": {"type":"bool","label": "If None use the value from Attributes['artifactualFilter']. If True apply artifactual filtering to the feature selection report and final report, defaults to None", "required": false},
+    "samples_to_exclude": {"type":"list","label": "Specify sample ids to explicitly ignore", "required": false},
+    "exclusion_comments": {"type":"list","label": "Exclusion comments, same order as samples_to_exclude", "required": false},
+    "exclude_on": {"type":"bool","label": "Whether to exclude samples", "required": false},
+    "transform": {"type":"dropdown","label": "Which transformation to use","options": {"":"","log": "log","sqrt":"sqrt"}, "required": false},
+    "scaling": {"type":"dropdown","label": "Which scaling to use","options": {"":"","med":"median-fold-change","mc": "mean-centred","uv": "unit-variance","pa": "pareto"}, "required": false},
+    "comment": {"type":"str","label": "Comment for the correction","required":false},
+    "class_type": {"type":"dropdown","label": "Which class source?","options": {"":"","hmdb": "hmdb","classyfire": "classyfire","lipidmaps": "lipidmaps"}, "required": false},
+    "class_level": {"type":"dropdown","label": "Which class level to aggregate?","options": {"":"","kingdom": "kingdom","category": "category","main_class": "main_class","sub_class": "sub_class","direct_parent": "direct_parent"}, "required": false},
+    "aggregate_function": {"type":"dropdown","label": "Which aggregation function?","options": {"":"","mean": "mean","max": "max","min": "min","median": "median","sum": "sum"}, "required": false},
+    "correction_type": {"type":"dropdown","label": "Correction type","options": {"":"","LTR": "Long Term Reference (LTR)","SR": "Study Reference (SR)"},"required":false},
+    "harmonise_annotations": {"type":"dropdown","label": "Harmonise annotations?","options": {"true": "true","false": "false"},"required":false},
+    "reload_cache": {"type":"dropdown","label": "Reload Cache?","options": {"false": "false","true": "true"},"required":false},
+    "upstream_task_run_id": {"type":"float","label": "Upstream task run ID","required":false},
+    "exclude_features_not_in_all_projects": {"type":"dropdown","label": "Exclude features not in all projects?","options": {"false": "false","true": "true"},"required":false}
+  },
+  "batch_correction.RunCombatCorrection": {
+    "saved_query_id": {"type":"float","label": "ID of the SavedQuery","required":true},
+    "correction_type": {"type":"dropdown","label": "Correction type","options": {"":"","LTR": "Long Term Reference (LTR)","SR": "Study Reference (SR)"},"required":false},
+    "model_Y_variable": {"type":"str","label": "Model Y Variable to preserve","required":false},
+    "model_X_variables": {"type":"list","label": "Model X Variables to preserve", "required": false},
+    "batch_variable": {"type":"str","label": "Batch variable to use for correction","required":false},
+    "comment": {"type":"str","label": "Comment for the correction","required":false},
+    "transform": {"type":"dropdown","label": "Which transformation to use","options": {"":"","log": "log","sqrt":"sqrt"}, "required": false},
+    "scaling": {"type":"dropdown","label": "Which scaling to use","options": {"":"","med":"median-fold-change","mc": "mean-centred","uv": "unit-variance","pa": "pareto"}, "required": false},
+    "reload_cache": {"type":"dropdown","label": "Reload Cache?","options": {"false": "false","true": "true"},"required":false},
+    "harmonise_annotations": {"type":"dropdown","label": "Harmonise annotations?","options": {"true": "true","false": "false"},"required":false}
+  },
+  "batch_correction.RunNormResidualsMM": {
+    "saved_query_id": {"type":"float","label": "ID of the SavedQuery","required":true},
+    "correction_type": {"type":"dropdown","label": "Correction type","options": {"":"","LTR": "Long Term Reference (LTR)","SR": "Study Reference (SR)"},"required":false},
+    "columns_fixed_to_keep": {"type":"list","label": "Fixed effects variables to preserve (ie model vars)", "required": false},
+    "columns_fixed_to_correct": {"type":"list","label": "Fixed effects variables to correct", "required": false},
+    "columns_random_to_correct": {"type":"list","label": "Random effects variables to correct (ie Project/Batch)", "required": false},
+    "heteroscedastic_columns": {"type":"list","label": "List of random effects that are heirarchical (ie Project/Batch)", "required": false},
+    "identifier_column": {"type":"str","label": "Unique ID column to use","required":false},
+    "comment": {"type":"str","label": "Comment for the correction","required":false},
+    "transform": {"type":"dropdown","label": "Which transformation to use","options": {"":"","log": "log","sqrt":"sqrt"}, "required": false},
+    "scaling": {"type":"dropdown","label": "Which scaling to use","options": {"":"","med":"median-fold-change","mc": "mean-centred","uv": "unit-variance","pa": "pareto"}, "required": false},
+    "reload_cache": {"type":"dropdown","label": "Reload Cache?","options": {"false": "false","true": "true"},"required":false},
+    "harmonise_annotations": {"type":"dropdown","label": "Harmonise annotations?","options": {"true": "true","false": "false"},"required":false}
+  },
+  "batch_correction.RunNPYCBatchCorrection": {
+    "saved_query_id": {"type":"float","label": "ID of the SavedQuery","required":true},
+    "correction_type": {"type":"dropdown","label": "Correction type","options": {"LTR": "Long Term Reference (LTR)","SR": "Study Reference (SR)"},"required":false},
+    "window": {"type":"float","label": "The correction window, defaults to 11","required":false},
+    "method": {"type":"dropdown","label": "Correction method, defaults to LOWESS","options": {"LOWESS": "LOWESS"},"required":false},
+    "align": {"type":"dropdown","label": "What to align against, defaults to median","options": {"median": "median"},"required":false},
+    "exclude_failures": {"type":"bool","label": "Whether to exclude failures, defaults to True", "required": false},
+    "comment": {"type":"str","label": "Comment for the correction","required":false},
+    "save_results": {"type":"bool","label": "Whether to save the results in CorrectedMeasurements, defaults to True", "required": false},
+    "reload_cache": {"type":"dropdown","label": "Reload Cache?","options": {"false": "false","true": "true"},"required":false}
+  },
+  "batch_correction.SaveBatchCorrection": {
+    "harmonised_data_task_run_id": {"type":"float","label": "ID of the task run to commit the batch correction from","required":true}
+  },
+  "pipelines.RebuildPipelinesFromDB":{
+    "type": {"type":"dropdown","label": "Type - dynamic or all","options": {"all": "all","dynamic": "dynamic"},"required":false}
+  },
+  "pipelines.GenerateSingleTaskPipelines":{},
+  "pipelines.BasicSetup":{},
+  "pipelines.BatchCorrectionAssessmentPipelineGenerator":{},
+  "pipelines.RunBatchCorrectionAssessmentPipeline":{
+    "saved_query_id": {"type":"float","label": "ID of the SavedQuery","required":true},
+    "correction_type": {"type":"dropdown","label": "Correction type","options": {"":"","SR": "Study Reference (SR)","LTR": "Long Term Reference (LTR)"},"required":false},
+    "run_combat_and_norm_mixedresiduals": {"type":"dropdown","label": "Run NormResidualsMM and COMBAT batch correction methods","options": {"false": "false","true": "true"},"required":false},
+    "variable_of_interest": {"type":"str","label": "Variable of interest","required":false},
+    "metadata_covariates": {"type":"list","label": "Metadata covariates","required":false},
+    "reload_cache": {"type":"dropdown","label": "Reload Cache?","options": {"false": "false","true": "true"},"required":false}
+  },
+  "pipelines.RunMWASMulti": {
+    "saved_query_ids": {"type":"list","label": "List of SavedQuery IDs","required":true},
+    "model_Y_variable": {"type":"str","label": "Model Y Variable (outcome)","required":false},
+    "method": {"type":"dropdown","label": "Which association method to use","options": {"linear":"linear","logistic": "logistic","pearson": "pearson","spearman": "spearman","kendall":"kendall"}, "required": false},
+    "multiple_correction": {"type":"dropdown","label": "Which multiple correction method to use","options": {"":"","BH": "Benjamini and Hochberg", "bonferroni": "Bonferroni", "holm": "Holm", "hochberg": "Hochberg", "hommel": "Hommel", "BY": "Benjamini and Yekutieli", "qvalues": "Q Values"}, "required": false},
+    "scaling": {"type":"dropdown","label": "Which scaling to use","options": {"":"","med":"median-fold-change","mc": "mean-centred","uv": "unit-variance","pa": "pareto"}, "required": false},
+    "transform": {"type":"dropdown","label": "Which transformation to use","options": {"":"","log": "log","sqrt":"sqrt"}, "required": false},
+    "correction_type": {"type":"dropdown","label": "Correction type","options": {"":"","LTR": "Long Term Reference (LTR)","SR": "Study Reference (SR)"},"required":false},
+    "reload_cache": {"type":"dropdown","label": "Reload Cache?","options": {"false": "false","true": "true"},"required":false},
+    "upstream_task_run_id": {"type":"float","label": "Upstream task run ID","required":false},
+    "model_Y_min": {"type":"float","label": "Model Y min, excludes samples with Y below","required":false},
+    "model_Y_max": {"type":"float","label": "Model Y max, excludes samples with Y above","required":false},
+    "model_Y_ci": {"type":"float","label": "Model Y confidence interval, ie 0.9, excludes samples outside range","required":false}
+  },
+  "task.ManualSQL": {},
+  "cache.CreateTaskViewCache": {},
+  "cache.RemoveUntransformedDataFromCache": {},
+  "cache.MoveTaskOutputToCache": {
+    "update_db": {"type":"dropdown","label": "Update DB?","options": {"false": "false","true": "true"},"required":false}
+  }
+}

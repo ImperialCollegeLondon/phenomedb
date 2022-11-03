@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-6">
+	    <h3 class="page-heading">Project Permissions</h3>
+		<h4>User Name : {{ current_user.username }} </h4>
+		<h4>Email : {{current_user.email}}</h4>
+		<h4>Roles : {{current_user.roles}}</h4>
+		<hr/>
+
+		<div role="tabpanel">
+			  <!-- Nav tabs -->
+			  <ul class="nav nav-tabs" role="tablist">
+				  {% for role in roles %}
+				  {% set link = '#' + role.id|string %}
+				  <li role="presentation"><a href={{link}} id={{role.id|string}}_tab aria-controls="basics" role="tab" data-toggle="tab">{{role.name}}</a></li>
+				  {% endfor %}
+
+			  </ul>
+
+			  <!-- Tab panes -->
+			  <div class="tab-content" >
+				  {% for role in roles %}
+
+				  <div role="tabpanel" class="tab-pane fade" id={{role.id|string}} >
+					  <h3>Projects for Role : [{{role.name}}]</h3>
+					  <table class="table table-bordered" >
+						  {% for project in projects[role.id] %}
+
+							  <tr><td>{{project.name}}</td>
+								  <td>
+								  {% if role != 'Admin' %}
+								  		<form method="POST" action={{url_for('ProjectView.delete_project')}}>
+											<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+											<input type="hidden" name="role_id" value="{{role.id}}" />
+									  		<input type="hidden" name="project_id" value="{{project.id}}" />
+								  			<input type="submit" value="Del" />
+										</form>
+								  {% endif %}
+								  </td>
+							  </tr>
+
+						  {% endfor %}
+					  </table>
+					  {% if role.name != "Admin" %}
+					  <h3>Add Project for Role : [{{role.name}}]</h3>
+					 <table class="table table-bordered" >
+						  <form method="POST" action={{url_for('ProjectView.add_project')}}>
+							  <tr>
+								  <input type="hidden" name="role_id" value="{{ role.id }}" />
+								  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+								  <td>
+									  <select name="project_id" id="project" class="selectpicker" >
+										  {% for project in unallowedprojects[role.id] %}
+											<option value="{{project.id}}">{{project.name}}</option>
+										  {% endfor %}
+									  </select>
+								  </td>
+								  <td>
+							  		<input type="submit">
+								  </td>
+							  </tr>
+						  </form>
+					 </table>
+					  {% endif %}
+				  </div>
+				  {% endfor %}
+			  </div>
+		</div>
+
+
+		<hr/>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	$( document ).ready(function() {
+		var name="#"+"{{selected_role}}"+"_tab";
+    	$(name).tab('show');
+		});
+</script>
+
+
+{% endblock %}

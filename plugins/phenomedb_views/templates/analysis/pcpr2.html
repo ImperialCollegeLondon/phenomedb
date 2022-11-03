@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+    {% include 'analysis/common.html' %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="plot-chevron" href="#plots" data-toggle="collapse">Results Plots</a></div>
+        <div class="panel-body collapse" id="plots">
+            <div id="R2_stats"></div>
+            <div id="R2_bar_all"></div>
+            <div id="R2_bar_proportion"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script>
+
+    var plotly_settings = {
+        responsive:true,
+        modeBarButtonsToRemove: ['toImage', 'sendDataToCloud'],
+        modeBarButtonsToAdd: [{
+            name: 'toImageSVG',
+            icon: Plotly.Icons.camera,
+            click: function (gd) {
+                let title = $(gd).find('.gtitle').data('unformatted');
+                title = title.replaceAll(":","_").replaceAll('<br />','_').replaceAll('/',"_").replaceAll(" ","_");
+                title = title + "_" + (new Date().toJSON().slice(0,22)).replaceAll("-","").replaceAll(":","").replaceAll(".","");
+                Plotly.downloadImage(gd, {format: 'svg',filename: title});
+            }
+        }],
+    }
+
+    draw_r2_bar = function(){
+
+        var x = [];
+        var y = [];
+        var text = [];
+        {% for variable in data.task_run_output.Z_order %}
+        x.push('{{ variable }}');
+        {% endfor %}
+        {% for value in data.task_run_output.pR2 %}
+        y.push({{ value }});
+        text.push(({{ value }}).toFixed(3));
+        {% endfor %}
+
+        //console.log(text);
+        var data = {
+            x: x,
+            y: y,
+            type: 'bar',
+            textposition: 'auto',
+            text: text,
+        };
+        var layout = {
+            xaxis: {
+                title: 'Covariates'//
+            },
+            yaxis: {
+                title: 'R<sup>2</sup>',
+                range: [0,{% if 'pct_threshold' in data.task_run.args.keys() %}{{ data.task_run.args['pct_threshold'] * 100}}{% else %}80{% endif %}],
+                rangemode: 'range',
+            },
+            title:'Partial R<sup>2</sup> explained by covariates'
+        };
+        Plotly.newPlot('R2_bar_all', [data], layout,plotly_settings);
+
+        r2_label = x.pop();
+        r2_value = y.pop();
+        r2_proportion = [];
+        text_proportion = [];
+        for(i=0;i<y.length;i++){
+            r2_proportion.push(y[i]/r2_value)
+            text_proportion.push((y[i]/r2_value).toFixed(2))
+        }
+
+        var data = {
+            x: x,
+            y: r2_proportion,
+            type: 'bar',
+            textposition: 'auto',
+            text: text_proportion,
+        };
+        var layout = {
+            xaxis: {
+                title: 'Covariates'
+            },
+            yaxis: {
+                title: 'PartialR<sup>2</sup>/R<sup>2</sup>',
+            },
+            title:'Partial R<sup>2</sup> proportion explained by covariates'
+        };
+        Plotly.newPlot('R2_bar_proportion', [data], layout,plotly_settings);
+
+        $('#R2_stats').html("Partial R<sup>2</sup>:");
+
+    };
+
+    $(function() {
+        draw_r2_bar();
+        $('#plot-chevron').trigger('click');
+    });
+</script>
+{% endblock %}

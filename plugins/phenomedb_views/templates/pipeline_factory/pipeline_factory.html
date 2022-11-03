@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+	<div class="row">
+	    <h3 class="page-heading">Pipeline Factory</h3>
+	</div>
+	<div class="row col-lg-12">
+  		<div class="row row-padded">
+			<div class="col-lg-6">
+			    <div class="col-xs-3 table-label">Select task</div>
+			    <div class="col-xs-8 table-value">
+			         <select class="form-control" id="task_select" name="task_select">
+			         {% for module_class,task in data.tasks.items() %}
+						<option data-mod="{{task.module}}" data-args="{{task.args}}" data-params="{{task.params}}" value="{{task.task}}">{{ task.module }}.{{task.task}}</option>
+			         {% endfor %}
+			         </select>
+			     </div>
+			</div>
+		</div>
+		<div class="row">
+		   
+		   	<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">	<span id="insert_task_class"> Task</span></div>
+					<div class="panel-body">
+				   
+						<div class="row">
+							<div class="col-xs-9 table-value" id="user_message"></div>
+						</div>
+			    		<div class="row">
+							<form id="add_task_form">
+								<input type="hidden" name="task_module" id="task_module" value=""/>
+								<input type="hidden" name="task_class" id="task_class" value=""/>
+								<input type="hidden" name="task_subfolder" id="task_subfolder" value=""/>
+								<div id="task_fields"></div>
+								<div class="col-xs-11 table-label"><button type="submit" id="add_task" class="btn btn-primary">Add task</button></div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Pipeline</div>
+					<div class="panel-body">
+				
+						<div class="row">
+					   		<form id="save_dag_form" method="POST" action="{{url_for('PipelineFactoryView.create_dag')}}">
+					   		<input type="hidden" name="dag_def" id="dag_def"/>			
+							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+	
+	
+							<div class="row-padded">
+								<div class="col-xs-3 table-label">Tasks</div>
+								<div class="col-xs-8 table-value">
+									<table class="table table-bordered table-condensed">
+										<thead><tr><td colspan="3">[Tasks will run in order shown here]</td></tr></thead>
+										<tbody id="dag_list"></tbody>
+									</table>
+								</div>
+							</div>
+	
+							<div class="row">
+								<div class="col-xs-3 table-label">DB environment</div>
+								<div class="col-xs-8 table-value">
+									<select class="form-control" id="db_env_select" name="set_db_env">
+										<option value="TEST">Test</option>
+										<option value="BETA">Beta</option>
+										<option value="PROD" selected>Production</option>
+									</select>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-3 table-label"><a target="_blank" href="http://airflow.apache.org/docs/apache-airflow/stable/dag-run.html">Schedule interval</a></div>
+								<div class="col-xs-8 table-value">
+									<input class="form-control" type="text" name="schedule_interval" placeholder="CRON def, @once, or 'manual'" value=""/>
+								</div>
+							</div>
+							<div class="row">	
+								<div class="col-xs-3 table-label">Pipeline name</div>
+			    				<div class="col-xs-8 table-value"><input class="form-control" type="text" name="name" placeholder="required, no spaces" required value=""/>	</div>
+			    			</div>
+			    			<div class="row">
+			    				<div class="col-xs-3 table-label">Description</div>
+			    				<div class="col-xs-8 table-value"><input class="form-control" type="text" name="dag_description" placeholder="required" required value=""/>	</div>
+			    			</div>
+							<div class="row">
+								<div class="col-xs-3 table-label">Tags</div>
+								<div class="col-xs-8 table-value"><input class="form-control" type="text" name="dag_tags" placeholder="tags separated by space" value=""/>	</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-3 table-label">Sequential?</div>
+								<div class="col-xs-8 table-value"><input class="form-check-input" type="checkbox" id="sequential" name="sequential" value="true" checked>&nbsp; Tasks run sequentially when checked</div>
+							</div>
+							<div class="col-xs-11 table-label"><button type="submit" class="btn btn-primary">Save</button></div> 				
+							</form>	
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script>
+
+
+$(function() {		
+	var dagTasks = [];
+
+	function getSelectOptions(tableName) {
+		var url = "{{ url_for('PipelineFactoryView.get_dropdown_options') }}?table=" + tableName;
+		console.log("fetching options " + url);
+		var select = $("<select/>"); 
+		select.addClass("form-control");		
+		select.append( $("<option/>").attr("value", "").html("--- select ---") );
+		$.getJSON(url).done( function(data) { 				
+				$.each( data, function(idx, p) {	
+					select.append( $("<option/>").attr("value", p).html(p) );
+				});
+			})
+	        .fail( function(data) { 	
+				console.log('error fetching options ' + JSON.stringify(data));
+			});	
+		return select;
+	}
+	
+	function refreshDAGTable() {		
+		$("#dag_list").empty();	
+		$.each( dagTasks, function(index, t) {	
+			var taskNum = index + 1;
+			var btn = makeGlyphButton("glyphicon-trash");
+			btn.addClass("del-field");
+			btn.attr("data-task_no", taskNum );
+			t['index'] = taskNum;
+			console.log("appending task " + JSON.stringify(t));
+			$("#dag_list").append( $("<tr/>")
+					.append( $("<td/>").html(taskNum))	
+					.append( $("<td/>").html(t.task_label))
+					.append( $("<td/>").html(btn))
+			);		
+		});
+		
+		$('#dag_def').val(JSON.stringify(dagTasks));
+	};
+
+	$("#add_task").on("click", function(e){
+		
+		e.preventDefault();	
+		var userMessage = "";
+		var taskObj = {};
+		taskObj['task_class'] = $("#task_class").val();
+		taskObj['task_label'] = $("#task_label").val();
+		//taskObj['task_subfolder'] = $("#task_subfolder").val();
+		taskObj['task_module'] = $("#task_module").val();
+		
+		var args = {};
+		
+		
+		$("#add_task_form .arg").each(function(){
+
+			var key = $(this).attr('name');
+
+			if (key != 'task_label') {
+
+				var val = $(this).val().trim();
+				var required = this.dataset['required'];
+				var label = this.dataset['label'];
+				var type = this.dataset['type'];
+
+				if (required == 'true' && val.length == 0) {
+					userMessage = "<em>**" + label + " is a required field</em>";
+					return false;
+				}
+
+				var iType = $(this).attr('type');
+
+				if (iType == "file") {
+					val = val.replace("C:\\fakepath\\", "");
+
+				} else if (iType == 'checkbox') {
+					val = $(this).is(':checked');
+				}
+				args[key] = val;
+
+				if (type == 'file_upload') {
+
+					file = this.files[0];
+
+					console.log("here");
+					console.log(JSON.stringify($('[name="overwrite-' + key + '"]').is(':checked')));
+
+					formdata = new FormData();
+					formdata.append('uploaded_file', file, file.name);
+					formdata.append('overwrite', JSON.stringify($('[name="overwrite-' + key + '"]').is(':checked')));
+					jQuery.ajax({
+						url: "{{ url_for('PipelineFactoryView.upload_file') }}",
+						type: "POST",
+						data: formdata,
+						processData: false,
+						contentType: false,
+						async: false,
+						error: function (xhr, status, error) {
+							userMessage = "<em>** file upload failed: " + xhr.responseText + "</em>";
+							return false;
+						}
+					});
+				}
+			}
+		});
+		
+		if ( userMessage.length == 0 ) {
+			taskObj['args'] = args;		
+			dagTasks.push(taskObj);
+			refreshDAGTable();	
+		}
+		$("#user_message").html(userMessage);	
+	});
+	
+	$("#task_select").on("change", function(e){
+		var task = $('option:selected',this);
+		var selectedTask = $(this).val();
+
+		var selectedSubfolder = $(this).closest('optgroup').prop('label');
+
+		var mod = task.data("mod");
+		var args = task.data("args");
+		var params = task.data("params");
+
+		$("#task_fields").empty();
+		$("#user_message").empty();
+		$('#insert_task_class').html(selectedTask + " parameters");
+
+		$('#task_class').val(selectedTask);
+		$('#task_module').val(mod);
+		$('#task_subfolder').val(mod);
+
+		var label = '<em>Task Label</em>';
+		var required = 'required';
+		var editBox = $("<input/>");
+		editBox.attr("type", "text");
+		editBox.addClass("form-control arg");
+		editBox.attr("name", 'task_label');
+		editBox.attr("required", true);
+		editBox.attr("id", 'task_label');
+		editBox.attr("value", selectedTask);
+		editBox.attr("data-type", 'text');
+		editBox.attr("data-required", true);
+		editBox.attr("data-label", 'task');
+		var taskRow = $("<div/>").attr("class", "row");
+		taskRow.append( $("<td/>").attr("class", "col-xs-4 table-label").html(label));
+		taskRow.append( $("<td/>").attr("class", "col-xs-7 table-value").html(editBox));
+		$("#task_fields").append(taskRow);
+
+		if ( args.length > 0 ) {
+			var argList = args.split(",");
+			
+			$.each( argList, function(index, argName) {	
+				
+				var paramData = params[argName];
+
+				var label = paramData['label'];
+				var required = paramData['required'];
+				var inputType = paramData['type'];
+
+				console.log(label);
+				console.log(inputType);
+				var editBox = $("<input/>"); 
+	        	editBox.attr("type", "text");
+
+		        if ( inputType == "dropdown"){
+		        	editBox = $("<select/>"); 
+		        	editBox.append( $("<option/>").attr("value", "").html("--- select ---") );
+		        	var options = paramData['options'];
+		        	for ( var opt in options ) {
+		        		editBox.append( $("<option/>").attr("value", options[opt]).html(opt) );
+		        	}
+		        } else if (inputType=='project') {   
+		        	editBox = getSelectOptions('project');
+		        } else if (inputType=='unit') {
+		        	editBox = getSelectOptions('unit');
+		        }
+				else if (inputType=='metadata_harmonised_field') {
+					editBox = getSelectOptions('metadata_harmonised_field');
+				}
+				else if (inputType=='file_path_remote'){
+					editBox.attr("type", "file");
+				} else if (inputType=='file_upload' ) {
+		        	editBox.attr("type", "file");
+		        }
+		        
+		        editBox.addClass("form-control arg");							
+				editBox.attr("name", argName);
+				editBox.attr("required", required);
+				editBox.attr("id", argName);
+				editBox.attr("data-type", inputType);
+				editBox.attr("data-required", required);
+				editBox.attr("data-label", label);
+				if ( required == true ) {
+					label = $("<em/>").append(label);
+				}
+				var taskRow = $("<div/>").attr("class", "row");
+				var taskFields = $("#task_fields");
+				
+				taskRow.append( $("<td/>").attr("class", "col-xs-4 table-label").html(label));
+
+				if (inputType=='file_upload' ) {
+					taskRow.append( $("<td/>").attr("class", "col-xs-5 table-value").html(editBox));
+					extra_input = "<input type='checkbox' name='overwrite-" + argName + "' value='overwrite' /> Overwrite";
+					taskRow.append( $("<td/>").attr("class", "col-xs-3 table-value").html(extra_input));
+				} else {
+					taskRow.append( $("<td/>").attr("class", "col-xs-7 table-value").html(editBox));
+				}
+				taskFields.append(taskRow);
+
+			});
+		} else {
+			$("#task_fields").append( $("<div/>").attr("class", "row")
+					.append( $("<td/>").attr("class", "col-xs-6 table-label").html("Task has no parameters"))					
+			);				
+		}
+		$('#task_class').val(selectedTask);
+	});
+	
+	/* delete task */
+	$("#dag_list").on("click", "a.del-field", function(e) {
+		e.preventDefault();								
+		var taskNum = this.dataset["task_no"];
+		dagTasks.splice(taskNum-1, 1);
+		refreshDAGTable();
+			
+	});
+	$("#task_select option:eq(0)").attr('selected','selected');
+	$("#task_select").trigger('change');	
+	refreshDAGTable();
+});
+</script>
+{% endblock %}

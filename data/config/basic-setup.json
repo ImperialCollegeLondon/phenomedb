@@ -1,0 +1,104 @@
+{
+  "units": [
+     ["noUnit", "no unit, for dimensionless variables (ie untargeted LC-MS)"],
+     ["-/-", "no unit"],
+     ["nM", "nano-mole"],
+     ["µM", "micro-moles"],
+     ["M", "Mole"],
+     ["fg/µL", "femtograms per microlitre"],
+     ["ng/mL", "nanograms per millilitre"],
+     ["mg/dL", "milligrams per decilitre"],
+     ["nmol/L", "nanomoles per litre"],
+     ["mmol/L", "millimoles per litre"],
+     ["Years", "Discrete number of years, ie Age"],
+     ["seconds", "seconds"]
+  ],
+  "annotation_methods": [
+    ["Bi-Quant-P","Bruker IVDr Bi-Quant Blood Method"],
+    ["Bi-Quant-U","Bruker IVDr Bi-Quant Urine Method"],
+    ["Bi-LISA", "Bruker IVDr Lipoprotein Blood Method"],
+    ["TargetLynx", "Waters TargetLynx"],
+    ["PPR", "PeakPanther RT/mz ion match"]
+  ],
+  "harmonised_metadata_fields": [
+    ["Age","Years","numeric"],
+    ["Sex", "noUnit", "text"],
+    ["BMI", "noUnit", "numeric"]
+  ],
+  "assays": [
+      ["HPOS","MS","N","-ve","Liquid Chromatography MS - positive - HILIC","mass spectrometry","relative"],
+      ["RPOS", "MS", "N", "+ve", "Liquid Chromatography MS - positive - reverse phase","mass spectrometry","relative"],
+      ["RNEG", "MS", "N", "-ve", "Liquid Chromatography MS - negative - reverse phase","mass spectrometry","relative"],
+      ["LPOS", "MS", "N", "+ve", "Liquid Chromatography MS - positive - lipid","mass spectrometry","relative"],
+      ["LNEG", "MS", "N", "-ve", "Liquid Chromatography MS - negative - lipid","mass spectrometry","relative"],
+      ["NOESY", "NMR", "N", null, "NOESY NMR", "nuclear magnetic resonance","absolute"],
+      ["CPMG", "NMR", "N", null, "CPMG NMR", "nuclear magnetic resonance","absolute"],
+      ["JRES", "NMR", "N", null, "JRES NMR", "nuclear magnetic resonance","absolute"]
+  ],
+  "lab": ["National Phenome Centre","Imperial College London"],
+  "projects": [
+    ["PipelineTesting","npc-devset"]
+  ],
+  "compounds": [
+    {
+      "task_class":  "ImportROICompounds",
+      "roi_file": "HPOS_ROI_V_3_1_1.csv",
+      "assay_name": "HPOS",
+      "roi_version": "3.1.1",
+      "update_names": true
+    },
+    {
+      "task_class":  "ImportROICompounds",
+      "roi_file": "RPOS_ROI_V_3_1_1.csv",
+      "assay_name": "RPOS",
+      "roi_version": "3.1.1",
+      "update_names": true
+    },
+    {
+      "task_class":  "ImportROICompounds",
+      "roi_file": "RNEG_ROI_V_3_1_0.csv",
+      "assay_name": "RNEG",
+      "roi_version": "3.1.0",
+      "update_names": true
+    },
+    {
+      "task_class":  "ImportROICompounds",
+      "roi_file": "LPOS_ROI_V_5_1_0.csv",
+      "assay_name": "LPOS",
+      "roi_version": "5.1.0",
+      "update_names": true,
+      "na_none": true,
+      "na_values": ["na","nan"]
+    },
+    {
+      "task_class":  "ImportROICompounds",
+      "roi_file": "LNEG_ROI_V_5_1_1.csv",
+      "assay_name": "LNEG",
+      "roi_version": "5.1.1",
+      "update_names": true,
+      "na_none": true,
+      "na_values": ["na","nan"]
+    },
+    {
+      "task_class":  "ImportBrukerBiLISACompounds",
+      "bilisa_file": "ivdr-bilisa-all.csv",
+      "version": "2.0"
+    },
+    {
+      "task_class":  "ImportBrukerBiQuantCompounds",
+      "biquant_compounds_file": "ivdr-bi-quant-all.csv",
+      "version": "2.0"
+    }
+  ],
+  "compound_external_dbs": [
+    ["LipidMAPS","http://www.lipidmaps.org/data/LMSDRecord.php?LMID={}"],
+    ["ChemSpider","http://www.chemspider.com/Chemical-Structure.{}.html"],
+    ["HMDB","http://www.hmdb.ca/metabolites/{}"],
+    ["CAS","http://webbook.nist.gov/cgi/cbook.cgi?ID={}"],
+    ["PubChem CID","https://pubchem.ncbi.nlm.nih.gov/compound/{}"],
+    ["ChEMBL","https://www.ebi.ac.uk/chembl/compound/inspect/{}"],
+    ["ChEBI","http://www.ebi.ac.uk/chebi/searchId.do?chebiId={}"],
+    ["KEGG","https://www.genome.jp/dbget-bin/www_bget?cpd:{}"],
+    ["Refmet","https://www.metabolomicsworkbench.org/databases/refmet/index.php"]
+  ]
+}

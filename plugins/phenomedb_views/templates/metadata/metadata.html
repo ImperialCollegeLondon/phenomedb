@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+	<div class="row">
+	    <h3 class="page-heading">Metadata Harmonisation</h3>
+	</div>	
+	<div class="row" id="section_tabs">	
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#project_tab" data-batch="" data-toggle="tab">Raw fields</a></li>		
+			<li><a href="#new_field_tab" data-toggle="tab">Add new harmonised field</a></li>
+			<li><a href="#new_unit_tab" data-toggle="tab">Add new unit</a></li>
+		</ul>       
+		
+		<div class="tab-content">		
+			<div class="tab-pane active" id="project_tab">	
+				<div class="row col-lg-12">					
+					<div class="col-md-6">
+						<div class="panel panel-default">
+							<div class="panel-heading">Project fields</div>
+							<div class="panel-body">			  				
+								<div class="row">    
+								    <div class="col-xs-2 table-label">Project</div>                            
+								    <div class="col-xs-5 table-value">
+								         <select class="form-control" id="project_select" name="project_select">
+										 <option value="none">--Please select--</option>
+											 {% for project in data.projects %}
+								         	<option value="{{project.id}}">{{project.name}}</option>
+								         {% endfor %}
+								         </select>
+								     </div> 
+								</div>
+                                <div class="section-heading" id="sample-count"></div>
+								<div class="section-heading">Metadata fields</div>
+								<div class="row row-padded">
+							 		<table class="table table-bordered">
+							 			<tr>
+											<td>Raw field</td>
+											<td>Assigned field</td>
+											<td>Delete</td>
+										</tr>
+										<tbody id="metadata_fields"></tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="panel panel-default">
+							<div class="panel-heading">Metadata distributions</div>
+							<div class="panel-body">
+								<div id="metadata-plot"></div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-md-6">
+						<div class="panel panel-default">
+							<div class="panel-heading">Project fields
+							<span class="pull-right" id="user_message"></span>
+							</div>
+							<div class="panel-body">			  				
+	
+								<div id="harmonised_fields" class="i-am-invisible">
+									<div class="row">     
+										<form method="POST" action="{{url_for('MetadataView.assign_harmonised_field')}}">
+									
+								    	<div id="metadata_field_name" class="col-xs-4 table-label">Link field to</div> 
+									                             
+									    <div class="col-xs-6 table-value">
+									         <select class="form-control" id="harmonised_field_select" name="metadata_harmonised_field_id">
+									         <option value="">-- select --</option>
+									         {% for field in data.harmonised %}
+									         	<option value="{{field.id}}">{{field.name}}</option>
+									         {% endfor %}
+									         </select>
+									     </div> 
+									      <div class="col-xs-1 table-label"><button type="submit" id="harmonised_field_save" class="btn btn-primary">Save</button></div>
+										<input type="hidden" name="id" id="input_raw_id" value="empty"/>
+										<input type="hidden" name="project_id" id="input_project_id" value="empty"/>		
+										<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>	 
+										</form>    
+									</div>	
+								</div>
+							
+								<div class="section-heading">
+									<span id="project_heading"></span>
+			   						<span id="raw_field_name"></span>
+								</div>
+								<div class="row row-padded">
+		
+							 		<table class="table table-bordered">	
+										<tr>
+											<td>Subject</td>
+											<td>Sample Event</td>
+											<td>Type</td>
+											<td id="raw_field_heading">Raw value</td>
+											<td id="harmonised_field_heading">Harmonised value</td>
+											<td>Save</td>
+										</tr>
+										<tbody id="metadata_values"></tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>				
+				</div>
+			</div>
+
+			
+			<!--  this is the new harmonised field tab  -->
+			<div class="tab-pane" id="new_field_tab">	
+				<div class="row col-lg-12">					
+					<div class="panel panel-default">
+						<div class="panel-heading">New field</div>
+						<div class="panel-body">			  				
+
+							<form action="{{url_for('MetadataView.insert_harmonised_field')}}" method="post">
+							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>									
+							<div class="row">
+								<div class="table-label col-xs-2">Name</div>
+								<div class="table-value col-xs-6"><input type="text" class="form-control" name="name"></div>
+							</div>	
+							<div class="row">
+								<div class="table-label col-xs-2">Unit</div>
+								<div class="table-value col-xs-6">
+									<select class="form-control" id="unit_id" name="unit_id">
+							         	{% for u in data.units %}
+							         		<option value="{{u.id}}">{{u.name}}</option>
+							         	{% endfor %}
+							        </select>
+								</div>
+							</div>
+							<div class="row">
+								<div class="table-label col-xs-2">Datatype</div>
+								<div class="table-value col-xs-6">
+									<select class="form-control" id="datatype" name="datatype">
+										{% for d in data.metadata_harmonised_field_datatype %}
+											<option value="{{d.value}}">{{d.value}}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+							<div class="col-xs-8 table-label"><button type="submit" class="btn btn-primary">Save</button></div>	
+							</form>
+					</div>
+				</div>
+			</div>
+			</div>
+			<!--  this is the new harmonised field tab  -->
+			<div class="tab-pane" id="new_unit_tab">
+				<div class="row col-lg-12">
+				
+					<div class="panel panel-default">
+						<div class="panel-heading">New unit</div>
+						<div class="panel-body">
+							<form action="{{url_for('MetadataView.insert_unit')}}" method="post">
+								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+								<div class="row">
+									<div class="table-label col-xs-2">Name</div>
+									<div class="table-value col-xs-6"><input type="text" class="form-control" name="name"></div>
+								</div>
+								<div class="row">
+									<div class="table-label col-xs-2">Description</div>
+									<div class="table-value col-xs-6"><input type="text" class="form-control" name="description"></div>
+								</div>
+								<div class="col-xs-8 table-label"><button type="submit" class="btn btn-primary">Save</button></div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block head_js %}
+{{ super() }}
+<script>
+
+function get_layout(field_name){
+    var layout = {
+            height: 600,
+            width: 600,
+            title: {
+                text:field_name + " raw metadata counts",
+                font: {
+                    family: 'Droid Sans',
+                    size: 16
+                },
+                xref: 'paper',
+                x: 0.05,
+            },
+            xaxis: {
+                title: {
+                    text: field_name,
+                    font: {
+                        family: 'Droid Sans',
+                        size: 18,
+                    }
+                },
+            },
+            yaxis: {
+                    title: {
+                        text: 'Count',
+                        font: {
+                            family: 'Droid Sans',
+                            size: 18,
+                        }
+                    },
+                },
+        };
+    return layout;
+}
+
+function populateMetadataFields(url) {
+	/* populate left hand table */
+	var promise = $.getJSON(url)
+		.done(function(data) {  				
+			$("#metadata_fields").empty();
+            $("#sample-count").html('Number of Samples: ' + data['sample_count']);
+			$.each( data['rows'], function(idx, row) {
+				var tr = $("<tr/>");
+							
+				var link = $("<a>").append(row.name);
+				link.attr("class", "field-name");
+				link.attr("href", "#" );
+				link.attr("data-field_id", row.id );
+				link.attr("data-field_name", row.name );
+				tr.append( $("<td/>").append(link));				
+				
+				tr.append( $("<td/>").append(row.harmonised_name));
+				
+				var btn = makeGlyphButton("glyphicon-trash");
+				btn.addClass("del-raw-field");
+				btn.attr("data-field_id", row.id );
+				tr.append( $("<td/>").append(btn));
+	
+				$("#metadata_fields").append(tr);
+			});			
+		})
+        .fail( function(data) { 	
+			console.log('error');
+		});
+	return promise;
+}
+
+function populateMetadataValues(url, field) {
+	/* set the heading in the table to actual field */
+	$("#raw_field_heading").html(field + " (raw)");
+	$("#harmonised_field_heading").html(field + " (harmonised)");
+	var promise = $.getJSON(url)
+		.done(function(data) {  
+			var plot_data = {'x':[],'y':[],'type':'bar'};
+            var metadata_counts = {};
+			$("#metadata_values").empty();						
+			$.each( data['rows'], function(idx, row) {
+				
+				var btn = makeGlyphButton("glyphicon-floppy-saved");
+				btn.addClass("edit-metadata-value");
+				btn.attr("data-id", row.metadata_value_id );
+				
+				// make an input to edit the value
+				var editBox = $("<input/>"); 
+				editBox.addClass("form-control");
+
+				if(data['metadata_harmonised_field_value_name'] == 'harmonised_text_value'){
+					editBox.attr("type", "text");
+					editBox.attr("value", row.harmonised_text_value);
+				} else if(data['metadata_harmonised_field_value_name'] == 'harmonised_numeric_value'){
+					editBox.attr("type", "text");
+					editBox.attr("value", row.harmonised_numeric_value);
+				} else if (data['metadata_harmonised_field_value_name'] == 'harmonised_datetime_value') {
+					editBox.attr("type", "datetime-local");
+					editBox.attr("value", row.harmonised_numeric_value);
+				}
+				editBox.attr("id", "input_" + row.metadata_value_id)
+				
+				$("#metadata_values").append( $("<tr/>")
+						.append( $("<td/>").html(row.subject))
+						.append( $("<td/>").html(row.sample))
+						.append( $("<td/>").html(row.sample_matrix))
+						.append( $("<td/>").html(row.raw_value))
+						.append( $("<td/>").attr("id", "edit_field_" + row.metadata_value_id).html(editBox))
+						.append( $("<td/>").html(btn))
+				);
+                if(metadata_counts[row.raw_value] === undefined){
+                    metadata_counts[row.raw_value] = 0
+                }
+                metadata_counts[row.raw_value] = metadata_counts[row.raw_value] + 1;
+			});
+            for(var raw_value in metadata_counts){
+                if (metadata_counts.hasOwnProperty(raw_value)) {
+                    plot_data['x'].push(raw_value);
+                    plot_data['y'].push(metadata_counts[raw_value]);
+                }
+            }
+            console.log(plot_data);
+            Plotly.newPlot('metadata-plot',[plot_data],get_layout(field));
+
+		})
+        .fail( function(data) { 	
+			console.log("error " + JSON.stringify(data));
+		});
+	return promise;
+}
+
+$(function() {	
+	/* delete raw field */
+	$("#metadata_fields").on("click", "a.del-raw-field", function(e) {
+		e.preventDefault();							
+		var delObject = {};		
+		delObject.field_id = this.dataset["field_id"];
+
+		var csrf_token = "{{csrf_token()}}";		
+		var url = "{{ url_for('MetadataView.delete_raw_field')}}";
+		
+	  	var jqxhr = ajaxUpdateOrDelete( delObject, url, "DELETE", csrf_token, "Are you sure?" );
+	  	
+		jqxhr.done( function( data ) {      			
+			/* trigger select on first item in list */
+			$("#project_select option:first").attr("selected","selected");	
+			$("#project_select").trigger("change");
+		
+	  	}).fail( function(data) { 				
+			console.log("failed " + JSON.stringify(data));
+		});		
+	});
+	
+	/* edit raw field */
+	$("#metadata_values").on("click", "a.edit-metadata-value", function(e) {
+		e.preventDefault();		
+		$("#user_message").empty();
+		var obj = {};		
+		var csrf_token = "{{csrf_token()}}";
+		obj.id = this.dataset['id'];
+			
+		console.log("editing " + JSON.stringify(obj));
+		var harmonisedVal = $("#input_" + obj.id).val();
+		console.log("harmonised is " + harmonisedVal);
+		obj.harmonised_value = harmonisedVal;
+		
+		var url = "{{ url_for('MetadataView.curate_field_value')}}";
+	  	var jqxhr = ajaxUpdateOrDelete( obj, url, "PUT", csrf_token, "" );
+	  	
+		jqxhr.done( function( data ) {      			
+			console.log("saved " + JSON.stringify(data));
+			$("#edit_field_" + obj.id).addClass('saved');
+		
+	  	}).fail( function(data) { 				
+			console.log("failed " + JSON.stringify(data));
+			$("#user_message").html("<em>**Failed: " + data.responseJSON.error + "</em>");
+			
+		});		
+	});
+		
+	/* select project in list */			
+	$("#project_select").on("change", function(e){		
+		projectId = $(this).children("option:selected").val();
+		projectName = $(this).children("option:selected").text();
+
+		if (projectId != 'none') {
+
+			/* reset the values table for new selection*/
+
+			$("#metadata_values").empty();
+			$("#project_heading").html(projectName);
+			$("#input_project_id").val(projectId);
+			url = "{{ url_for('MetadataView.get_metadata_fields') }}?project_id=" + projectId;
+			handle = populateMetadataFields(url);
+			handle.always(
+				function (data) {
+					if (data.length > 0) {
+						$("a.field-name:first").trigger('click');
+						$("#harmonised_fields").css("visibility", "visible");
+					} else {
+						$("#harmonised_fields").css("visibility", "hidden");
+					}
+				});
+		}
+	});
+	
+	/* select a raw metadata field in the left table */
+	$("#metadata_fields").on("click", "a.field-name", function(e) {			
+		highlightTableRow( this );
+		console.log('dataset ' + JSON.stringify(this.dataset));
+		selectedField = this.dataset["field_name"];
+		/* change the name in the 'link' selection box */
+		$('#metadata_field_name').html("Link \"" + selectedField + "\" to ");
+		$("#raw_field_name").html(selectedField);
+		var fieldId = this.dataset["field_id"];	
+		$('#input_raw_id').val(fieldId);	
+		var url = "{{ url_for('MetadataView.get_metadata_values') }}?id=" + fieldId;
+		populateMetadataValues(encodeURI(url), selectedField);
+	});
+	/* trigger select on item in list */
+	projectId = "{{data.project_id}}";
+	
+	if ( projectId.length > 0 ) {
+		$('#project_select option[value={{data.project_id}}]').attr('selected','selected');
+	} else {
+		$("#project_select option:first").attr('selected','selected');	
+	}
+	$("#project_select").trigger('change');
+
+
+});
+
+</script>
+{% endblock %}

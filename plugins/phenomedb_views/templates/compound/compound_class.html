@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container">
+	<div class="row">
+		<h3 class="page-heading"><a class="bc-back" href="{{url_for('CompoundView.compound',id=data.compound_id)}}">Compound</a>&nbsp;Class {{ data.group.type.value }}</h3>
+			<h4 class="sub-heading">
+			{% if data.group.type.value == 'isomer' %}
+				{{data.group.inchi_key_backbone}}
+			{% elif data.group.type.value == 'lipidmaps' %}
+				<a href="https://www.lipidmaps.org/data/structure/LMSDSearch.php?Mode=ProcessStrSearch&LMID={{data.group.category_id}}">{{data.group.category}}</a>
+				-
+				<a href="https://www.lipidmaps.org/data/structure/LMSDSearch.php?Mode=ProcessStrSearch&LMID={{data.group.main_class_id}}">{{data.group.main_class }}</a>
+				-
+				<a href="https://www.lipidmaps.org/data/structure/LMSDSearch.php?Mode=ProcessStrSearch&LMID={{data.group.lipidmaps_subclass_id}}">{{data.group.sub_class}}</a>
+            {% else %}
+                {{data.group.kingdom}} - {{data.group.category}} - {{ data.group.main_class }} - {{data.group.sub_class}} - {{data.group.direct_parent}}
+			{% endif %}
+            </h4>
+	</div>
+	<div class="row">    				
+		<div class="col-md-12">
+		
+			
+			<div class="row row-padded">				
+				<div class="panel panel-default">
+					<div class="panel-heading">Compounds</div>
+					<div class="panel-body">	
+					<form id="remove_group_compounds" method="post">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>	
+						<input type="hidden" name="compound_id" value="{{ data.compound_id }}"/>	
+						<input type="hidden" name="compound_class_id" value="{{ data.group.id }}"/>
+				 		<table class="table table-bordered">
+				 			<tr>
+								<td>Compound ID</td>
+								<td>Name</td>
+								<td>InChI</td>
+								<td>InChI key</td>
+								<td>Monoisotopic mass</td>
+								<!--<td>Remove</td> -->
+							</tr>
+							<tbody id="compound_table">
+							{% for field in data.group_compounds %}
+					         	<tr>
+					         		<td>{{field.compound_id}}</td>
+									<td><a href="{{url_for('CompoundView.compound',id=field.compound_id)}}">{{field.name}}</a></td>
+									<td>{{field.inchi}}</td>
+									<td>{{field.inchi_key}}</td>
+									<td>{{field.monoisotopic_mass}}</td>
+									<!-- <td><input type="checkbox" name="remove_compound_class" value="{{field.id}}"/></td> -->
+					         {% endfor %}
+							</tbody>
+						</table>
+						<!--<div class="col-xs-12 table-label"><button type="submit" class="btn btn-default">Remove compounds from group</button></div> -->
+					</form>
+					</div>	
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>		
+
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script>
+
+function populateTable(url, tableId) {	
+
+	var promise = $.getJSON(url)
+		.done(function(data) {  				
+			$("#metadata_fields").empty();						
+			$.each( data, function(idx, row) {			
+				var tr = $("<tr/>");
+							
+				var link = $("<a>").append(row.name);
+				link.attr("class", "field-name");
+				link.attr("href", "#" );
+				link.attr("data-field_id", row.id );
+				link.attr("data-field_name", row.name );
+				tr.append( $("<td/>").append(link));				
+				
+				tr.append( $("<td/>").append(row.harmonised_name));
+				
+				var btn = makeGlyphButton("glyphicon-trash");
+				btn.addClass("del-raw-field");
+				btn.attr("data-field_id", row.id );
+				tr.append( $("<td/>").append(btn));
+	
+				$("#metadata_fields").append(tr);
+			});			
+		})
+        .fail( function(data) { 	
+			console.log('error');
+		});
+	return promise;
+}
+
+
+</script>
+{% endblock %}

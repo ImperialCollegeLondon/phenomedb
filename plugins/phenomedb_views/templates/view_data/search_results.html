@@ -1,0 +1,31 @@
+<div class="panel panel-default">
+	<div class="panel-body">
+	<ul>
+	{% for bucket, results in data.items() %}
+	<li class="table-sized">
+		<div>{{results|length}} {{bucket}}</div>		
+	</li>
+	{% endfor %}
+	</ul>
+	</div>
+</div>
+<hr/>
+{% for bucket, results in data.items() %}
+	{% if results %}
+
+		<div class="panel panel-default">
+		    <div class="panel-heading">
+		        {{bucket}}
+		    </div>
+	    	<div class="panel-body">
+	    	<ul>
+		        {% for result in results %}
+
+		    		 <li>{{ result.name }}</li>
+		        {% endfor %}
+		    </ul>
+	    	</div>
+		</div>
+
+	{% endif %}
+{% endfor %}

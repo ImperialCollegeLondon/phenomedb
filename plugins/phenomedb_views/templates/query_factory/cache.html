@@ -1,0 +1,58 @@
+<div class="panel panel-default">
+    <div class="panel-heading"><a class="accordion-toggle" href="#cache" data-toggle="collapse">Combined format Cache</a></div>
+    <div class="panel-body collapse in" id="cache">
+        The AnnotatedFeature Combined cache is necessary for downstream caches, such as the CompoundClass and the other export formats.
+
+        {% if not data.saved_query %}
+            Please save the query before generating the cache.
+        {% else %}
+            <table class="table">
+                <tr><th>Model</th><th>Cache state/options</th></tr>
+                <tr><td>Annotated Feature (Raw)</td><td id="cache-AnnotatedFeature">
+                    {% if data.saved_query.cache_state %}
+                        {% if data.annotated_feature_cache_raw and data.annotated_feature_cache_raw == 'exists' %}
+                            Cache exists
+                        {% elif data.annotated_feature_cache_raw and data.annotated_feature_cache_sr_raw == 'generating' %}
+                            Cache generating, please wait. You will receive an email when the Task completes.
+                        {% endif %}
+                            <a href="#" id="generate-dataframe-cache-AnnotatedFeature" class="button generate-dataframe-cache">Generate cache</a>
+
+                    {% else %}
+                        <a href="#" id="generate-dataframe-cache-AnnotatedFeature" class="button generate-dataframe-cache">Generate cache</a>
+                    {% endif %}
+                    </td>
+                </tr>
+                <tr><td>Annotated Feature (SR corrected)</td><td id="cache-AnnotatedFeature-SR">
+                    {% if data.saved_query.cache_state %}
+                        {% if data.annotated_feature_cache_sr_corrected and data.annotated_feature_cache_sr_corrected == 'exists' %}
+                            Cache exists
+                        {% elif data.annotated_feature_cache_sr_corrected and data.annotated_feature_cache_sr_corrected == 'generating' %}
+                            Cache generating, please wait. You will receive an email when the Task completes.
+                        {% endif %}
+                            <a href="#" id="generate-dataframe-cache-AnnotatedFeature" class="button generate-dataframe-cache">Generate cache</a>
+                    {% else %}
+                        <a href="#" id="generate-dataframe-cache-AnnotatedFeature-SR" class="button generate-dataframe-cache">Generate cache</a>
+                    {% endif %}
+                    </td>
+                </tr>
+                <tr><td>Annotated Feature (LTR corrected)</td><td id="cache-AnnotatedFeature-LTR">
+                    {% if data.saved_query.cache_state %}
+                        {% if data.annotated_feature_cache_ltr_corrected and data.annotated_feature_cache_ltr_corrected == 'exists' %}
+                            Cache exists
+                        {% elif data.annotated_feature_cache_ltr_corrected and data.annotated_feature_cache_ltr_corrected == 'generating' %}
+                            Cache generating, please wait. You will receive an email when the Task completes.
+                        {% endif %}
+                            <a href="#" id="generate-dataframe-cache-AnnotatedFeature-LTR" class="button generate-dataframe-cache">Generate cache</a>
+                    {% else %}
+                        <a href="#" id="generate-dataframe-cache-AnnotatedFeature-LTR" class="button generate-dataframe-cache">Generate cache</a>
+                    {% endif %}
+                    </td>
+                </tr>
+            </table>
+        {% endif %}
+    </div>
+    {% if data.saved_query %}
+        <input type="hidden" id="saved_query_id" value="{{ data.saved_query.id }}" />
+    {% endif %}
+</div>
+

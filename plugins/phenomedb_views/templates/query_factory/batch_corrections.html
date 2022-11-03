@@ -1,0 +1,63 @@
+<div class="panel panel-default">
+    <div class="panel-heading"><a class="accordion-toggle" href="#batch-correction" data-toggle="collapse">Batch Correction</a></div>
+    <div class="panel-body collapse in" id="batch-correction">
+        <a href="{{ url_for('BatchCorrectionView.dashboard',id=data.saved_query.id) }}">View batch correction dashboard</a>
+        <!--<div class="dataTable_wrapper">
+            <table id="batch_correction_table" width="100%" class="table table-striped table-bordered table-hover"></table>
+        </div>-->
+    </div>
+</div>
+
+<script>
+    $(function() {
+        if ($('[name=saved_query_id]').val() !== undefined){
+            url = "{{ url_for('AnalysisView.get_table_json') }}?class_name=RunNPYCBatchCorrection&saved_query_id=" + $('[name=saved_query_id]').val();
+        } else {
+            url = "{{ url_for('AnalysisView.get_table_json') }}?class_name=RunNPYCBatchCorrection";
+        }
+
+        var displayTable = null;
+
+        var jqxhr = $.get(url, function( data ) {
+            displayTable = $("#batch_correction_table").DataTable({
+                data: data.table_data,
+                columns: data.columns,
+                'pageLength':50,
+                'dom': 'Bfrtip',
+                lengthMenu: [
+                    [ 25, 50, 100 ],
+                    [ '25 rows', '50 rows', '100 rows' ]
+                ],
+                'buttons': [ 'pageLength', {
+                    extend: 'collection',
+                    text: 'Export Options',
+                    buttons: [
+                        'copy',
+                        'excel',
+                        'csv',
+                        {
+                            extend: 'pdf',
+                            orientation : 'landscape',
+                            pageSize : 'A3',
+                            title: $('h1').text(),
+                            exportOptions: {
+                                columns: ':not(.no-print)'
+                            }
+                        },
+                        'print'
+                    ]
+                }],
+            });
+        });
+        jqxhr.fail(function(data) {
+            console.log(JSON.stringify(data));
+        });
+        jqxhr.always(function() {
+            if ( displayTable != null ) {
+                displayTable.order( [ 0, 'desc' ] ).draw();
+            }
+        });
+
+    });
+
+ </script>

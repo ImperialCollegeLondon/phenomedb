@@ -1,0 +1,27 @@
+<div class="col-xs-12" id="action_buttons">
+    <button class="add_filter btn btn-primary">Add another filter</button>
+    <button class="get_summary btn btn-primary">View summary stats</button>
+    <button class="save_query btn btn-success">Save saved_query definition</button>
+    <button class="copy_saved_query btn btn-warning">Copy saved_query definition</button>
+    {% if data.saved_query %}
+        <button class="clear-cache btn btn-danger">Clear cache</button>
+        <button class="btn btn-danger delete-button"><a href="{{url_for('QueryFactoryView.delete_saved_query')}}?id={{data.saved_query.id}}">Delete saved_query definition</a>
+    {% else %}
+        <button disabled class="disabled clear-cache btn btn-danger">Clear cache</button>
+        <button disabled class="disabled btn btn-danger delete-button"><a href="#">Delete saved_query definition</a>
+    {% endif %}
+    </button>
+</div>
+<script type="application/javascript">
+
+    {% if data.saved_query %}
+        $('.clear-cache').on('click',function(e){
+            e.preventDefault();
+           url = "{{ url_for("QueryFactoryView.clear_cache") }}?id={{ data.saved_query.id }}"
+            console.log(url);
+            $.get(url, function( data ) {
+                window.location.href = window.location.href;
+           });
+        });
+    {% endif %}
+</script>

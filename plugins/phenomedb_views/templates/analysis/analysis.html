@@ -1,0 +1,287 @@
+{% if data.json_render is defined and data.render_json == True %}
+    {% extends 'base_json.html' %}
+{% else %}
+    {% extends 'base.html' %}
+{% endif %}
+{% block plugin_content %}
+<div class="container-fluid">
+    <div class="row">
+        <h3 class="page-heading">Analysis</h3>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Run Analysis
+        </div>
+        <div class="panel-body">
+            <form id="task_form">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="saved_query_id"><em>Saved Query</em></label>
+                        <select class="form-control" id="saved_query_id">
+                        {% for saved_query in data.saved_queries %}
+                            <option value="{{ saved_query.id }}">{{ saved_query.id }} - {{ saved_query.name }}</option>
+                        {%  endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="task_select"><em>Analysis Type</em></label>
+                        <select class="form-control" id="task_select">
+                            {% for module_name,task in data.tasks.items() %}
+                                <option data-mod="{{task.module}}" data-args="{{task.args}}" data-params="{{task.params}}" value="{{task.task}}">{{ task.module }}.{{task.task}}</option>
+                            {%  endfor %}
+                        </select>
+                    </div>
+                    <button type="button" id="run_task" class="btn btn-primary disabled">Run Analysis</button>
+                </div>
+                <div class="col-md-6">
+                    <em>* required</em>
+                    <div id="task_fields"></div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="table-heading">Analysis Results</span>
+            <div class="pull-right">
+                <div class="btn-group">
+                    <a class="add-new" href="#"><span class="glyphicon glyphicon-plus"></span></a>&nbsp;
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="dataTable_wrapper">
+                <table id="table_data" width="100%" class="table table-striped table-bordered table-hover"></table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script>
+    $(function() {
+
+        url = "{{ url_for('AnalysisView.get_table_json') }}";
+        var displayTable = null;
+
+        var jqxhr = $.get(url, function (data) {
+            displayTable = $("#table_data").DataTable({
+                data: data.table_data,
+                columns: data.columns,
+                'pageLength': 50,
+                'dom': 'Bfrtip',
+                lengthMenu: [
+                    [25, 50, 100],
+                    ['25 rows', '50 rows', '100 rows']
+                ],
+                'buttons': ['pageLength', {
+                    extend: 'collection',
+                    text: 'Export Options',
+                    buttons: [
+                        'copy',
+                        'excel',
+                        'csv',
+                        {
+                            extend: 'pdf',
+                            orientation: 'landscape',
+                            pageSize: 'A3',
+                            title: $('h1').text(),
+                            exportOptions: {
+                                columns: ':not(.no-print)'
+                            }
+                        },
+                        'print'
+                    ]
+                }],
+            });
+        });
+        jqxhr.fail(function (data) {
+            console.log(JSON.stringify(data));
+        });
+        jqxhr.always(function () {
+            if (displayTable != null) {
+                displayTable.order([0, 'desc']).draw();
+            }
+        });
+
+        var args = {};
+
+        $("#saved_query_id").on("change",function(e){
+            $("#task_form").validate();
+
+            if ($("#task_form").valid()){
+                $('#run_task').removeClass('disabled');
+            } else{
+                $('#run_task').addClass('disabled');
+            }
+        });
+
+        $("#task_select").on("change", function(e){
+
+            var task = $('option:selected',this);
+            var selectedTask = $(this).val();
+
+            var selectedSubfolder = $(this).closest('optgroup').prop('label');
+
+            var mod = task.data("mod");
+            var args = task.data("args");
+            var params = task.data("params");
+
+            $("#task_fields").empty();
+            $("#user_message").empty();
+            $('#insert_task_class').html(selectedTask + " parameters");
+
+            $('#task_class').val(selectedTask);
+            $('#task_module').val(mod);
+            $('#task_subfolder').val(mod);
+
+            if ( args.length > 0 ) {
+                var argList = args.split(",");
+
+                console.log(argList);
+
+                $.each( argList, function(index, argName) {
+
+                    var paramData = params[argName];
+
+                    if (paramData == undefined || argName == 'saved_query_id') {
+                        return;
+                    }
+                   // console.log(argName);
+                   // console.log(paramData);
+
+                    var label = paramData['label'];
+                    var required = paramData['required'];
+                    var inputType = paramData['type'];
+
+                    console.log(label);
+                    console.log(inputType);
+                    var editBox = $("<input/>");
+                    editBox.attr("type", "text");
+
+                    if ( inputType == "dropdown"){
+                        editBox = $("<select/>");
+                        //editBox.append( $("<option/>").attr("value", "").html("--- select ---") );
+                        var options = paramData['options'];
+                        //console.log(options);
+                        for ( var opt in options ) {
+                            // options = {key/value: text}
+                            editBox.append( $("<option/>").attr("value", opt).html(options[opt]) );
+                        }
+                    } else if (inputType=='project') {
+                        editBox = getSelectOptions('project');
+                    } else if (inputType=='unit') {
+                        editBox = getSelectOptions('unit');
+                    } else if (inputType=='metadata_harmonised_field') {
+                        editBox = getSelectOptions('metadata_harmonised_field');
+                    } else if (inputType=='file_path_remote'){
+                        editBox.attr("type", "file");
+                    } else if (inputType=='file_upload' ) {
+                        editBox.attr("type", "file");
+                    }
+
+                    editBox.addClass("form-control arg");
+                    editBox.attr("name", argName);
+                    editBox.attr("required", required);
+                    editBox.attr("id", argName);
+                    editBox.attr("data-type", inputType);
+                    editBox.attr("data-required", required);
+                    editBox.attr("data-label", label);
+                    if ( required == true ) {
+                        label = $("<em/>").append(label);
+                    }
+                    var taskRow = $("<div/>").attr("class", "row");
+                    var taskFields = $("#task_fields");
+
+                    taskRow.append( $("<td/>").attr("class", "col-xs-4 table-label").html(label));
+
+                    if (inputType=='file_upload' ) {
+                        taskRow.append( $("<td/>").attr("class", "col-xs-5 table-value").html(editBox));
+                        extra_input = "<input type='checkbox' name='overwrite-" + argName + "' value='overwrite' /> Overwrite";
+                        taskRow.append( $("<td/>").attr("class", "col-xs-3 table-value").html(extra_input));
+                    } else {
+                        taskRow.append( $("<td/>").attr("class", "col-xs-7 table-value").html(editBox));
+                    }
+                    taskFields.append(taskRow);
+                    $("#task_form").validate();
+
+                    if ($("#task_form").valid()){
+                        $('#run_task').removeClass('disabled');
+                    } else{
+                        $('#run_task').addClass('disabled');
+                    }
+                });
+            } else {
+                $("#task_fields").append( $("<div/>").attr("class", "row")
+                        .append( $("<td/>").attr("class", "col-xs-6 table-label").html("Task has no parameters"))
+                );
+                $("#task_form").validate();
+
+                if ($("#task_form").valid()){
+                    $('#run_task').removeClass('disabled');
+                } else{
+                    $('#run_task').addClass('disabled');
+                }
+            }
+
+        });
+        $("#task_select option:eq(0)").attr('selected','selected');
+        $("#task_select").trigger('change');
+
+
+        //$('#run_task').on('click',function(e){
+        $('#run_task').click(function(e){
+            console.log("here")
+            var pipeline_name = $('#task_select').find(":selected").val();
+            var task_id = pipeline_name.toLowerCase().replace("-","_").replace(" ","_").replace(".","_").replace(")","_").replace("(","_")
+            var run_config = {}
+            run_config[task_id] = {}
+            $('#task_fields :input').each(function(e) {
+                console.log($(this).attr('data-type'));
+                if ($(this).val() === 'true') {
+                    var value = true;
+                } else if ($(this).val() === 'false') {
+                    var value = false;
+                } else if ($(this).attr('data-type') == 'list' && $(this).val() != '') {
+                    var value = $(this).val().split(",");
+                } else if ($(this).attr('data-type') == 'json' && $(this).val() != '') {
+                    var value = JSON.parse($(this).val());
+                } else {
+                    var value = $(this).val();
+                }
+                run_config[task_id][$(this).prop('name')] = value;
+            });
+            var task_args = $('#task_select').find(':selected').data("args");
+            if (task_args.indexOf('saved_query_id') >= 0) {
+                run_config[task_id]['saved_query_id'] = $('#saved_query_id').val();
+            }
+            console.log(run_config);
+            var data = {"pipeline_name":$('#task_select').find(":selected").val(),
+                        "run_config":run_config,
+                        "csrf_token": $('[name=csrf_token]').val()}
+
+            console.log(data);
+
+            $.ajax("{{ url_for('PipelineFactoryView.run_pipeline') }}", {
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(data),
+                success: function (data,status,xhr) {
+                    console.log(data);
+                    if (data['success'] === 'true') {
+                        $('#run_task').addClass('disabled');
+                        alert("Pipeline scheduled: " + data['pipeline_url']);
+                        window.location.href = window.location.href;
+                    } else {
+                        console.log("it didnt work!");
+                    }
+                }
+            });
+        });
+
+    });
+</script>
+{% endblock %}

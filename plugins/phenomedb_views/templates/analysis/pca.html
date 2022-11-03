@@ -1,0 +1,870 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+    {% include "analysis/common.html" %}
+    {% if data.task_run.status.value == 'success' %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="plot-chevron" href="#plots" data-toggle="collapse">Result Plots</a></div>
+        <div class="panel-body collapse" id="plots">
+            <div class="col-md-8">
+                <div id="scree-r2x"></div>
+            </div>
+            <div class="col-md-4">
+                {% include "analysis/pc-control.html" %}
+            </div>
+            <div class="row">
+                <div id="scores-wrap" class="col-lg-6 col-md-12">
+                    <div id="scores" class="responsive-plot"></div>
+                </div>
+                <div id="loading-scatter-wrap" class="col-lg-6 col-md-12">
+                    <div id="loadings_scatter" class="loading-plot responsive-plot"></div>
+                </div>
+            </div>
+            <div class="row"></div>
+                <div id="loading-one-wrap" class="col-lg-6 col-md-12">
+                    <div id="loadings_bar_one" class="responsive-plot"></div>
+                </div>
+                <div id="loading-two-wrap" class="col-lg-6 col-md-12">
+                    <div id="loadings_bar_two" class="loading-plot responsive-plot"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-color@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-interpolate@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3"></script>
+<script>
+
+    getKeyByValue = function( dict, value ) {
+        for( var prop in dict ) {
+            if( dict.hasOwnProperty( prop ) ) {
+                 if( dict[ prop ] === value ) {
+                     return prop;
+                 }
+            }
+
+        }
+    }
+
+    var plotly_settings = {
+        responsive:true,
+        modeBarButtonsToRemove: ['toImage', 'sendDataToCloud'],
+        modeBarButtonsToAdd: [{
+            name: 'toImageSVG',
+            icon: Plotly.Icons.camera,
+            click: function (gd) {
+                let title = $(gd).find('.gtitle').data('unformatted');
+                title = title.replaceAll(":","_").replaceAll('<br />','_').replaceAll('/',"_").replaceAll(" ","_");
+                title = title + "_" + (new Date().toJSON().slice(0,22)).replaceAll("-","").replaceAll(":","").replaceAll(".","");
+                Plotly.downloadImage(gd, {format: 'svg',filename: title});
+            }
+        }],
+    }
+
+
+    {% if data.task_run.status.value == 'success' %}
+
+        var project_colours = JSON.parse('{{ data.project_colours | tojson }}' );
+
+        var plot_size = 500;
+        var metadata = JSON.parse('{{ data.sample_metadata | tojson }}');
+    var features = JSON.parse('{{ data.task_data.feature_metadata | tojson }}');
+    var scores = JSON.parse('{{ data.task_run_output['scores'] | tojson }}');
+    var t2 = JSON.parse('{{ data.task_run_output['t2'] | tojson }}');
+    var loadings = JSON.parse('{{ data.task_run_output['loadings'] | tojson }}');
+    var sorted_loadings = JSON.parse('{{ data.task_run_output['sorted_loadings'] | tojson }}');
+    var sorted_loadings_features = JSON.parse('{{ data.task_run_output['sorted_loadings_features'] | tojson }}');
+    var sorted_loadings_feature_ids = JSON.parse('{{ data.task_run_output['sorted_loadings_feature_ids'] | tojson }}');
+    var loadings_feature_ids = JSON.parse('{{ data.task_run_output['loadings_feature_ids'] | tojson }}');
+    console.log(metadata);
+    var scree = JSON.parse('{{ data.task_run_output['cv_parameters'].R2X_Scree }}');
+    var var_exp = JSON.parse('{{ data.task_run_output['model_parameters'].VarExpRatio }}');
+
+    var sample_ids = Object.values(metadata['Sample ID']);
+
+    var projects = [];
+    var sample_types = [];
+    var sample_type_order = ['Study Sample','Study Pool','External Reference'];
+    for (const value of Object.values(metadata['Project'])) {
+        if(projects.indexOf(value) < 0){
+           projects.push(value);
+       }
+    }
+    for (const value of Object.values(metadata['SampleType'])) {
+        if(sample_types.indexOf(value) < 0){
+           sample_types.push(value);
+       }
+    }
+   console.log(projects);
+   console.log(sample_types);
+
+    {# for index, sample_name in data.task_data.sample_metadata['Sample ID'].items() #}
+    //    sample_ids.push('{# sample_name #}');
+    {# endfor #}
+    //var loadings = {};
+    {#  for component in data.task_run_output.loadings #}
+        //index = {# loop.index #};
+        //if (loadings[index] === undefined){
+        //    loadings[index] = [];
+       //}
+        {# for loading in component #}
+         //   loadings[index].push({# loading #});
+        {# endfor #}
+    {# endfor #}
+    //var sorted_loadings = {};
+    {# for component in data.task_run_output.sorted_loadings #}
+        //index = {# loop.index #};
+        //if (sorted_loadings[index] === undefined){
+        //    sorted_loadings[index] = [];
+        //}
+        {# for loading in component #}
+         //   sorted_loadings[index].push({# loading #});
+        {# endfor #}
+    {# endfor #}
+    var loadings_features = [];
+    var loadings_feature_labels = [];
+    for (i=0;i<loadings_feature_ids.length;i++){
+        var feature_key = getKeyByValue(features['feature_id'], loadings_feature_ids[i]);
+        loadings_feature_labels.push(loadings_feature_ids[i]);
+        var feature_str = "Feature ID: " + loadings_feature_ids[i]
+        for (var key in features) {
+            // check if the property/key is defined in the object itself, not in parent
+            if (features.hasOwnProperty(key)) {
+                if (features[key][feature_key] !== null) {
+                    feature_str = feature_str + "<br />" + key + ": " + features[key][feature_key];
+                }
+            }
+        }
+        loadings_features.push(feature_str);
+    }
+    {# for feature_id in data.task_run_output.loadings_feature_ids #}
+       //var feature_key = getKeyByValue(features['feature_id'], '{# feature_id #}');
+       //loadings_feature_labels.push('{# feature_id #}');
+       //var feature_str = "Feature ID: {# feature_id #}"
+       //for (var key in features) {
+            // check if the property/key is defined in the object itself, not in parent
+        //    if (features.hasOwnProperty(key)) {
+         //       if (features[key][feature_key] !== null) {
+          //          feature_str = feature_str + "<br />" + key + ": " + features[key][feature_key];
+          //      }
+          //  }
+        //}
+        //loadings_features.push(feature_str);
+
+    {# endfor #}
+    //var sorted_loadings_features = {};
+    {# for feature_names in data.task_run_output.sorted_loadings_features #}
+        //index = {# loop.index #};
+        //if (sorted_loadings_features[index] === undefined){
+         //   sorted_loadings_features[index] = [];
+        //}
+        {# for feature_name in feature_names #}
+           // sorted_loadings_features[index].push('{#  feature_name #}'.replace('feature:','').replace("#noUnit",""));
+        {# endfor #}
+    {# endfor #}
+
+   // var sorted_loadings_feature_ids = {};
+    {# for feature_ids in data.task_run_output.sorted_loadings_feature_ids #}
+     //   index = {# loop.index #};
+       // if (sorted_loadings_feature_ids[index] === undefined){
+        //    sorted_loadings_feature_ids[index] = [];
+        //}
+        {# for feature_id in feature_ids #}
+          //  sorted_loadings_feature_ids[index].push('{# feature_id #}');
+        {# endfor #}
+    {# endfor #}
+
+    get_normalised_value = function(metadata_field,metadata_value,range,unique_values){
+        //console.log(metadata_value);
+        if (metadata_value === null) {
+            return 'black';
+        } else if (metadata_value === Infinity){
+            return 1;
+        }
+        if (typeof metadata_value == 'number'){
+
+            if($.isNumeric($('#metadata-colour-interval').val())){
+                var metadata_colour_interval = $('#metadata-colour-interval').val();
+                var ceiling_number_of_intervals = Math.ceil(range / metadata_colour_interval);
+                var floored_group_value = Math.floor(metadata_value / metadata_colour_interval);
+                return floored_group_value / ceiling_number_of_intervals;
+            } else {
+                return metadata_value / range
+            }
+
+        } else {
+            var index = unique_values.indexOf(metadata_value)
+            if (index == 0) {
+                return 0
+            } else if (index == 1 && range == 2){
+                return 1
+            } else {
+                return unique_values.indexOf(metadata_value) / range
+            }
+        }
+    }
+
+    get_marker_symbol = function(i){
+        var sample_type = null;
+        var assay_role = null;
+        if (metadata.hasOwnProperty('SampleType')){
+            if (metadata['SampleType'].hasOwnProperty(i)){
+                sample_type = metadata['SampleType'][i];
+            }
+        }
+        if (metadata.hasOwnProperty('AssayRole')){
+            if (metadata['AssayRole'].hasOwnProperty(i)){
+                assay_role = metadata['AssayRole'][i];
+            }
+        }
+
+        if (assay_role == 'Linearity Reference'){
+            return 'cross'
+        } else if (sample_type == 'Study Pool'){
+            return 'diamond'
+        } else if (sample_type == 'External Reference'){
+            return 'triangle-up'
+        } else if (sample_type == 'Study Sample'){
+            return 'circle'
+        } else {
+            console.log("Unknown sample_type and assay_role: " + sample_type + " " + assay_role)
+            return 'square'
+        }
+    }
+
+    draw_scores = function(){
+        var opacity = {};
+
+       if($.isNumeric($('#scores-marker-size').val())){
+           var marker_size = parseInt($('#scores-marker-size').val());
+       } else {
+           var marker_size = 5;
+       }
+
+       var colour_scale = $('#metadata-colour-scale').val();
+
+       var x = {};
+       var y = {};
+       var text = {};
+       var symbols = {};
+       var colours = {};
+        for(var p=0;p<sample_types.length;p++){
+            let sample_type = sample_types[p];
+
+           if(Object.keys(x).indexOf(sample_type) < 0){
+               x[sample_type] = {};
+           }
+           if(Object.keys(y).indexOf(sample_type) < 0){
+               y[sample_type] = {};
+           }
+           if(Object.keys(text).indexOf(sample_type) < 0){
+               text[sample_type] = {};
+           }
+           if(Object.keys(symbols).indexOf(sample_type) < 0){
+               symbols[sample_type] = {};
+           }
+           if(Object.keys(colours).indexOf(sample_type) < 0){
+               colours[sample_type] = {};
+           }
+           if(Object.keys(opacity).indexOf(sample_type) < 0){
+               opacity[sample_type] = {};
+           }
+           for(var i=0;i<projects.length;i++){
+                let project = projects[i];
+                if(Object.keys(x[sample_type]).indexOf(project) < 0){
+                    x[sample_type][project] = [];
+                }
+                if(Object.keys(y[sample_type]).indexOf(project) < 0) {
+                    y[sample_type][project] = [];
+                }
+                if(Object.keys(text[sample_type]).indexOf(project) < 0) {
+                    text[sample_type][project] = [];
+                }
+                if(Object.keys(symbols[sample_type]).indexOf(project) < 0) {
+                    symbols[sample_type][project] = [];
+                }
+                if(Object.keys(colours[sample_type]).indexOf(project) < 0) {
+                    colours[sample_type][project] = [];
+                }
+                if(Object.keys(opacity[sample_type]).indexOf(project) < 0) {
+                    opacity[sample_type][project] = [];
+                }
+           }
+       }
+       //console.log(x);
+       // console.log(y);
+       // console.log(text);
+       // console.log(colours);
+       // console.log(symbols);
+
+       var x_axis = parseInt($('#x-axis option:selected').val()) - 1;
+       var y_axis = parseInt($('#y-axis option:selected').val()) - 1;
+       for (var i = 0;i<scores.length;i++) {
+           let project = metadata['Project'][i];
+           let sample_type = metadata['SampleType'][i];
+           x[sample_type][project].push(scores[i][x_axis]);
+           y[sample_type][project].push(scores[i][y_axis]);
+           symbols[sample_type][project].push(get_marker_symbol(i));
+       }
+       console.log(x);
+       console.log(y);
+       //console.log(text);
+       //console.log(colours);
+       console.log(symbols);
+
+       var selected_colour_field = $('#metadata-colour-filter option:selected').val();
+       if (selected_colour_field === undefined){
+            selected_colour_field = 'Project';
+       }
+
+       var selected_label_fields = [];
+       $('#metadata-label-filter option:selected').each(function(){
+            selected_label_fields.push($(this).val());
+       });
+
+       var coloured_sample_types = [];
+       $('#colour-sample-types-dropdown option:selected').each(function(){
+            coloured_sample_types.push($(this).val());
+       });
+       console.log(coloured_sample_types);
+
+       // 1. get number of unique entries in column
+       // 2. assign colours for the unique entries
+       // 3. loop over sample ids, get matching entry, colour according to colour map
+        // 4. colouring follows this normalisation procedure:
+        //  if numeric, normalise between 0 and 1 using min and max values,
+        // if string, normalise between 0 and 1 using unique_values.length (0 -> n)
+        var unique_values = [];
+        var metadata_column = metadata[selected_colour_field];
+        var unique_types = [];
+        var main_type = null;
+        var string_count = 0;
+        var number_count = 0;
+
+        for(var i=0;i<Object.keys(metadata_column).length;i++){
+            if (metadata_column.hasOwnProperty(i)){
+                var metadata_value = metadata_column[i];
+                if (metadata_value === null){
+                    metadata_value = 0;
+                } else if (metadata_value === Infinity){
+                    metadata_value = 1;
+                }
+                if (unique_values.indexOf(metadata_value) === -1){
+                    unique_values.push(metadata_value);
+                    var metadata_type = typeof metadata_value;
+                    unique_types.push(metadata_type);
+                    if (metadata_type === 'string') {
+                        string_count = string_count + 1;
+                    } else if (metadata_type === 'number') {
+                        number_count = number_count + 1
+                    }
+
+                }
+            }
+        }
+        if (string_count > number_count){
+            main_type = 'string';
+        } else {
+            main_type = 'number';
+        }
+
+        if (main_type === 'number'){
+
+            var min = 0;
+            var max = 0;
+            for (var i = 0;i<unique_values.length;i++){
+                if (typeof unique_values[i] == 'number'){
+                    if (parseFloat(unique_values[i]) < min){
+                        min = parseFloat(unique_values[i]);
+                    }
+                    if (parseFloat(unique_values[i]) > max){
+                        max = parseFloat(unique_values[i]);
+                    }
+                }
+            }
+            var range = max - min;
+        } else {
+            var range = unique_values.length;
+        }
+        for (var i = 0;i<sample_ids.length;i++){
+           var sample_text = sample_ids[i];
+           let project = metadata['Project'][i];
+           let sample_type = metadata['SampleType'][i];
+            sample_text = sample_text + " " + selected_colour_field + ": " + metadata_column[i];
+            for(var p = 0;p<selected_label_fields.length;p++){
+                var key = selected_label_fields[p];
+                if (metadata[key] !== undefined){
+                    if (metadata[key].hasOwnProperty(i)) {
+                        if (metadata[key][i] != null){
+                            sample_text = sample_text + "<br />" + key + ": " + metadata[key][i];
+                        }
+                    }
+                }
+            }
+            text[sample_type][project].push( sample_text);
+            var metadata_value = metadata_column[i];
+
+            if (coloured_sample_types.indexOf(metadata['SampleType'][i]) < 0){
+               opacity[sample_type][project].push(0.2);
+            }
+            else if($.isNumeric($('#metadata-colour-opacity-percent').val())){
+               opacity[sample_type][project].push(parseInt($('#metadata-colour-opacity-percent').val()) / 100);
+            } else {
+               opacity[sample_type][project].push(1);
+            }
+
+            if (coloured_sample_types.indexOf(metadata['SampleType'][i]) < 0){
+                var color = 'grey';
+            } else if (selected_colour_field == 'Project') {
+                //console.log(metadata_value);
+                var color = project_colours[metadata_value];
+            } else {
+
+                var normalised_value = get_normalised_value(selected_colour_field,metadata_value,range,unique_values);
+
+                if (colour_scale == 'plasma') {
+                    var color = d3.interpolatePlasma(normalised_value);
+                } else if (colour_scale == 'turbo') {
+                    var color = d3.interpolateTurbo(normalised_value);
+                } else if (colour_scale == 'cubehelixdefault') {
+                    var color = d3.interpolateCubehelixDefault(normalised_value);
+                } else {
+                    var color = d3.interpolateCubehelixDefault(normalised_value);
+                }
+            }
+            colours[sample_type][project].push(color);
+       }
+        let data = [];
+        for(let p=0;p<sample_type_order.length;p++){
+            let sample_type = sample_type_order[p];
+            if(x.hasOwnProperty(sample_type)){
+                for(let i=0;i<projects.length;i++){
+                    let project = projects[i];
+                    if (x[sample_type].hasOwnProperty(project)){
+                        let trace = {
+                            x: x[sample_type][project],
+                            y: y[sample_type][project],
+                            mode: 'markers',
+                            type: 'scatter',
+                            name: project + " " + sample_type,
+                            text: text[sample_type][project],
+                            marker: {
+                                'color': colours[sample_type][project],
+                                'opacity': opacity[sample_type][project],
+                                'size': marker_size,
+                                'symbol': symbols[sample_type][project]
+                            }
+                        };
+                        data.push(trace);
+                    }
+                }
+            }
+        }
+        console.log(data);
+        if($('#legend-checkbox').is(':checked')){
+            var show_legend = true;
+        } else {
+            var show_legend = false;
+        }
+        let x_axis_pc = parseInt($('#x-axis option:selected').val());
+        let y_axis_pc = parseInt($('#y-axis option:selected').val());
+
+        var layout = {
+            //width: 1000,
+            //height: 1000,
+            //autosize: false,
+            xaxis: {
+                title: 'PC' + $('#x-axis option:selected').val() + " (R<sup>2</sup> = " + var_exp[x_axis_pc-1].toFixed(2) + ")"
+            },
+            yaxis: {
+                title: 'PC' + $('#y-axis option:selected').val() + " (R<sup>2</sup> = " + var_exp[y_axis_pc-1].toFixed(2) + ")"
+            },
+            hovermode: 'closest',
+            title: '{{ data.title_base }}<br />PCA Scores plot PC' + $('#x-axis option:selected').val() + "/PC" + $('#y-axis option:selected').val(),
+            showlegend: show_legend,
+            shapes: [
+                {
+                    type: 'circle',
+                    xref: 'x',
+                    yref: 'y',
+                    x0: 0 - (t2[x_axis] / 2),
+                    y0: 0 - (t2[y_axis] / 2),
+                    x1: (t2[x_axis] / 2),
+                    y1: (t2[y_axis] / 2),
+                    line: {
+                        color: 'grey'
+                    }
+                }
+            ]
+        }
+
+        Plotly.newPlot('scores', data, layout,plotly_settings);
+
+    };
+
+    draw_loadings = function(){
+
+        var unsorted_x = [];
+        var unsorted_y = [];
+        var sorted_x = [];
+        var sorted_y = [];
+        var x_text = [];
+        var y_text = [];
+        var x_axis_label = [];
+        var y_axis_label = [];
+        var x_axis = parseInt($('#x-axis option:selected').val()) - 1;
+        var y_axis = parseInt($('#y-axis option:selected').val()) - 1;
+
+        console.log('here');
+        console.log(x_axis);
+        console.log(y_axis);
+        console.log(sorted_loadings);
+        console.log(loadings);
+        console.log(features);
+        console.log(sorted_loadings_feature_ids);
+        console.log(loadings_features);
+        for (var i = 0;i<loadings[x_axis].length;i++){
+           unsorted_x.push( loadings[x_axis][i] );
+           unsorted_y.push( loadings[y_axis][i] );
+        }
+        for (var i = 0;i<sorted_loadings[x_axis].length;i++){
+           sorted_x.push( sorted_loadings[x_axis][i] );
+           sorted_y.push( sorted_loadings[y_axis][i] );
+        }
+        for (var i = 0;i<sorted_loadings_feature_ids[x_axis].length;i++){
+           var x_feature_id = sorted_loadings_feature_ids[x_axis][i];
+           var y_feature_id = sorted_loadings_feature_ids[x_axis][i];
+           //console.log(x_feature_id);
+           var x_feature_key = getKeyByValue(features['feature_id'],x_feature_id);
+           var y_feature_key = getKeyByValue(features['feature_id'],y_feature_id);
+           var x_str = "cpd_name: " + x_feature_id
+           var y_str = "cpd_name: " + y_feature_id
+           for (var key in features) {
+                // check if the property/key is defined in the object itself, not in parent
+                if (features.hasOwnProperty(key)) {
+                    if (features[key][x_feature_key] !== null) {
+                        x_str = x_str + "<br />" + key + ": " + features[key][x_feature_key];
+                    }
+                    if (features[key][y_feature_key] !== null) {
+                        y_str = y_str + "<br />" + key + ": " + features[key][y_feature_key];
+                    }
+                }
+            }
+            x_text.push( x_str );
+            y_text.push( y_str );
+            x_axis_label.push( sorted_loadings_feature_ids[x_axis][i].replace("#noUnit","").replace(/feature\:ha\:[0-9]+\:\:/g, "").replace('PPR#','') );
+            y_axis_label.push( sorted_loadings_feature_ids[y_axis][i].replace("#noUnit","").replace(/feature\:ha\:[0-9]+\:\:/g, "").replace('PPR#','') );
+        }
+        // 2D scatter
+        var data = {
+            x: unsorted_x,
+            y: unsorted_y,
+            mode: 'markers',
+            type: 'scatter',
+            text: loadings_features
+        };
+        var layout = {
+            //width: 1000,
+            //height: 1000,
+            //autosize: false,
+            xaxis: {
+                title: 'PC' + $('#x-axis option:selected').val(),
+                automargin: true,
+            },
+            yaxis: {
+                title: 'PC' + $('#y-axis option:selected').val(),
+                automargin: true,
+            },
+            annotations: [],
+            title:'{{ data.title_base }}<br />2D PCA Loadings plot PC' + $('#x-axis option:selected').val() + "/PC" + $('#y-axis option:selected').val()
+        };
+        Plotly.newPlot('loadings_scatter', [data], layout,plotly_settings);
+
+        // Loadings xth component
+        data = {
+            y: sorted_x,
+            x: x_axis_label,
+            text: x_text,
+            type: 'bar'
+        }
+        var font_size = 6;
+        if (sorted_loadings_feature_ids[x_axis] < 20){
+            font_size = 10;
+        }
+        var layout = {
+            xaxis: {
+                title: 'Metabolites',
+                automargin: true,
+                tickfont:{
+                    family: "Arial",
+                    size : font_size,
+                }
+            },
+            yaxis: {
+                title: 'intensity',
+                automargin: true,
+            },
+            hovermode: 'closest',
+            title: '{{ data.title_base }}<br />PC' + $('#x-axis option:selected').val() + ' Loadings plot'
+        };
+        Plotly.newPlot('loadings_bar_one', [data], layout,plotly_settings);
+
+        // Loadings yth component
+        data = {
+            y: sorted_y,
+            x: y_axis_label,
+            text: y_text,
+            type: 'bar'
+        }
+        var layout = {
+
+            xaxis: {
+                title: 'Metabolites',
+                automargin: true,
+                tickfont:{
+                    family: "Arial",
+                    size : font_size,
+                }
+            },
+            yaxis: {
+                title: 'intensity',
+                automargin: true
+            },
+            hovermode: 'closest',
+            title:'{{ data.title_base }}<br />PC' + $('#y-axis option:selected').val() + ' Loadings plot'
+        }
+        Plotly.newPlot('loadings_bar_two', [data], layout,plotly_settings);
+    };
+
+    draw_scree = function() {
+        var x = [0];
+        var y = [0];
+        for (var i = 0; i < scree.length; i++) {
+            y.push(scree[i]);
+            x.push(i + 1);
+        }
+
+        var data = {
+            y: y,
+            x: x,
+            type: 'line'
+        }
+        var layout = {
+            xaxis: {
+                title: 'Components',
+                automargin: true
+            },
+            yaxis: {
+                title: 'R<sup>2</sup>',
+                automargin: true,
+                range: [0,1],
+                rangemode: 'range',
+            },
+            hovermode: 'closest',
+            title: '{{ data.title_base }}<br />CV R<sup>2</sup> Scree plot'
+        }
+        Plotly.newPlot('scree-r2x', [data], layout,plotly_settings);
+    }
+
+    $(function() {
+        draw_scree();
+        draw_scores();
+        draw_loadings();
+        $('#plot-chevron').trigger('click');
+    });
+
+    $('#metadata-colour-filter').on('change',function(e) {
+        draw_scores();
+    });
+
+    $('#legend-checkbox').on('change',function(e) {
+        draw_scores();
+    });
+
+    $('#colour-sample-types-dropdown').on('change',function(e) {
+        draw_scores();
+    });
+
+    $('#metadata-colour-scale').on('change',function(e) {
+        draw_scores();
+    });
+
+    $('#scores-marker-size').on('change',function(e) {
+        draw_scores();
+    });
+
+    $('#metadata-colour-interval').on('focusout',function(e) {
+        if ($.isNumeric($('#metadata-colour-interval').val())){
+            draw_scores();
+        }
+    });
+
+    $('#metadata-colour-opacity-percent').on('focusout',function(e) {
+        if ($.isNumeric($('#metadata-colour-opacity-percent').val())){
+            draw_scores();
+        }
+    });
+
+    $('#metadata-label-filter').on('change',function(e) {
+        draw_scores();
+    });
+
+    $('#x-axis').on('change',function(e){
+        draw_scores();
+        draw_loadings();
+    });
+    $('#y-axis').on('change',function(e){
+        draw_scores();
+        draw_loadings();
+    });
+
+    $('#scores').on('plotly_click',function(self,data){
+        if ($('#selected-samples').val() != ''){
+            existing = $('#selected-samples').val().split(',');
+        } else {
+            existing = [];
+        }
+
+        for(var i=0; i < data.points.length; i++) {
+            if (existing.indexOf(sample_ids[data.points[i].pointIndex]) === -1){
+                existing.push(sample_ids[data.points[i].pointIndex]);
+            }
+
+            var annotate_text = sample_ids[data.points[i].pointIndex];
+
+            var annotation = {
+              text: annotate_text,
+              x: data.points[i].x,
+              y: parseFloat(data.points[i].y.toPrecision(4)),
+              font: {
+                  size: 9,
+                  family: "Arial",
+              }
+            }
+
+            var annotations = self.target.layout.annotations || [];
+            annotations.push(annotation);
+
+            Plotly.relayout('scores',{annotations: annotations})
+        }
+        if (existing.length > 0){
+            $('#selected-samples').val(existing.join(','));
+            $('#remove-from-saved-query').removeClass('disabled');
+        } else {
+            $('#remove-from-saved-query').addClass('disabled');
+        }
+
+    });
+
+     $('#loadings_scatter').on('plotly_click', function(self,data){
+        var pts = '';
+        for(var i=0; i<data.points.length; i++){
+
+            var annotate_text = loadings_feature_labels[data.points[i].pointIndex];
+
+            var annotation = {
+              text: annotate_text.replace("#noUnit","").replace(/feature\:ha\:[0-9]+\:\:/g, "").replace('PPR#',''),
+              x: data.points[i].x,
+              y: parseFloat(data.points[i].y.toPrecision(4)),
+              font: {
+                  size: 9,
+                  family: "Arial",
+              }
+              //arrowsize: 0.3,
+              //arrowwidth:0.1,
+            }
+
+            var annotations = self.target.layout.annotations || [];
+            annotations.push(annotation);
+
+            Plotly.relayout('loadings_scatter',{annotations: annotations})
+        }
+    });
+
+
+    $('#remove-from-saved-query').on('click',function(e){
+       e.preventDefault();
+        if (confirm('Are you sure? This will remove the following samples from the Query and re-run the Task: ' + $('#selected-samples').val())){
+           var data = {"excluded_samples":$('#selected-samples').val(),
+                        "task_run_id": {{ data.task_run.id }},
+                        "csrf_token": $('[name=csrf_token]').val()}
+
+           $.ajax("{{ url_for('PipelineFactoryView.exclude_samples_and_rerun') }}", {
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(data),
+                success: function (data,status,xhr) {
+                    console.log(data);
+                    if (data['success'] === 'true') {
+                        alert("Query adjusted and pipeline scheduled");
+                    } else {
+                        console.log("it didnt work!");
+                    }
+                }
+            });
+
+       }
+    });
+
+    (function() {
+      var d3 = Plotly.d3;
+      var WIDTH_IN_PERCENT_OF_PARENT = 100,
+          HEIGHT_IN_PERCENT_OF_PARENT = 90;
+
+      var gd3 = d3.selectAll(".responsive-plot")
+          .style({
+            width: WIDTH_IN_PERCENT_OF_PARENT + '%',
+            'margin-left': (100 - WIDTH_IN_PERCENT_OF_PARENT) / 2 + '%',
+
+            height: HEIGHT_IN_PERCENT_OF_PARENT + 'vh',
+            'margin-top': (100 - HEIGHT_IN_PERCENT_OF_PARENT) / 2 + 'vh'
+          });
+
+      var nodes_to_resize = gd3[0]; //not sure why but the goods are within a nested array
+      window.onresize = function() {
+        for (var i = 0; i < nodes_to_resize.length; i++) {
+          Plotly.Plots.resize(nodes_to_resize[i]);
+        }
+      };
+
+    })();
+
+    $('#widescreen-plots-checkbox').on('change',function(ev){
+       if ($(this).is(':checked')){
+            $('#scores-wrap').removeClass('col-lg-6');
+            $('#scores-wrap').addClass('col-lg-12');
+            $('#loading-scatter-wrap').removeClass('col-lg-6');
+            $('#loading-scatter-wrap').addClass('col-lg-12');
+            $('#loading-one-wrap').removeClass('col-lg-6');
+            $('#loading-one-wrap').addClass('col-lg-12');
+            $('#loading-two-wrap').removeClass('col-lg-6');
+            $('#loading-two-wrap').addClass('col-lg-12');
+       } else {
+           $('#scores-wrap').removeClass('col-lg-12');
+            $('#scores-wrap').addClass('col-lg-6');
+            $('#loading-scatter-wrap').removeClass('col-lg-12');
+            $('#loading-scatter-wrap').addClass('col-lg-6');
+           $('#loading-one-wrap').removeClass('col-lg-12');
+            $('#loading-one-wrap').addClass('col-lg-6');
+            $('#loading-two-wrap').removeClass('col-lg-12');
+            $('#loading-two-wrap').addClass('col-lg-6');
+       }
+       $('#scores').resize();
+       $('#loadings_scatter').resize();
+       $('#loadings_bar_one').resize();
+       $('#loadings_bar_one').resize();
+       $('#loadings_bar_two').resize();
+
+    });
+
+    {% endif %}
+</script>
+{% endblock %}

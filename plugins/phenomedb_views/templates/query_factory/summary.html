@@ -1,0 +1,130 @@
+<div class="row">
+    <div class="col-md-6">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Record type</th>
+                <th scope="col">Total count</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>SampleAssays</td>
+                    <td>{{data.saved_query_summary_stats.number_of_sample_assays}}</td>
+                </tr>
+                <tr>
+                    <td>Samples</td>
+                    <td>{{data.saved_query_summary_stats.number_samples}}</td>
+                </tr>
+                <tr>
+                    <td>Subjects</td>
+                    <td>{{data.saved_query_summary_stats.number_subjects}}</td>
+                </tr>
+                <tr>
+                    <td>Total Annotated Features</td>
+                    <td>{{data.saved_query_summary_stats.number_of_annotated_features}}</td>
+                </tr>
+                <tr>
+                    <td>Min feature count in all samples</td>
+                    <td>{{data.saved_query_summary_stats.min_annotated_feature_count}}</td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Project</th>
+                    <th scope="col">Count</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for project,counts in data.saved_query_summary_stats.project_counts.items() %}
+                <tr>
+                    <td>{{ project }}</td>
+                    <td>{{ counts }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <table class="table">
+            <thead>
+                 <tr>
+                     <th scope="col">Assay</th>
+                     <th scope="col">Count</th>
+                 </tr>
+             </thead>
+             <tbody>
+             {% for assay,counts in data.saved_query_summary_stats.assay_counts.items() %}
+                 <tr>
+                     <td>{{ assay }}</td>
+                     <td>{{ counts }}</td>
+                 </tr>
+             {% endfor %}
+             </tbody>
+        </table>
+
+        <table class="table">
+            <thead>
+              <tr>
+                  <th scope="col">Sample Matrix</th>
+                  <th scope="col">Count</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for sample_matrix,counts in data.saved_query_summary_stats.sample_matrix_counts.items() %}
+              <tr>
+                  <td>{{ sample_matrix }}</td>
+                  <td>{{ counts }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+     </div>
+    <div class="col-md-6">
+        <div id="pie_chart_one">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div id="pie_chart_two">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div id="pie_chart_three">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div id="pie_chart_four">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div id="test_bar">
+        </div>
+    </div>
+    {% for metadata_field in data.saved_query_summary_stats.metadata_counts_harmonised_text_by_project.keys() %}
+    <div class="col-md-6">
+        <div id="metadata_harmonised_text_by_project_{{ metadata_field }}_stack"></div>
+        <div id="metadata_harmonised_text_by_project_{{ metadata_field }}_group"></div>
+    </div>
+    {% endfor %}
+    {% for metadata_field in data.saved_query_summary_stats.metadata_counts_harmonised_numeric_by_project.keys() %}
+    <div class="col-md-6">
+        <div id="metadata_harmonised_numeric_by_project_{{ metadata_field }}_stack"></div>
+        <div id="metadata_harmonised_numeric_by_project_{{ metadata_field }}_group"></div>
+    </div>
+    {% endfor %}
+    {% for metadata_field in data.saved_query_summary_stats.metadata_counts_harmonised_datetime_by_project.keys() %}
+    <div class="col-md-6">
+        <div id="metadata_harmonised_datetime_by_project_{{ metadata_field }}_stack"></div>
+        <div id="metadata_harmonised_datetime_by_project_{{ metadata_field }}_group"></div>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% block javascript %}
+<script type="text/javascript">
+    {% include 'query_factory/summary_charts.js' %}
+</script>
+{% endblock %}

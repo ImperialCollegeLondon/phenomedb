@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+    {% include "analysis/common.html" %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="task_runs-chevron" href="#task_runs" data-toggle="collapse">Integrated Analysis Pipeline Results</a></div>
+        <div class="panel-body collapse" id="task_runs">
+            <div class="row table-wrapper" id="task-run-1">
+                <h4>Task Run results</h4>
+                {% if 'task_run_table' in data['task_run'].output.keys() %}
+                    <div class="col-md-12 table-outer">
+                        <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Task ID</th>
+                                {% for saved_query_id in data['task_run'].output['aic_table'].keys() %}
+                                    <th><a target="_blank" href="{{ url_for('QueryFactoryView.advanced_saved_query_editor') }}?id={{ saved_query_id }}">{{ data['saved_query_names'][saved_query_id] }}</a></th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        {% for task_id in data['pipeline'].task_order %}
+                            <tr>
+                                <td>{{ task_id }}</td>
+                                {% if task_id in data['task_run'].output['task_run_table'].keys() %}
+                                    {% for saved_query_id,task_run_id in data['task_run'].output['task_run_table'][task_id].items() %}
+                                        <td><a target="_blank" href="{{ url_for('AnalysisView.analysisresult',id=task_run_id) }}">{{ saved_query_id }}: {{ task_run_id }}</a></td>
+                                    {% endfor %}
+                                {% endif %}
+                            </tr>
+
+                        {% endfor %}
+                        <tr>
+                            <td>Compare MWAS</td>
+                            {% for saved_query_id,url in data['saved_query_mwas_compare'].items() %}
+                                <td><a target="_blank" href="{{ url }}">Compare MWAS {{ saved_query_id }}</a></td>
+                            {% endfor %}
+                        </tr>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="pcpr2" href="#compare-pcpr2" data-toggle="collapse">Compare PCPR2</a></div>
+        <div class="panel-body collapse" id="compare-pcpr2">
+            <div class="row">
+                <div class="col-md-12">
+                    {% for saved_query_id,saved_query_name in data['saved_query_names'].items() %}
+                        <div id="pcpr2-{{ saved_query_id }}"></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-color@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-interpolate@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3"></script>
+<script>
+
+    var pcpr2_data = JSON.parse('{{ data['task_run'].output['pcpr2_tables'] | tojson }}');
+    var saved_query_names = JSON.parse('{{ data['saved_query_names'] | tojson }}');
+
+     draw_pcpr2 = function(saved_query_id,task_results){
+
+         var task_types = {'batch':[],'project':[],'sample_matrix':[]};
+         var x = {}
+         var y = {}
+
+         for (let [task_id,results] of Object.entries(task_results)){
+             re = new RegExp("_batch$");
+             if (re.test(task_id) === true){
+                 task_types['batch'].push(task_id);
+             }
+             else {
+                 re = new RegExp("_project$");
+                 if (re.test(task_id) === true){
+                    task_types['project'].push(task_id);
+                 }
+                 else {
+                   re = new RegExp("_sample_matrix$");
+                   if (re.test(task_id) === true){
+                       task_types['sample_matrix'].push(task_id);
+                   }
+                 }
+             }
+             for (let field of Object.keys(results)){
+                 if (field != 'task_run_id'){
+                    x[field] = [];
+                    y[field] = [];
+                 }
+
+             }
+         }
+         for (let [type,task_ids] of Object.entries(task_types)){
+            for (i=0;i<task_ids.length;i++) {
+                for (let [field, value] of Object.entries(task_results[task_ids[i]])) {
+                    if (field != 'task_run_id') {
+                        y[field].push(value);
+                        x[field].push(task_ids[i]);
+                    }
+                }
+            }
+         }
+
+         let data = [];
+
+         for( let field of Object.keys(y)){
+             var trace = {
+                 x: x[field],
+                 y: y[field],
+                 name: field
+             }
+              if (field == 'R2'){
+                  trace['type'] = 'line'
+                  trace['name'] = 'Total R2'
+              } else {
+                  trace['type'] = 'bar'
+              }
+             data.push(trace);
+         }
+
+         var layout = {
+              barmode: 'stack',
+              title: 'PCPR2 factors for ' + saved_query_names[saved_query_id],
+              height: 1000,
+              xaxis: {
+                title: 'Task ID',
+                automargin: true,
+              },
+              yaxis: {
+                title: 'R2 %',
+                automargin: true,
+              },
+            };
+
+
+        Plotly.newPlot('pcpr2-'+saved_query_id, data, layout);
+    }
+    for( let [saved_query_id, task_results] of Object.entries(pcpr2_data)){
+        draw_pcpr2(saved_query_id,task_results);
+    }
+
+
+</script>
+{% endblock %}

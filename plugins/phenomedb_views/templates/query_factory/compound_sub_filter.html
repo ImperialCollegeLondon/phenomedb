@@ -1,0 +1,53 @@
+<div class="row sub_filter">
+    <div class="col-md-1">&nbsp;</div>
+    <div class="col-md-3">
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label>Field name</label>
+                    <select class="form-control" name="compound_identifier">
+                        <option data-type="" value="">--Please select--</option>
+                        <option value="Compound.chemical_formula"{% if compound_field and compound_field.name == 'Compound.chemical_formula' %} selected{% endif %}>Chemical Formula</option>
+                        <option value="Compound.monoisotopic_mass"{% if compound_field and compound_field.name == 'Compound.monoisotopic_mass' %} selected{% endif %}>Exact mass</option>
+                        <option value="Compound.inchi"{% if compound_field and compound_field.name == 'Compound.inchi' %} selected{% endif %}>InChI</option>
+                        <option value="Compound.inchi_key"{% if compound_field and compound_field.name == 'Compound.inchi_key' %} selected{% endif %}>InChI Key</option>
+                        <option value="CompoundClass.inchi_key_backbone"{% if compound_field and compound_field.name == 'CompoundClass.inchi_key_backbone' %} selected{% endif %}>InChI Key Backbone</option>
+                        <option value="CompoundClass.category_id"{% if compound_field and compound_field.name == 'CompoundClass.category_id' %} selected{% endif %}>LipidMAPS category</option>
+                        <option value="CompoundClass.main_class_id"{% if compound_field and compound_field.name == 'CompoundClass.main_class_id' %} selected{% endif %}>LipidMAPS main class</option>
+                        <option value="CompoundClass.sub_class_id"{% if compound_field and compound_field.name == 'CompoundClass.sub_class_id' %} selected{% endif %}>LipidMAPS sub class</option>
+                        {% for external_db in data.external_dbs %}
+                            <option value="ExternalDB.{{ external_db.name }}"{% if compound_field and compound_field.model == 'ExternalDB' and compound_field.external_db_field and external_db.name == compound_field.external_db_field %} selected{% endif %}>{{ external_db.name }}</option>
+                        {% endfor %}
+                        <option value="CompoundAssay.feature_name"{% if compound_field and compound_field.name == 'CompoundAssay.feature_name' %} selected{% endif %}>Annotation Feature Name</option>
+                        <option value="CompoundAssay.cpd_name"{% if compound_field and compound_field.name == 'CompoundAssay.cpd_name' %} selected{% endif %}>Annotation cpd_name</option>
+                        <option value="Annotation.confidence_level"{% if compound_field and compound_field.name == 'Annotation.confidence_level' %} selected{% endif %}>Annotation confidence level</option>
+                        <option value="Measurement.intensity"{% if compound_field and compound_field.name == 'Measurement.intensity' %} selected{% endif %}>Measured intensity</option>
+                        <option value="Annotation.lod"{% if compound_field and compound_field.name == 'Annotation.lod' %} selected{% endif %}>LOD</option>
+                        <option value="Annotation.lloq"{% if compound_field and compound_field.name == 'Annotation.lloq' %} selected{% endif %}>LLOQ</option>
+                        <option value="Annotation.uloq"{% if compound_field and compound_field.name == 'Annotation.uloq' %} selected{% endif %}>ULOQ</option>
+                        <option value="Annotation.quantification_type"{% if compound_field and compound_field.name == 'Annotation.quantification_type' %} selected{% endif %}>quantification type</option>
+                        <option value="Annotation.calibration_method"{% if compound_field and compound_field.name == 'Annotation.calibration_method' %} selected{% endif %}>calibration method</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <br /><br /><br />
+                <button class="add_compound_sub_filter btn btn-sm btn-success">Add another constraint</button>
+                <br />&nbsp;
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-7 sub_filter_injection">
+        {% if compound_field %}
+            {% include "query_factorycompound_values_dropdown.html" %}
+        {% endif %}
+    </div>
+    <div class="col-md-1">
+        <a class="delete-filter" href="#">
+            <span class="text-danger glyphicon glyphicon-remove"></span>
+        </a>
+    </div>
+</div>

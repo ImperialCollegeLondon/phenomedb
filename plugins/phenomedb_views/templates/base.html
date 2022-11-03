@@ -1,0 +1,59 @@
+
+{% extends base_template %}
+
+{% block content %}
+{{ super() }}
+<div class="body-font">
+    <div>
+        <h3>
+            {% block page_header %}
+            <img src="{{url_for('phenomedb_browser.static', filename='small-trans.png')}}"> PhenomeDB
+            {% endblock%}
+        </h3>
+        <hr/>
+        {% if 'error' in data %}
+            <div class="alert alert-warning" role="alert">
+                {{data.error}}
+            </div>
+        {% endif %}
+
+        <!--  user_msg should be a python list or it will display one char per line -->
+        {% if 'user_msg' in data %}
+            <div class="alert alert-success" role="alert">
+                {%for item in data.user_msg%}
+                    {{item}}<br/>
+                {%endfor%}
+            </div>
+        {% endif %}
+
+    </div>
+    {% block plugin_content %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block head_css %}
+{{ super() }}
+
+<!--
+<link rel="stylesheet" type="text/css" href="{#{ url_for('static', filename='dataTables.bootstrap.css') }#}">
+-->
+
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('phenomedb_browser.static', filename='phenomedb.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('phenomedb_browser.static', filename='jquery-ui-1.12.1/jquery-ui.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('phenomedb_browser.static', filename='chosen/chosen.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('phenomedb_browser.static', filename='DataTables/datatables.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('phenomedb_browser.static', filename='DataTables/datatables.min.css') }}"/>
+{% endblock %}
+
+{% block head_js %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('phenomedb_browser.static', filename='DataTables/datatables.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('phenomedb_browser.static', filename='jquery-ui-1.12.1/jquery-ui.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('phenomedb_browser.static', filename='phenomedb.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('phenomedb_browser.static', filename='chosen/chosen.jquery.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('phenomedb_browser.static', filename='venny.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>-->
+{% endblock %}

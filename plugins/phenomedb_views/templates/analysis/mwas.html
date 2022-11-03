@@ -1,0 +1,1573 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+    {% include "analysis/common.html" %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="mwas-chevron" href="#mwas" data-toggle="collapse">MWAS table</a></div>
+        <div class="panel-body collapse" id="mwas">
+            <div class="row">
+                <div id="task_run_1_pvalues" class="responsive-plot"></div>
+                <div id="task_run_1_estimates" class="responsive-plot"></div>
+            </div>
+            <div class="row table-wrapper" id="task-run-1">
+                {% include "analysis/mwas_table.html" %}
+            </div>
+
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="mwas-compare-chevron" href="#compare-mwas" data-toggle="collapse">Compare MWAS</a></div>
+        <div class="panel-body collapse" id="compare-mwas">
+            <div class="row">
+                <div class="col-md-12">
+                    <form>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="form-group">
+                            <label for="taskrun-dropdown-fdr-n">FWER n</label>
+                            <input type="text" value="{{ data['fdr_n'] }}" name="taskrun-fdr-n" id="taskrun-dropdown-fdr-n">
+                        </div>
+                        <div class="form-group">
+                            <label for="taskrun-id-order">Order by task_run_id</label>
+                            <input type="text" value="" name="taskrun-id-order" id="taskrun-id-order">
+                        </div>
+                        <div class="form-group">
+                            <label for="taskrun-dropdown-show-sig-in-some-not-all">Show significant in some but not all (crashes for lots of comparisons)</label>
+                            <input type="checkbox" name="taskrun-dropdown-show-sig-in-some-not-all" id="taskrun-dropdown-show-sig-in-some-not-all" value="show"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskrun-dropdown-show-sig-in-only-one">Show significant in only one (crashes for lots of comparisons)</label>
+                            <input type="checkbox" name="taskrun-dropdown-show-sig-in-only-one" id="taskrun-dropdown-show-sig-in-only-one" value="show"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskrun-dropdown-only-significant">Only show the unfiltered metabolites that have at least 1 significant association</label>
+                            <input type="checkbox" name="taskrun-dropdown-show-sig-in-some-not-all" id="taskrun-dropdown-show-sig-in-some-not-all" value="show" checked/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="taskrun-dropdown-dedupe">Dedupe the unfiltered and consistent tables</label>
+                            <input type="checkbox" name="taskrun-dropdown-dedupe" id="taskrun-dropdown-dedupe" value="show" checked/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="taskrun-metabolite-filter">Filter metabolites where metabolites are:</label>
+                            <select class="form-control" id="taskrun-metabolite-filter" name="taskrun-metabolite-filter">
+                                <option value="none">No filter</option>
+                                <option value="somenull">Some null</option>
+                            </select>
+                        </div>
+                        <!--{#
+                        <div class="form-group">
+                            <label for="taskrun-dropdown-multi">Which to plot</label>
+                            <select class="form-control" id="taskrun-dropdown-plot-select" name="taskrun-dropdown-plot-select" multiple style="height:100px">
+                                <option value="{{ data.task_run.id }}">{{ data.task_run.id }} - {{ data.task_run.saved_query_id }} - {{ data.task_run.saved_query.name }}</option>
+                                {#  if data['other_mwas_task_runs'] }
+                                    {% for task_run_1 in data['other_mwas_task_runs'] %}
+                                        {% for task_run_2 in data['other_mwas_task_runs'] %}
+                                            <option value="{{ task_run_1.id }}-{{ task_run_2.id }}">{{ task_run_1.id }}-{{ task_run_2.id }}</option>
+                                        {% endfor %}
+                                    {% endfor }
+                                {% endif #}
+                            </select>-->
+                        <div class="form-group">
+                            <label for="taskrun-dropdown">Select a single TaskRun to compare</label>
+                            <select class="form-control" id="taskrun-dropdown" name="taskrun-dropdown">
+                                {% for task_run in data['other_mwas_task_runs'] %}
+                                    <option value="{{ task_run.id }}">{{ task_run.id }} - {{ task_run.saved_query.name }}
+                                        {% if task_run.args['upstream_task_run_id'] %} Upstream: {{ task_run.args['upstream_task_run_id'] }}{% endif %}
+                                        {% if task_run.args['transform'] %} transform: {{ task_run.args['transform'] }}{% endif %}
+                                        {% if task_run.args['scaling'] %} scaling: {{ task_run.args['scaling'] }}{% endif %}
+                                        Y={{ task_run.args['model_Y_variable'] }}
+                                        X={{ task_run.args['model_X_variables'] }}
+                                        {% if task_run.args['method'] %}
+                                            method: {{ task_run.args['method'] }}
+                                        {% else %}
+                                            method: linear
+                                        {% endif %}
+                                        {% if task_run.args['multiple_correction'] %}
+                                            multiple_correction: {{ task_run.args['multiple_correction'] }}
+                                        {% else %}
+                                            multiple_correction: BH
+                                        {% endif %}
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-info" id="compare-taskrun">Compare single</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskrun-dropdown-multi">Compare multiple</label>
+                            <select class="form-control" id="taskrun-dropdown-multi" name="taskrun-dropdown" multiple style="height:100px">
+                                {% for task_run in data['other_mwas_task_runs'] %}
+                                    <option value="{{ task_run.id }}">{{ task_run.id }} - {{ task_run.saved_query.name }}
+                                        {% if task_run.args['upstream_task_run_id'] %} Upstream: {{ task_run.args['upstream_task_run_id'] }}{% endif %}
+                                        {% if task_run.args['transform'] %} transform: {{ task_run.args['transform'] }}{% endif %}
+                                        {% if task_run.args['scaling'] %} scaling: {{ task_run.args['scaling'] }}{% endif %}
+                                        Y={{ task_run.args['model_Y_variable'] }}
+                                        X={{ task_run.args['model_X_variables'] }}
+                                        {% if task_run.args['method'] %}
+                                            method: {{ task_run.args['method'] }}
+                                        {% else %}
+                                            method: linear
+                                        {% endif %}
+                                        {% if task_run.args['multiple_correction'] %}
+                                            multiple_correction: {{ task_run.args['multiple_correction'] }}
+                                        {% else %}
+                                            multiple_correction: BH
+                                        {% endif %}
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-info" id="compare-multiple">Compare multiple</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row compare-single">
+                <div class="row">
+                    <div id="task_run_2_plot" class="responsive-plot"></div>
+                    <div id="scatter" class="responsive-plot"></div>
+                </div>
+                <div class="row table-wrapper" id="task_run_2">
+                    <div id="task_run_2_table"></div>
+                </div>
+            </div>
+            <div class="row compare-multiple">
+                <div class="row">
+                    <div id="col-md-11">
+                        <form method="POST" action="https://pathways.embl.de/mapping.cgi" target="_blank">
+                            <div class="form-group">
+                                <textarea style="display:block;" name="selection" id="kegg_textarea"></textarea>
+                            </div>
+                            <input type="hidden" name="export_type" value='svg'>
+                            <input type="hidden" name="tax_filter" value="9606">
+                            <input type="hidden" name="keep_colors" value="1">
+                            <input type="hidden" name="whole_pathways" value="1">
+                            <input type="hidden" name="whole_modules" value="0">
+                            <input type="hidden" name="query_reactions" value="0">
+                            <input type="hidden" name="map" value="metabolic">
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-info" value="Get iPath3 pathway">
+                            </div>
+                        </form>
+                        <br/>
+                        <div id="heatmap_logp_consistent"></div>
+                        <div id="heatmap_coefficients_consistent"></div>
+                        <div id="heatmap_aic_consistent"></div>
+                        <div id="heatmap_logp_unfiltered"></div>
+                        <div id="heatmap_coefficients_unfiltered"></div>
+                        <div id="heatmap_aic_unfiltered"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-11 log_p_comparisons">
+                        <div id="log_p_comparisons_all"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="col-md-1">
+                        &nbsp;
+                    </div>
+                    <div id="col-md-11">
+                        <h4>Significant adjusted metabolites (p < 0.05)</h4>
+                        All<br/>
+                        <div id="venn-sig"></div>
+                        Linear<br/>
+                        <div id="venn-linear"></div>
+                        Pearson<br/>
+                        <div id="venn-pearson"></div>
+                        Spearman<br/>
+                        <div id="venn-spearman"></div>
+                        Kendall<br/>
+                        <div id="venn-kendall"></div>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="multi-task-table-filtered"></div>
+                </div>
+                <div class="row">
+                    <div id="multi-task-table-unfiltered"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="significant-in-only-one" style="display: none;"><h4>Significant in only 1 cohort (p(FWER) < 0.05)</h4></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="sigtaskrun-dropdown-dedupenificant-in-some-but-not-all-tables" style="display: none;"><h4>Significant in individual cohorts but not all (p(FWER) < 0.05)</h4></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="feature-plot-chevron" href="#feature-plot-section" data-toggle="collapse">Feature Plots</a></div>
+        <div class="panel-body collapse" id="feature-plot-section">
+            <div class="row">
+                <form>
+                    <div class="form-check">
+                        <label class="form-check-label" for="widescreen-plots-checkbox">Large plots</label>
+                        <input class="form-check-input" value="" type="checkbox" id="widescreen-plots-checkbox"/>
+                    </div>
+                </form>
+            </div>
+            <div class="row">
+                <div id="feature-plots"></div>
+            </div>
+            <div class="row">
+                <pre id="feature-estimates"></pre>
+            </div>
+            <div class="row">
+                <pre id="feature-summary"></pre>
+            </div>
+        </div>
+    </div>
+    <!--<div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="feature-bootstrap-chevron" href="#feature-bootstrap-section" data-toggle="collapse">Feature Plots</a></div>
+        <div class="panel-body collapse" id="feature-bootstrap-section">
+            <div class="row">
+                <div id="feature-bootstrap"></div>
+            </div>
+        </div>
+    </div>-->
+</div>
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-color@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-interpolate@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3"></script>
+<script>
+
+    var multidata = {}
+
+    var addBreaksAtLength = 10;
+    textwrapper = function(traces) {
+        for (var p=0;p<traces.length;p++) {
+            for(var i=0;i<traces[p]['x'].length;i++){
+                var rxp = new RegExp(".{1," + addBreaksAtLength + "}", "g");
+                traces[p]['x'][i] = traces[p]['x'][i].match(rxp).join("<br>");
+            }
+        }
+        return traces;
+    };
+
+
+    function remove_float_imprecision(str_value){
+        str_value = str_value+"";
+        var replace_strings = ['000000000001', '0000000000002','0000000000003','0000000000004','0000000000005','0000000000006',
+                                '0000000000007','0000000000008','0000000000009','9999999999991','9999999999992','9999999999993',
+                                '9999999999994', '9999999999995', '9999999999996', '9999999999997', '9999999999998', '9999999999999',
+                                '000000000001', '000000000002','000000000003','000000000004','000000000005','000000000006',
+                                '000000000007','000000000008','000000000009','999999999991','999999999992','999999999993',
+                                '999999999994', '999999999995', '999999999996', '999999999997', '999999999998', '999999999999']
+        for(i=0;i<replace_strings.length;i++){
+            str_value = str_value.replace(replace_strings[i],'');
+        }
+        return str_value
+    }
+    var plotly_settings = {
+        responsive:true,
+        modeBarButtonsToRemove: ['toImage', 'sendDataToCloud'],
+        modeBarButtonsToAdd: [{
+            name: 'toImageSVG',
+            icon: Plotly.Icons.camera,
+            click: function (gd) {
+                let title = $(gd).find('.gtitle').data('unformatted');
+                title = title.replaceAll(":","_").replaceAll('<br />','_').replaceAll('/',"_").replaceAll(" ","_");
+                title = title + "_" + (new Date().toJSON().slice(0,22)).replaceAll("-","").replaceAll(":","").replaceAll(".","");
+                Plotly.downloadImage(gd, {format: 'svg',filename: title});
+            }
+        }],
+    }
+
+    var task_run_1_mwas_table = JSON.parse('{{ data['mwas_table'] | tojson }}');
+
+    var project_colours = JSON.parse('{{ data['project_colours'] | tojson }}');
+
+    var show_insignificant = true;
+
+    draw_coefficients = function(task_run_id,mwas_table){
+
+        var estimate_y = []
+        var p_y = []
+        var text = []
+        var axis_label = []
+        var colours = []
+        var keys = Object.keys(mwas_table);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            if (show_insignificant === true || mwas_table[key]['adjusted_pvalues'] < 0.05){
+
+                p_y.push(mwas_table[key]['log_adjusted_pvalues'])
+                estimate_y.push(mwas_table[key]['estimates'])
+                if (mwas_table[key]['sign'] >= 0 && mwas_table[key]['adjusted_pvalues'] < 0.05){
+                    colours.push('red');
+                } else if (mwas_table[key]['sign'] < 0 && mwas_table[key]['adjusted_pvalues'] < 0.05){
+                    colours.push('blue');
+                } else {
+                    colours.push('grey');
+                }
+                axis_label.push("<b>" + mwas_table[key]['cpd_name'] + "</b>");
+                text.push("HarmonisedAnnotation: " + mwas_table[key]['harmonised_annotation_id'] + "<br />Assay: " + mwas_table[key]['assay']
+                    + "<br />Annotation method: " + mwas_table[key]['annotation_method']
+                    + "<br />cpd_key: " + mwas_table[key]['cpd_key'] + "<br />cpd_name: " + mwas_table[key]['cpd_name']
+                    + "<br />Estimate: " + mwas_table[key]['estimates'] + "<br />p-value: " + mwas_table[key]['pvalues']
+                    + "<br />Adjusted p-value: " + mwas_table[key]['adjusted_pvalues']);
+            }
+
+        }
+        // Loadings xth component
+        var data = {
+            y: p_y,
+            x: axis_label,
+            text: text,
+            type: 'bar',
+            marker:{
+                color: colours
+            }
+        }
+        var layout = {
+            xaxis: {
+                title: 'Metabolites',
+                automargin: true,
+                tickfont:{
+                    family: "Arial",
+                    size: 9,
+                    fontweight: 'bold'
+                }
+            },
+            yaxis: {
+                title: 'Sign-adjusted Log10(adjusted pvalues)',
+                automargin: true,
+            },
+            hovermode: 'closest',
+            title:'Sign adjusted Log10(adjusted pvalues) for TaskRun :' + task_run_id
+        };
+        Plotly.newPlot('task_run_1_pvalues', [data], layout,plotly_settings);
+
+        // Loadings xth component
+        var data = {
+            y: estimate_y,
+            x: axis_label,
+            text: text,
+            type: 'bar',
+            marker:{
+                color: colours
+            }
+        }
+        var layout = {
+            xaxis: {
+                title: 'Metabolites',
+                automargin: true,
+                tickfont:{
+                    family: "Arial",
+                    size: 9,
+                    fontweight: 'bold'
+                }
+            },
+            yaxis: {
+                title: 'Coefficient',
+                automargin: true,
+            },
+            hovermode: 'closest',
+            title:'Coefficient estimate for TaskRun :' + task_run_id
+        };
+        Plotly.newPlot('task_run_1_estimates',[data], layout,plotly_settings);
+
+    }
+
+    draw_scatter_plot = function(coefficients,correlation,task_run_1_id,task_run_2_id){
+        var x = [];
+        var y = [];
+        var text = [];
+        var x_axis_label = [];
+        var keys = Object.keys(coefficients['task_run_1']);
+        console.log(keys);
+        var i = 0
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            text.push("HarmonisedAnnotation ID: " + task_run_1_mwas_table[key]['harmonised_annotation_id'] + "<br />Assay: " + task_run_1_mwas_table[key]['assay']
+                + "<br />Annotation method: " + task_run_1_mwas_table[key]['annotation_method']
+                + "<br />cpd_key: " + task_run_1_mwas_table[key]['cpd_key'] + "<br />cpd_name: " + task_run_1_mwas_table[key]['cpd_name']
+                + "<br />Estimate 1: " + task_run_1_mwas_table[key]['estimates'] + "<br />p-value 1: " + task_run_1_mwas_table[key]['pvalues']
+                + "<br />Adjusted p-value 1: " + task_run_1_mwas_table[key]['adjusted_pvalues']);
+            x.push(coefficients['task_run_1'][key]);
+            y.push(coefficients['task_run_2'][key]);
+
+        }
+        var trace1 = {
+            x: x,
+            y: y,
+            mode: 'markers',
+            type: 'scatter',
+            text: text
+        };
+        var float_correlation = parseFloat(correlation);
+        var corr_x = [Math.min.apply(null,x),Math.max.apply(null,x)]
+        var corr_y = []
+        for(i=0;i<corr_x.length;i++){
+            corr_y.push(corr_x[i]*float_correlation);
+        }
+        var trace2 = {
+            x: corr_x,
+            y: corr_y,
+            mode: 'lines',
+            type: 'Lines'
+        };
+        var layout = {
+            xaxis: {
+                title: 'Log10 adjusted p-values for TaskRun ' + task_run_1_id,
+                autorange: true,
+            },
+            yaxis: {
+                title: 'Log10 adjusted p-values for TaskRun ' + task_run_2_id,
+                autorange: true,
+            },
+            hovermode: 'closest',
+            title: 'Log10 Adjusted p-values for TaskRun ' + task_run_1_id + ' vs TaskRun ' + task_run_2_id + ' - Spearman correlation: ' + correlation
+        }
+
+        var data = [trace1, trace2]//, trace3];
+
+        Plotly.newPlot('scatter', data, layout,plotly_settings);
+
+        Plotly.relayout( 'scatter', {
+            'xaxis.autorange': true,
+            'yaxis.autorange': true
+        });
+    }
+
+    draw_Y_intensity_scatter = function(Y_intensities,Y_label,X_label,std,mean,cpd_name,
+                                        cpd_id,task_run_id,saved_query_name,cell_id,y_axis_label,
+                                        Y_range,intensity_range){
+        console.log(X_label);
+        if (X_label !== null){
+            var target_id = "feature-plot-" + X_label.replace("(","").replace("]","").replace(":","").replace(",","").replace(".","").replace(" ","")
+        } else {
+            var target_id = "feature-plot-all"
+        }
+        $("#feature-plots").append("<div class='plot-wrap col-md-6'><div id='" + target_id + "' class='feature-plot responsive-plot'></div></div>");
+        var all_x = [];
+        var keys = Object.keys(Y_intensities);
+
+        var colours = [];
+        var average_vector = []
+        var std_vector = []
+        var project_traces = {};
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            var project = Y_intensities[key]['project'];
+            //y.push(Y_intensities[key]['feature intensity']);
+            all_x.push(Y_intensities[key]['Y']);
+            if (project_traces.hasOwnProperty(project) === false){
+                project_traces[project] = {
+                    x: [Y_intensities[key]['Y']],
+                    y: [Y_intensities[key]['feature intensity']],
+                    mode: 'markers',
+                    type: 'scatter',
+                    showlegend: true,
+                    name: project,
+                    legend: {
+                        x: 1,
+                        xanchor: 'right',
+                        y: 1
+                    },
+                    marker:{
+                        color: [project_colours[project]]
+                    },
+                }
+            } else {
+                project_traces[project]['x'].push(Y_intensities[key]['Y']);
+                project_traces[project]['y'].push(Y_intensities[key]['feature intensity']);
+                project_traces[project]['marker']['color'].push(project_colours[project]);
+            }
+        }
+
+        var sorted_y_values = all_x.sort()
+        for (var i = 0; i < sorted_y_values.length;i++){
+            var Y_key = parseFloat(sorted_y_values[i]).toFixed(1)
+            //colours.push(project_colours[Y_intensities[key]['project']]);
+            if (mean.hasOwnProperty(Y_key)){
+                average_vector.push(mean[Y_key]['feature intensity']);
+            } else {
+                average_vector.push(0);
+            }
+            if (mean.hasOwnProperty(Y_key)){
+                std_vector.push(std[Y_key]['feature intensity']);
+            } else {
+                std_vector.push(0);
+            }
+        }
+        var mean_std_trace = {
+            x: all_x,
+            y: average_vector,
+            showlegend: true,
+            name: "mean + std dev",
+            legend: {
+                x: 1,
+                xanchor: 'right',
+                y: 1
+            },
+            marker: {
+                color: '#ff7f0e'
+            },
+            error_y: {
+              type: 'data',
+              array: std_vector,
+              visible: true
+            },
+        };
+
+        var estimate = Number($('#'+cell_id).text())
+        var pvalue = Number($('#'+cell_id+"-pvalue").text());
+        var adjusted_pvalue = Number($('#'+cell_id+"-adjusted-pvalue").text());
+
+        var title = "TR:" + task_run_id + " SQ: " + saved_query_name + "<br />" + cpd_id + " " + cpd_name + '<br />Y = ' + Y_label.replace("h_metadata::","");
+        if(X_label !== null){
+            title = title + ", X = (" + X_label + ")";
+        }
+        console.log("estimate");
+        console.log(estimate);
+        console.log(cell_id);
+        title = title + "<br />Estimate:" + estimate.toExponential(5) + " p:" + pvalue.toExponential(3) + " p(FWER):" + adjusted_pvalue.toExponential(3);
+        var layout = {
+            xaxis: {
+                title: Y_label.replace("h_metadata::",""),
+                range: Y_range,
+                rangemode: 'range',
+                autorange: false
+            },
+            yaxis: {
+                title: y_axis_label,
+                range: intensity_range,
+                rangemode: 'range',
+                autorange: false
+            },
+            hovermode: 'closest',
+            title: {
+                font: {
+                    size: 12,
+                },
+                text: title,
+            },
+            height: 500
+        }
+
+        var data = [];
+
+        var projects = Object.keys(project_traces);
+        for(var i=0;i<projects.length;i++) {
+            var project = projects[i];
+            data.push(project_traces[project]);
+        }
+        data.push(mean_std_trace);
+
+        Plotly.newPlot(target_id, data, layout,plotly_settings);
+
+    }
+
+    draw_pvalue_compares = function(table,task_run_ids,task_labels_short,methods){
+
+        var task_run_log_p_lists = {};
+        console.log('hereE');
+        console.log(table);
+        var task_run_text = {};
+
+        for (var t in table) {
+            if (table.hasOwnProperty(t)) {
+                for (var i = 0; i < task_run_ids.length; i++) {
+                    if (!task_run_log_p_lists.hasOwnProperty(task_run_ids[i])) {
+                        task_run_log_p_lists[task_run_ids[i]] = [];
+                    }
+                    if (!task_run_text.hasOwnProperty(task_run_ids[i])) {
+                        task_run_text[task_run_ids[i]] = [];
+                    }
+//                    var log_p_column = 'tr_' + task_run_ids[i] + '_adjusted_pvalues';
+                    var log_p_column = 'tr_' + task_run_ids[i] + '_pvalues';
+                    task_run_text[task_run_ids[i]].push(table[t]['cpd_id'] + " " + table[t]['cpd_name'] + "<br>");
+                    //console.log(log_p_column);
+                    //console.log(table[t][log_p_column]);
+                    //console.log(remove_float_imprecision(-Math.log10((table[t][log_p_column]))));
+                    if (table[t][log_p_column] === null || table[t][log_p_column] === undefined){
+                        task_run_log_p_lists[task_run_ids[i]].push(0);
+                    } else {
+                        task_run_log_p_lists[task_run_ids[i]].push(remove_float_imprecision(-Math.log10((table[t][log_p_column]))));
+                    }
+                   // task_run_text[task_run_ids[i]].push(table[t]['cpd_name']);
+                }
+            }
+        }
+        console.log(task_run_text)
+        var data = [];
+        var combinations = [];
+    //    var selected_combos = $('#taskrun-dropdown-plot-select').val();
+        for (var i = 0; i < task_run_ids.length; i++) {
+            for (var p = 0; p < task_run_ids.length; p++) {
+                if (task_run_ids[i] !== task_run_ids[p]){
+
+                    var combination_1 = task_run_ids[i]+'-'+task_run_ids[p];
+                    var combination_2 = task_run_ids[p]+'-'+task_run_ids[i];
+                    if ((combinations.indexOf(combination_1) < 0 && combinations.indexOf(combination_2) < 0
+                        && methods[task_run_ids[i]] === methods[task_run_ids[p]]) ){//} && selected_combos.indexOf(combination_1)) {
+
+                        var div_id = "compare-p-values-" + task_run_ids[i].toString() + "-" + task_run_ids[p].toString();
+                        var html_div = "<div id='" + div_id + "'></div>";
+                        $('.log_p_comparisons').append(html_div);
+
+                        var trace1 = {
+                            x: task_run_log_p_lists[task_run_ids[i]],
+                            y: task_run_log_p_lists[task_run_ids[p]],
+                            mode: 'markers',
+                            name: "x:" + task_labels_short[i] + "<br>y:" + task_labels_short[p],
+                            //text: task_run_text[task_run_ids[i]]
+                            text: task_run_text[task_run_ids[i]]
+                        }
+                        if (methods[task_run_ids[i]] === 'linear' || methods[task_run_ids[p]] === 'linear'){
+                            trace1['marker'] = {'symbol':'star-diamond','size':8}
+                        } else if (methods[task_run_ids[i]] === 'pearson' || methods[task_run_ids[p]] === 'pearson'){
+                            trace1['marker'] = {'symbol':'circle'}
+                        } else if (methods[task_run_ids[i]] === 'spearman' || methods[task_run_ids[p]] === 'spearman'){
+                            trace1['marker'] = {'symbol':'triangle-up'}
+                        } else if (methods[task_run_ids[i]] === 'kendall' || methods[task_run_ids[p]] === 'kendall'){
+                            trace1['marker'] = {'symbol':'x'}
+                        }
+
+                        data.push(trace1)
+                        combinations.push(combination_1)
+
+                        var layout = {
+                            xaxis: {
+                                title: task_labels_short[i],
+                                range: [0, 100],
+                            },
+                            yaxis: {
+                                title: task_labels_short[p],
+                                range: [0, 100],
+                            },
+                            hovermode: 'closest',
+                            height: 500,
+                            width: 800,
+                            title: '- Log10 Adjusted p-values (larger = more significant)'
+                        }
+
+                        var x = [0, 10, 100];
+                        var y = [0, 10, 100];
+
+                        var trace2 = {
+                            x: x,
+                            y: y,
+                            mode: 'lines',
+                            name: 'y=x'
+                        }
+
+                      //  Plotly.newPlot(div_id, [trace1, trace2], layout, plotly_settings);
+                    }
+                }
+
+            }
+        }
+         var layout = {
+            xaxis: {
+                title: 'Log10 adjusted p-values',
+                range: [0,100],
+            },
+            yaxis: {
+                title: 'Log10 adjusted p-values',
+                range: [0,100],
+            },
+            hovermode: 'closest',
+            height: 800,
+            width: 1000,
+            title: 'Log10 Adjusted p-values for all TaskRun comparisons',
+             legend: {
+                x: 1,
+                y: 0.5
+              }
+        }
+
+
+        var x = [0,10,100];
+        var y = [0,10,100];
+
+        var trace2 = {
+            x: x,
+            y: y,
+            mode: 'lines',
+           name: 'y=x'
+        }
+
+        data.push(trace2);
+
+        Plotly.newPlot('log_p_comparisons_all', data, layout,plotly_settings);
+
+    }
+
+   // var method = '';
+
+     draw_venn_diagrams = function(table,task_run_ids,task_labels_short,methods,task_saved_query_project_short_labels){
+
+         if (task_labels_short.length <= 5) {
+
+             var task_run_sig_lists = {};
+             console.log('VENN');
+
+             var task_labels_by_id = {};
+
+             for (var t in table) {
+                 if (table.hasOwnProperty(t)) {
+                     for (var i = 0; i < task_run_ids.length; i++) {
+                         //if (methods[task_run_ids[i]] === method || method === '') {
+
+                             if (!task_run_sig_lists.hasOwnProperty(task_run_ids[i])) {
+                                 task_run_sig_lists[task_run_ids[i]] = [];
+                             }
+                             if (!task_labels_by_id.hasOwnProperty(task_run_ids[i])) {
+                                 task_labels_by_id[task_run_ids[i]] = task_labels_short[i];
+                             }
+
+                             var log_p_column = 'tr_' + task_run_ids[i] + '_adjusted_pvalues';
+                             //console.log(method);
+
+                             if (table[t][log_p_column] !== null && table[t][log_p_column] !== undefined && table[t][log_p_column] < 0.05) {
+                             //if (table[t][log_p_column] !== null && table[t][log_p_column] !== undefined) {
+                                 task_run_sig_lists[task_run_ids[i]].push(table[t]['harmonised_annotation_id']);
+                             }
+                        // }
+                     }
+                 }
+             }
+             var series = []
+             for (const [task_run_id, list_of_significant] of Object.entries(task_run_sig_lists)) {
+                 series.push({'name': task_labels_short[task_run_id], 'data': list_of_significant})
+             }
+             $('#venn-sig').venny({
+                 series: series
+             });
+         } else {
+             console.log(methods);
+             console.log(task_saved_query_project_short_labels);
+             var project_short_label_sig_lists = {};
+             for (const method of Object.values(methods)) {
+                 console.log(method);
+                 if (!project_short_label_sig_lists.hasOwnProperty(method)) {
+                     project_short_label_sig_lists[method] = {}
+
+                     for (const project_short_label of task_saved_query_project_short_labels) {
+                         project_short_label_sig_lists[method][project_short_label] = []
+                     }
+                 }
+             }
+             console.log(project_short_label_sig_lists);
+
+             for (var t in table) {
+                 if (table.hasOwnProperty(t)) {
+                     for (var i = 0; i < task_run_ids.length; i++) {
+
+                         var log_p_column = 'tr_' + task_run_ids[i] + '_adjusted_pvalues';
+
+                         if (table[t][log_p_column] !== null && table[t][log_p_column] !== undefined && table[t][log_p_column] < 0.05) {
+                             project_short_label_sig_lists[methods[task_run_ids[i]]][task_saved_query_project_short_labels[i]].push(table[t]['harmonised_annotation_id']);
+                         }
+                     }
+                 }
+             }
+             console.log('here!');
+             console.log(project_short_label_sig_lists);
+             for (const [method, query_short_label_list] of Object.entries(project_short_label_sig_lists)) {
+                 var series = []
+                 for (const [project_short_label, list_of_significant] of Object.entries(query_short_label_list)) {
+                     series.push({'name': project_short_label, 'data': list_of_significant})
+                 }
+                 $('#venn-' + method).venny({
+                     series: series
+                 });
+             }
+         }
+    }
+
+    draw_heatmaps = function(table,task_run_ids,task_labels,type){
+
+        console.log("here1");
+        var cutoff = {{ data['bonferroni_cutoff'] }}
+
+        if (table === null || table === undefined){
+            console.log("table is null");
+            return;
+        }
+
+        {% if 'method' in data.task_run.args.keys() %}
+            var method = '{{ data.task_run.args['method'] }}';
+        {% else %}
+            var method = 'linear';
+        {% endif %}
+
+        console.log(method);
+        console.log(table);
+        var y = [];
+        var log_ps = [];
+        var p_labels = [];
+        var coefficients = [];
+        var aics = [];
+        var coefficient_labels = [];
+        var aic_labels = [];
+        var keys = Object.keys(table);
+        console.log(keys);
+        for (var i = 0; i < multidata['metabolite_order'].length; i++) {
+
+            if (keys.includes(multidata['metabolite_order'][i])){
+
+                //if checked and not in key, show
+                //if not checked
+                //console.log(type);
+                //console.log(multidata['significant_in_all_table']);
+                //console.log(multidata['metabolite_order'][i]);
+
+                if(type == 'consistent'
+                    || multidata['significant_in_all_table'] === undefined
+                    || !($("#taskrun-dropdown-dedupe").is(':checked'))
+                    || ($("#taskrun-dropdown-dedupe").is(':checked')
+                        && !(multidata['metabolite_order'][i].toString() in multidata['significant_in_all_table']))
+                ){
+
+                    var log_p_row = [];
+                    var p_values_for_row = [];
+                    var adjusted_p_values_for_row = [];
+                    var coefficient_row = [];
+                    var aic_row = [];
+                    var p_label_row = [];
+                    var aic_label_row = [];
+                    var coefficient_label_row = [];
+                    var min_aic = 0;
+                    var max_aic = 0;
+                    var min_coefficient = 0;
+                    var max_coefficient = 0;
+                    var min_pvalue = 0;
+                    var max_pvalue = 0;
+                    for(var t=0;t<task_run_ids.length;t++){
+                        var adjusted_log_p_column_name = 'tr_' + task_run_ids[t] + '_log_adjusted_pvalues'
+                        var adjusted_p_column_name = 'tr_' + task_run_ids[t] + '_adjusted_pvalues'
+                        var log_p_column_name = 'tr_' + task_run_ids[t] + '_log_pvalues'
+                        var p_column_name = 'tr_' + task_run_ids[t] + '_pvalues'
+                        var coefficient_column_name = 'tr_' + task_run_ids[t] + '_estimates'
+                        if(table[multidata['metabolite_order'][i]][p_column_name] !== undefined
+                            && table[multidata['metabolite_order'][i]][p_column_name] !== null
+                            && table[multidata['metabolite_order'][i]][log_p_column_name] !== undefined
+                            && table[multidata['metabolite_order'][i]][log_p_column_name] !== null) {
+                            //console.log('p')
+                            //console.log(table[multidata['metabolite_order'][i]][p_column_name]);
+                            //console.log('logp')
+                            //console.log(table[multidata['metabolite_order'][i]][log_p_column_name]);
+                            if (table[multidata['metabolite_order'][i]][adjusted_p_column_name].toString() === '0' || table[multidata['metabolite_order'][i]][adjusted_p_column_name].toString() === '0') {
+                              //  console.log('p is zero - set it toset to a big number')
+                                if (table[multidata['metabolite_order'][i]][coefficient_column_name] >= 0) {
+                                    log_p_row.push(40);
+                                } else {
+                                    log_p_row.push(-40);
+                                }
+                                coefficient_row.push(table[multidata['metabolite_order'][i]][coefficient_column_name])
+                            } else if (type === 'unfiltered' && (table[multidata['metabolite_order'][i]][adjusted_p_column_name] > 0.05 || table[multidata['metabolite_order'][i]][adjusted_p_column_name] < -0.05)) {
+                               // console.log('not significant filtered to zero')
+                                log_p_row.push(0)
+                                coefficient_row.push(0)
+                            } else {
+                                //console.log('set as is')
+                                coefficient_row.push(table[multidata['metabolite_order'][i]][coefficient_column_name])
+                                log_p_row.push(remove_float_imprecision(table[multidata['metabolite_order'][i]][log_p_column_name]));
+                            }
+                            //console.log('parsed logp')
+                            //console.log(log_p_row[log_p_row.length - 1]);
+
+                            if (table[multidata['metabolite_order'][i]][log_p_column_name] > max_pvalue) {
+                                max_pvalue = table[multidata['metabolite_order'][i]][log_p_column_name];
+                            } else if (table[multidata['metabolite_order'][i]][log_p_column_name] < min_pvalue) {
+                                min_pvalue = table[multidata['metabolite_order'][i]][log_p_column_name];
+                            }
+                            p_label_row.push(remove_float_imprecision(table[multidata['metabolite_order'][i]][p_column_name + "_str"]));
+                            p_values_for_row.push(table[multidata['metabolite_order'][i]][p_column_name])
+                            //if (table[multidata['metabolite_order']][i][adjusted_p_column_name] !== undefined && table[multidata['metabolite_order']][i][adjusted_p_column_name] !== null) {
+                            //    adjusted_p_values_for_row.push(table[multidata['metabolite_order']][i][adjusted_p_column_name])
+                            //} else {
+                            //    adjusted_p_values_for_row.push(1);
+                           // }
+                            coefficient_label_row.push(table[multidata['metabolite_order'][i]][coefficient_column_name + "_str"])
+                            if (table[multidata['metabolite_order'][i]][coefficient_column_name] > max_coefficient) {
+                                max_coefficient = table[multidata['metabolite_order'][i]][coefficient_column_name];
+                            } else if (table[multidata['metabolite_order'][i]][coefficient_column_name] < min_coefficient) {
+                                min_coefficient = table[multidata['metabolite_order'][i]][coefficient_column_name];
+                            }
+                            if (method == 'linear' || method == 'logistic') {
+                                var aic_column_name = 'tr_' + task_run_ids[t] + '_aic'
+
+                                if (table[multidata['metabolite_order'][i]][aic_column_name] > max_aic) {
+                                    max_aic = table[multidata['metabolite_order'][i]][aic_column_name];
+                                } else if (table[multidata['metabolite_order'][i]][aic_column_name] < min_aic) {
+                                    min_aic = table[multidata['metabolite_order'][i]][aic_column_name];
+                                }
+                                if (table[multidata['metabolite_order'][i]][aic_column_name] == 'inf') {
+                                    aic_row.push(-500000)
+                                } else {
+                                    aic_row.push(table[multidata['metabolite_order'][i]][aic_column_name])
+                                }
+                                aic_label_row.push(remove_float_imprecision(table[multidata['metabolite_order'][i]][aic_column_name + "_str"]))
+                            }
+                        } else {
+                            log_p_row.push(null)
+                            p_label_row.push('null')
+                            coefficient_row.push(null)
+                            coefficient_label_row.push('null')
+                             if (method == 'linear' || method == 'logistic') {
+                                 aic_row.push(null);
+                                 aic_label_row.push('null')
+                             }
+                        }
+                    }
+                    if ($('#taskrun-dropdown-only-significant').is(':checked') !== true && type === 'unfiltered'){
+                        var include_row = false;
+                        for(var q=0;q<p_values_for_row.length;q++){
+                            if (p_values_for_row[q] < cutoff){
+                                include_row = true;
+                            }
+                        }
+                        if (include_row === true){
+                            log_ps.push(log_p_row);
+                            coefficients.push(coefficient_row);
+                            aics.push(aic_row);
+                            p_labels.push(p_label_row)
+                            coefficient_labels.push(coefficient_label_row)
+                            aic_labels.push(aic_label_row)
+                            y.push(table[multidata['metabolite_order'][i]]['cpd_name']);
+                        }
+                    } else {
+                        log_ps.push(log_p_row);
+                        coefficients.push(coefficient_row);
+                        aics.push(aic_row);
+                        p_labels.push(p_label_row)
+                        coefficient_labels.push(coefficient_label_row)
+                        aic_labels.push(aic_label_row)
+                        y.push(table[multidata['metabolite_order'][i]]['cpd_name']);
+                    }
+
+                } else {
+                    //console.log('filtered');
+                }
+
+            }
+        }
+        if (max_pvalue > 10){
+            max_pvalue = 10
+        }
+        if (min_pvalue < -10){
+            min_pvalue = -10
+        }
+        if (max_pvalue > (0 - min_pvalue)){
+            var pvalue_range = [0-max_pvalue,max_pvalue]
+        } else if (min_pvalue < (0 - max_pvalue)) {
+            var pvalue_range = [min_pvalue,0-min_pvalue]
+        } else {
+            var pvalue_range = [min_pvalue,max_pvalue]
+        }
+        if (max_coefficient > (0 - min_coefficient)){
+            var coefficient_range = [0-max_coefficient,max_coefficient]
+        } else if (min_coefficient < (0 - max_coefficient)) {
+            var coefficient_range = [min_coefficient,0-min_coefficient]
+        } else {
+            var coefficient_range = [min_coefficient,max_coefficient]
+        }
+        if (method == 'linear' || method == 'logistic') {
+            if (max_aic > (0 - min_aic)) {
+                var aic_range = [0 - max_aic, max_aic]
+            } else if (min_aic < (0 - max_aic)) {
+                var aic_range = [min_aic, 0 - min_aic]
+            } else {
+                var aic_range = [min_aic, max_aic]
+            }
+        }
+        var log_p_data = [
+          {
+            z: log_ps,
+            x: task_labels,
+            y: y,
+            type: 'heatmap',
+            hoverongaps: false,
+            colorscale: [
+                [pvalue_range[0], 'rgb(49,54,149)'],
+                [pvalue_range[1], 'rgb(165,0,38)'],
+            ],
+            zmin: pvalue_range[0],
+            zmax: pvalue_range[1],
+          }
+        ];
+        //log_p_data = textwrapper(log_p_data);
+
+        var coefficient_data = [
+          {
+            z: coefficients,
+            x: task_labels,
+            y: y,
+            type: 'heatmap',
+            hoverongaps: false,
+            colorscale: [
+                [coefficient_range[0], 'rgb(49,54,149)'],
+                [coefficient_range[1], 'rgb(165,0,38)'],
+            ],
+            //annotation_text: coefficients,
+            zmin: coefficient_range[0],
+            zmax: coefficient_range[1],
+          }
+        ];
+        //coefficient_data = textwrapper(coefficient_data);
+
+        var height = (y.length * 30) + 300;
+
+        console.log("height:");
+        console.log(height);
+        if (method == 'linear') {
+            var aic_data = [
+                {
+                    z: aics,
+                    x: task_labels,
+                    y: y,
+                    type: 'heatmap',
+                    hoverongaps: false,
+                    colorscale: [
+                        [aic_range[0], 'rgb(49,54,149)'],
+                        [aic_range[1], 'rgb(165,0,38)'],
+                    ],
+                    //annotation_text: aic_labels,
+                    zmin: aic_range[0],
+                    zmax: aic_range[1],
+                }
+            ];
+            //console.log(aic_data);
+          //  var totals = [];
+          //  for (i = 0; i < aic_data[0]['x'].length; i++) {
+            //    var column_total = 0;
+              //  for (p = 0; p < aic_data[0]['z'].length; p++) {
+                //    column_total = column_total + aic_data[0]['z'][p][i];
+                //}
+                //totals.push(column_total);
+            //}
+            //aic_data = textwrapper(aic_data);
+        }
+       // console.log(p_labels);
+        //console.log("hereA")
+        var log_p_annotations = [];
+        var coefficient_annotations = [];
+        var aic_annotations = [];
+       // console.log(y);
+        for ( var i = 0; i < y.length; i++ ) {
+            //console.log(i);
+              for ( var j = 0; j < task_labels.length; j++ ) {
+                  if (i == 144){
+                      console.log('p_labels['+i+']['+j+']');
+                  }
+                var result = {
+                  xref: 'x1',
+                  yref: 'y1',
+                  x: task_labels[j],
+                  y: y[i],
+                  text: "<b>" + p_labels[i][j] + "</b>",
+                  font: {
+                    family: 'Arial',
+                    size: 12,
+                    color: '#000000'
+                  },
+                  showarrow: false,
+                };
+                log_p_annotations.push(result);
+                //console.log('hereD');
+                var coefficient_result = JSON.parse(JSON.stringify(result));
+                //console.log('hereE');
+                coefficient_result['text'] = "<b>" + coefficient_labels[i][j] + "</b>";
+                //console.log('hereF');
+                  coefficient_annotations.push(coefficient_result)
+                //  console.log('hereG');
+                if (method == 'linear') {
+                    var aic_result = JSON.parse(JSON.stringify(result));
+                //    console.log('hereH');
+                    aic_result['text'] = "<b>" + aic_labels[i][j] + "</b>";
+                //    console.log('hereJ');
+                    aic_annotations.push(aic_result)
+                }
+
+              }
+            }
+        console.log("hereB")
+        if (type == 'consistent'){
+            var title_type = 'consistently significant';
+        } else if (type == 'unfiltered' && $('#taskrun-metabolite-filter').val() != 'none'){
+            var title_type = 'significant in at least one but not measured in all'
+        } else if (type == 'unfiltered' && $('#taskrun-dropdown-dedupe').is(':checked')){
+            var title_type = 'significant in at least one but not all'
+        } else if (type == 'unfiltered' && $('#taskrun-dropdown-only-significant').is(':checked')){
+            var title_type = 'metabolites with at least 1 significant association';
+        } else {
+            var title_type = 'all metabolites';
+        }
+        console.log("hereC")
+
+        var layout = {
+              title: 'Heatmap of ' + title_type + ' log10 pvalues. Bonferroni cut-off ' + cutoff,
+              height: height,
+              xaxis: {
+                type: 'category',
+                title: 'TaskRun',
+                automargin: true,
+                font: {
+                    family: 'Courier New, monospace',
+                    size: 8,
+                    color: '#7f7f7f'
+                }
+              },
+              yaxis: {
+                title: 'Metabolites',
+                type: 'category',
+                automargin: true,
+                  font: {
+                    family: 'Courier New, monospace',
+                    size: 8,
+                    color: '#7f7f7f'
+                }
+              },
+              annotations: log_p_annotations
+            };
+
+        Plotly.newPlot('heatmap_logp_'+type, log_p_data,layout,plotly_settings);
+
+        var layout = {
+              title: 'Heatmap of ' + title_type + ' coefficients. Bonferroni cut-off ' + cutoff,
+              height: height,
+              xaxis: {
+                type: 'category',
+                title: 'TaskRun',
+                automargin: true,
+                font: {
+                    family: 'Courier New, monospace',
+                    size: 8,
+                    color: '#7f7f7f'
+                }
+              },
+              yaxis: {
+                title: 'Metabolites',
+                type: 'category',
+                automargin: true,
+                  font: {
+                    family: 'Courier New, monospace',
+                    size: 8,
+                    color: '#7f7f7f'
+                }
+
+              },
+                annotations: coefficient_annotations
+            };
+
+        Plotly.newPlot('heatmap_coefficients_'+type, coefficient_data,layout,plotly_settings);
+        if (method == 'linear' || method == 'logistic') {
+            var layout = {
+                title: 'Heatmap of ' + title_type + ' Aikita Information Criterion (AIC)',
+                height: height,
+                xaxis: {
+                    type: 'category',
+                    title: 'TaskRun',
+                    automargin: true,
+                    font: {
+                        family: 'Courier New, monospace',
+                        size: 8,
+                        color: '#7f7f7f'
+                    }
+                },
+                yaxis: {
+                    title: 'Metabolites',
+                    type: 'category',
+                    automargin: true,
+                    font: {
+                        family: 'Courier New, monospace',
+                        size: 9,
+                        color: '#7f7f7f'
+                    }
+                },
+                annotations: aic_annotations
+            };
+
+            Plotly.newPlot('heatmap_aic_'+type, aic_data, layout, plotly_settings);
+        }
+    }
+
+    $('#compare-taskrun').on('click',function(e){
+
+        e.preventDefault();
+
+       var data = {"task_run_1_id":"{{ data.task_run.id }}",
+                    "task_run_2_id": $('#taskrun-dropdown').val(),
+                    "csrf_token": $('[name=csrf_token]').val()}
+
+        if($('#taskrun-dropdown-fdr-n').val() !== undefined){
+            data["fdr_n"] = $('#taskrun-dropdown-fdr-n').val()
+        }
+
+       $.ajax("{{ url_for('AnalysisView.load_task_run_for_MWAS') }}", {
+            type: "POST",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(data),
+            success: function (data,status,xhr) {
+                if (data['success'] === true) {
+                    $('#task_run_2_table').html(data['task_run_2_table']);
+                    //draw_scatter_plot(data['coefficients'],data['correlation'],"{# data.task_run.id #}",$('#taskrun-dropdown').val())
+                    draw_coefficients('task_run_2_plot',$('#taskrun-dropdown').val(),data['mwas_table']);
+                } else {
+                    console.log("it didnt work!");
+                }
+            }
+        });
+
+    });
+
+    compare_multiple = function(task_run_ids){
+        var data = {"task_run_ids":task_run_ids,
+                    "csrf_token": $('[name=csrf_token]').val()}
+
+        if($('#taskrun-dropdown-fdr-n').val() !== undefined){
+            data["fdr_n"] = $('#taskrun-dropdown-fdr-n').val()
+        }
+        if($("#taskrun-dropdown-show-sig-in-some-not-all").is(':checked')){
+            data["show-sig-in-some-not-all"] = true
+        }
+        if($("#taskrun-dropdown-show-sig-in-only-one").is(':checked')){
+            data["show-sig-in-only-one"] = true
+        }
+        if($('#taskrun-id-order').val() !== undefined && $('#taskrun-id-order').val() !== ''){
+            data['taskrun-id-order'] = $('#taskrun-id-order').val();
+        }
+        if($('#taskrun-metabolite-filter').val() != 'none'){
+            data['taskrun-metabolite-filter'] = $('#taskrun-metabolite-filter').val();
+        }
+        console.log("Starting multi task run request!")
+       $.ajax("{{ url_for('AnalysisView.load_multi_task_runs_for_MWAS') }}", {
+            type: "POST",
+            contentType: 'application/json',
+            //dataType: 'json',
+            data: JSON.stringify(data),
+            error: function(){
+                console.log('error');
+            },
+            success: function (data,status,xhr) {
+                //data = JSON.parse(data);
+                console.log("its returned");
+                console.log(data);
+                if (data['success'] === true) {
+                    console.log("Multi task run request success!")
+                    console.log(data);
+                    multidata = data;
+
+                    $('#kegg_textarea').val(data['all_kegg_ids_string']);
+
+                    console.log("pre-html-injection")
+                    $('#multi-task-table-filtered').html(data['mwas_consistent_table']);
+                    $('#multi-task-table-unfiltered').html(data['mwas_unfiltered_table']);
+                    console.log("pre-heatmaps")
+                    if ($('#taskrun-metabolite-filter').val() != 'somenull'){
+                        //draw_heatmaps(data['filtered_table'],task_run_ids,data['task_labels'],'filtered');
+                        draw_heatmaps(data['significant_in_all_table'], task_run_ids, data['task_labels'], 'consistent');
+                        console.log("1 heatmap completed")
+                    }
+                    console.log(data['unfiltered_table']);
+                    draw_heatmaps(data['unfiltered_table'],task_run_ids,data['task_labels'],'unfiltered');
+                    console.log("post-heatmaps")
+                    draw_pvalue_compares(data['unfiltered_table'],task_run_ids,data['task_labels_short'],data['methods']);
+                    draw_venn_diagrams(data['unfiltered_table'],task_run_ids,data['task_labels_short'],data['methods'],data['task_saved_query_project_short_labels']);
+                    if($("#taskrun-dropdown-show-sig-in-some-not-all").is(':checked')){
+                        console.log("checked");
+                        $('#significant-in-some-but-not-all-tables').append(data['mwas_significant_in_some_but_not_all_tables']);
+                        $('#significant-in-some-but-not-all-tables').show();
+                    }
+                    if($("#taskrun-dropdown-show-sig-in-only-one").is(':checked')){
+                        console.log("checked");
+                        $('#significant-in-only-one').append(data['significant_in_only_one']);
+                        $('#significant-in-only-one').show();
+                    }
+
+                } else {
+                    console.log("it didnt work!");
+                }
+            }
+        });
+    }
+
+    $('#compare-multiple').on('click',function(e){
+
+        e.preventDefault();
+
+        var this_task_run_id = ['{{ data.task_run.id }}'];
+        var task_run_ids = this_task_run_id.concat($('#taskrun-dropdown-multi').val())
+
+        compare_multiple(task_run_ids);
+
+    });
+
+    $(document).on('click','.hide-insignificant-rows',function(ev){
+        ev.preventDefault();
+        if (show_insignificant === true){
+            $(this).closest('.table-outer').find('.bg-active').each(function(e){
+                $(this).hide();
+            });
+            show_insignificant = false;
+            draw_coefficients('{{ data.task_run.id }}',task_run_1_mwas_table);
+        } else {
+            $(this).closest('.table-outer').find('.bg-active').each(function(e){
+                $(this).show();
+            })
+            show_insignificant = true;
+            draw_coefficients('task_run_1_plot','{{ data.task_run.id }}',task_run_1_mwas_table);
+        }
+    });
+
+    $(document).on('click','.hide-insignificant-rows-multi',function(ev){
+        ev.preventDefault();
+        if (show_insignificant === true){
+            $(this).closest('.table-outer').find('.bg-active').each(function(e){
+                $(this).hide();
+            });
+            show_insignificant = false;
+        } else {
+            $(this).closest('.table-outer').find('.bg-active').each(function(e){
+                $(this).show();
+            })
+            show_insignificant = true;
+        }
+    });
+
+    $(document).on('click','.plot-feature-against-y',function(ev){
+       ev.preventDefault();
+       var id = $(this).prop('id');
+       if (id.substring(0,2) === 'm-'){
+           id = id.substring(2,id.length);
+       }
+       if (id !== null || id !== undefined){
+            var split_id = id.split("-");
+       } else {
+           console.log(id);
+       }
+
+
+       var harmonised_annotation_id = split_id[0];
+       var task_run_id = split_id[1];
+
+       var data = {"task_run_id":task_run_id,
+                    "harmonised_annotation_id":harmonised_annotation_id,
+                    "csrf_token": $('[name=csrf_token]').val()}
+
+       $.ajax({
+            type: "POST",
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "{{ url_for('AnalysisView.load_features_for_MWAS_validation_plot') }}",
+            data: JSON.stringify(data),
+            success: function (data) {
+                console.log(data);
+                if (data['success'] === true) {
+                    console.log('broken_task_runs:' + data['broken_task_runs'])
+
+                    if ('feature_estimates' in Object.keys(data)){
+                        var html = "<table class='table'><tr><th>Factor</th><th>Estimate</th><th>Std. Error</th><th>t value</th><th>Pr(>|t|)</th></tr>"
+                        for(var i=0;i<data['feature_estimates'].length;i++){
+                            if (i == 0){
+                                var factor = 'Intercept'
+                            } else if (i == 1){
+                                var factor = data['cpd_name']
+                            } else {
+                                var factor = 'CF'+ (i - 1).toString()
+                            }
+                            html = html + "<tr><td>" + factor + "</td><td>" + data['feature_estimates'][i][0] + "</td><td>"
+                                + data['feature_estimates'][i][1] + "</td><td>" + data['feature_estimates'][i][2]
+                                + "</td><td>" + data['feature_estimates'][i][3] + "</td></tr>"
+                        }
+                        html = html + "</table>"
+                        $('#feature-estimates').html(html);
+                    }
+                    if ('feature_summary' in Object.keys(data)) {
+                        $('#feature-summary').html(JSON.stringify(data['feature_summary'], null, 2))
+                    }
+                    //console.log(data);
+                    draw_Y_intensity_scatter(
+                        data['Y_intensity'],
+                        data['Y_label'],
+                        null,
+                        data['std'],
+                        data['mean'],
+                        data['cpd_name'],
+                        data['cpd_id'],
+                        data['task_run_id'],
+                        data['saved_query_name'],
+                        id,
+                        data['y_axis_label'],
+                        data['Y_range'],
+                        data['intensity_range'],
+                    );
+                    var keys = Object.keys(data['grouped_data']);
+                    for(var i=0;i<keys.length;i++){
+                        var key = keys[i];
+                        for (var group in data['grouped_data'][key]) {
+                            if (Object.prototype.hasOwnProperty.call(data['grouped_data'][key], group)) {
+                                //console.log(data['grouped_data'][key][group]);
+                                draw_Y_intensity_scatter(
+                                    data['grouped_data'][key][group]['Y_intensities'],
+                                    data['Y_label'],
+                                    key.replace('h_metadata::','').replace('h_metadata::','') + ":" + group,
+                                    data['grouped_data'][key][group]['std'],
+                                    data['grouped_data'][key][group]['mean'],
+                                    data['cpd_name'],
+                                    data['cpd_id'],
+                                    data['task_run_id'],
+                                    data['saved_query_name'],
+                                    id,
+                                    data['y_axis_label'],
+                                    data['Y_range'],
+                                    data['intensity_range'],
+                                )
+                            }
+                        }
+                    }
+
+                } else {
+                    console.log("it didnt work!");
+                }
+            },
+           error: function(xhr,status,error){
+                var errorMessage = xhr.status + ': ' + xhr.statusText
+                console.log(errorMessage)
+           }
+        });
+    });
+
+    (function() {
+      var d3 = Plotly.d3;
+      var WIDTH_IN_PERCENT_OF_PARENT = 100,
+          HEIGHT_IN_PERCENT_OF_PARENT = 90;
+
+      var gd3 = d3.selectAll(".feature-plot")
+          .style({
+            width: WIDTH_IN_PERCENT_OF_PARENT + '%',
+            'margin-left': (100 - WIDTH_IN_PERCENT_OF_PARENT) / 2 + '%',
+
+            height: HEIGHT_IN_PERCENT_OF_PARENT + 'vh',
+            'margin-top': (100 - HEIGHT_IN_PERCENT_OF_PARENT) / 2 + 'vh'
+          });
+
+      var nodes_to_resize = gd3[0]; //not sure why but the goods are within a nested array
+      window.onresize = function() {
+        for (var i = 0; i < nodes_to_resize.length; i++) {
+          Plotly.Plots.resize(nodes_to_resize[i]);
+        }
+      };
+
+    })();
+
+   $(document).on('change','#widescreen-plots-checkbox',function(ev) {
+       if ($(this).is(':checked')) {
+            var update = {
+                height: 800,
+                width: 1000
+            }
+           $('#feature-plots').find('.plot-wrap').each(function(e){
+               $(this).removeClass('col-md-6');
+               $(this).addClass('col-md-12');
+               var id = $(this).find('.feature-plot').prop('id');
+               console.log(id);
+               Plotly.relayout(id,update);
+               $('#'+id).resize();
+           });
+
+       } else {
+           var update = {
+                height: 500,
+                width: 500
+            }
+           $('#feature-plots').find('.plot-wrap').each(function(e){
+               $(this).removeClass('col-md-12');
+               $(this).addClass('col-md-6');
+               var id = $(this).find('.feature-plot').prop('id');
+               console.log(id);
+               Plotly.relayout(id,update);
+               $('#'+id).resize();
+           });
+       }
+
+   });
+
+    draw_coefficients('{{ data.task_run.id }}',task_run_1_mwas_table);
+
+    $(document).ready(function(e){
+        var url = new URL(window.location.href);
+        var fdr_n = url.searchParams.get("fdr_n");
+        var only_significant = url.searchParams.get("only_sig");
+        var dedupe = url.searchParams.get("dedupe");
+        var order_by = url.searchParams.get("order_by");
+        var filter = url.searchParams.get("filter");
+       //var method = url.searchParams.get("method");
+        if (dedupe === null | dedupe === undefined | dedupe === true){
+            $('#taskrun-dropdown-dedupe').prop('checked', true);
+        } else {
+            $('#taskrun-dropdown-dedupe').prop('checked', false);
+        }
+        if (fdr_n !== null | fdr_n !== undefined){
+            $('#taskrun-dropdown-fdr-n').val(fdr_n);
+        } else {
+            $('#taskrun-dropdown-fdr-n').val({{ data['fdr_n'] }});
+        }
+        if (only_significant !== null | only_significant !== undefined | only_significant === true){
+            $('#taskrun-dropdown-only-significant').prop('checked', true);
+        } else {
+            $('#taskrun-dropdown-only-significant').prop('checked', false);
+        }
+        if (order_by !== null && order_by !== undefined){
+            $('#taskrun-id-order').val(order_by);
+        }
+        //taskrun-id-order
+
+        if (filter !== null | filter !== undefined | filter != 'none'){
+            $("#taskrun-metabolite-filter option[value='" + filter + "']").prop("selected", true);
+        }
+
+        var compare = url.searchParams.get("compare");
+        if (compare !== null || compare !== undefined){
+            //e.preventDefault();
+            var this_task_run_id = ['{{ data.task_run.id }}'];
+            var other_task_run_ids = compare.split(",")
+            for (var i=0;i<other_task_run_ids.length;i++){
+                $("#compare-multiple option[value='" + other_task_run_ids[i] + "']").prop("selected", true);
+            }
+            var task_run_ids = this_task_run_id.concat(other_task_run_ids)
+            compare_multiple(task_run_ids);
+            $('#mwas-compare-chevron').trigger('click');
+        }
+
+    });
+
+ //  $('#log_p_comparisons_all').on('plotly_click', function(self,data){
+ //      var pts = '';
+ //      for(var i=0; i<data.points.length; i++){
+ //
+ //          var annotate_text = loadings_feature_labels[data.points[i].pointIndex];
+ //
+ //          var annotation = {
+ //            text: annotate_text.replace("#noUnit","").replace(/feature\:ha\:[0-9]+\:\:/g, "").replace('PPR#',''),
+ //            x: data.points[i].x,
+ //            y: parseFloat(data.points[i].y.toPrecision(4)),
+ //            font: {
+ //                size: 9,
+ //                family: "Arial",
+ //            }
+ //            //arrowsize: 0.3,
+ //            //arrowwidth:0.1,
+ //          }
+ //
+ //          var annotations = self.target.layout.annotations || [];
+ //          annotations.push(annotation);
+ //
+ //          Plotly.relayout('loadings_scatter',{annotations: annotations})
+ //      }
+ //  });
+
+</script>
+{% endblock %}

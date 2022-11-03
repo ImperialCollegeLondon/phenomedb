@@ -1,0 +1,29 @@
+<div class="panel panel-default">
+    <div class="panel-heading"><a class="accordion-toggle" href="#container-{{task_run.id}}" data-toggle="collapse">Exploratory batch correction {{ task_run.id | pprint }}</a></div>
+    <div class="panel-body collapse" id="container-{{task_run.id}}">
+        <ul>
+            <li><a target="_blank" href="{{ task_run.get_log_url() }}">View log</a></li>
+        {% if task_run.reports %}
+            {% if 'batch correction assessment' in task_run.reports %}
+                <li><a target="_blank" href="{{ url_for('ReportView.viewreport',id=task_run.id,report_name='batch correction assessment')}}">View batch correction assessment report</a></li>
+            {% endif %}
+            {% if 'batch correction summary' in task_run.reports %}
+                <li><a target="_blank" href="{{ url_for('ReportView.viewreport',id=task_run.id,report_name='batch correction summary')}}">View batch correction summary report</a></li>
+            {% endif %}
+        {% else %}
+            <li>no reports?</li>
+        {% endif %}
+            <li><a target="_blank" href="{{ url_for('QueryFactoryView.advanced_saved_query_editor')}}?id={{ task_run.saved_query.id }}">Saved Query: {{ task_run.saved_query.id}}</a></li>
+            <li>Parameters: <ul>
+                {% for key, value in task_run.args.items() %}
+                    {% if key not in ['intensity_data','sample_metadata','feature_metadata','query_factory_dict','query_factory_factory'] %}
+                        <li>{{ key }}: {{ value }}</li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </li>
+            <br />
+            <li><a href="#" class="commit-batch-correction" data-id="{{task_run.id}}">Commit batch correction to database</a></li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,89 @@
+<div class="row">
+    <input type="hidden" name="datatype" value="{% if metadata_field %}{{ metadata_field['datatype']}}{% else %}{{ data.datatype }}{% endif %}"/>
+    <div class="col-md-5">
+        <div class="form-group metadata_operator_group">
+            <label>Operator</label>
+            <select class="form-control" name="metadata_operator">
+                <option value="eq"{% if metadata_field and metadata_field.operator == 'eq' %} selected{% endif %}>== x (equals)</option>
+                <option value="not_eq"{% if metadata_field and metadata_field.operator == 'not_eq' %} selected{% endif %}>!= x (not equals)</option>
+                <option value="in"{% if metadata_field and metadata_field.operator == 'in' %} selected{% endif %}>in x,y,z</option>
+                <option value="not_in"{% if metadata_field and metadata_field.operator == 'not_in' %} selected{% endif %}>not in x,y,z</option>
+
+                {% if data.datatype == 'VARCHAR' %}
+                    <option value="like"{% if metadata_field and metadata_field.operator == 'like' %} selected{% endif %}>like x</option>
+                    <option value="not_like"{% if metadata_field and metadata_field.operator == 'not_like' %} selected{% endif %}>not like x</option>
+                    <option value="ilike"{% if metadata_field and metadata_field.operator == 'ilike' %} selected{% endif %}>ilike x</option>
+                    <option value="not_ilike"{% if metadata_field and metadata_field.operator == 'not_ilike' %} selected{% endif %}>not ilike x</option>
+                {% else %}
+                    <option value="gt"{% if metadata_field and metadata_field.operator == 'gt' %} selected{% endif %}>> x (greater than)</option>
+                    <option value="lt"{% if metadata_field and metadata_field.operator == 'lt' %} selected{% endif %}>< x (less than)</option>
+                    <option value="gte"{% if metadata_field and metadata_field.operator == 'gte' %} selected{% endif %}>>= x (greater than equals)</option>
+                    <option value="lte"{% if metadata_field and metadata_field.operator == 'lte' %} selected{% endif %}><= x (less than equals)</option>
+                    <option value="between"{% if metadata_field and metadata_field.operator == 'between' %} selected{% endif %}>between x,y</option>
+                    <option value="not_between"{% if metadata_field and metadata_field.operator == 'not_between' %} selected{% endif %}>not between x,y</option>
+                {% endif %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="row">
+            <div class="col-xs-12">
+                <span style="display:none;" class="loading">Loading values...</span>
+                <div class="form-group metadata_value_dropdown">
+                    <label>Select values</label>
+                    <select class="form-control" name="metadata_dropdown" {% if data.multiple or metadata_field and metadata_field.operator in ['in','not_in','between','not_between'] %}multiple{% endif %}>
+                        <option data-type="" value="">--Please select--</option>
+                        {% if data.metedata_values %}
+                            {% for field in data.metadata_values %}
+                                <!-- loaded from ajax -->
+                                {% if data.datatype == 'text' %}
+                                    <option data-type="{{ data.datatype }}" value="{{ value.harmonised_text_value }}">{{ value.harmonised_text_value }}</option>
+                                {% elif data.datatype == 'numeric' %}
+                                    <option data-type="{{ data.datatype }}" value="{{ value.harmonised_numeric_value }}">{{ value.harmonised_numeric_value }}</option>
+                                {% elif data.datatype == 'datetime' %}
+                                    <option data-type="{{ data.datatype }}" value="{{ value.harmonised_datetime_value }}">{{ value.harmonised_datetime_value }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        {% elif metadata_field and metadata_field.metadata_values %}
+                            {% for field in metadata_field.metadata_values %}
+                                <!-- loaded from existing -->
+                                {% if data.datatype == 'text' %}
+                                    <option data-type="{{ metadata_field['datatype'] }}" value="{{ value.harmonised_text_value }}"
+                                            {% if metadata_field and metadata_field.operator in ['in','not_in','between','not_between'] %}
+                                                {% if metadata_field and value.harmonised_text_value in metadata_field['values'] %} selected{% endif %}
+                                            {% else %}
+                                                {% if metadata_field and value.harmonised_text_value == metadata_field['values'] %} selected{% endif %}
+                                            {% endif %}
+                                            >{{ value.harmonised_text_value }}
+                                    </option>
+                                {% elif data.datatype == 'numeric' %}
+                                    <option data-type="{{ metadata_field['datatype'] }}" value="{{ value.harmonised_numeric_value }}"
+                                        {% if metadata_field and metadata_field.operator in ['in','not_in','between','not_between'] %}
+                                            {% if metadata_field and value.harmonised_text_value in metadata_field['values'] %} selected{% endif %}
+                                        {% else %}
+                                            {% if metadata_field and value.harmonised_text_value == metadata_field['values'] %} selected{% endif %}
+                                        {% endif %}
+                                        >{{ value.harmonised_numeric_value }}
+                                    </option>
+                                {% elif data.datatype == 'datetime' %}
+                                    <option data-type="{{ metadata_field['datatype'] }}" value="{{ value.harmonised_datetime_value }}"
+                                        {% if metadata_field and metadata_field.operator in ['in','not_in','between','not_between'] %}
+                                            {% if metadata_field and value.harmonised_datetime_value in metadata_field['values'] %} selected{% endif %}
+                                        {% else %}
+                                            {% if metadata_field and value.harmonised_datetime_value == metadata_field['values'] %} selected{% endif %}
+                                        {% endif %}
+                                        >{{ value.harmonised_datetime_value }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="form-group metadata_value_csv">
+                    <label>Or enter CSV values</label>
+                    <input class="form-control" data-type="{% if data %}{{ data.datatype }}{% elif metadata_field %}{{ metadata_field['datatype'] }}{% endif %}" type="text" name="metadata_value_csv" placeholder="Text, Numeric, or CSV list" value="{% if metadata_field %}{{ metadata_field.csv_values }}{% endif %}"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

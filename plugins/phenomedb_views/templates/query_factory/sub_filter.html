@@ -1,0 +1,27 @@
+<div class="sub_filter">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="col-xs-12 table-label"><div class="pull-left">Sub filter operator</div></div>
+            <div class="col-xs-12 table-value">
+                <select class="form-control" name="sub_filter_operator">
+                    <option value="AND" {% if sub_filter and sub_filter.operator=='AND' %}selected{% endif %}>AND</option>
+                    <option value="OR" {% if sub_filter and sub_filter.operator=='OR' %}selected{% endif %}>OR</option>
+                </select>
+            </div>
+            <div class="col-xs-12"><div class="pull-right">
+                <button class="btn btn-primary add_match">Add a match</button>
+            </div></div>
+        </div>
+        <div class="col-sm-9 match_container">
+            {% if sub_filter %}
+                {% for match in sub_filter.matches %}
+                    {% include "query_factory/match.html" %}
+                {% endfor %}
+            {% else %}
+                {% include "query_factory/match.html" %}
+            {% endif %}
+        </div>
+    </div>
+    <hr />
+</div>
+

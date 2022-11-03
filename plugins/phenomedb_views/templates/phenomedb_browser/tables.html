@@ -1,0 +1,198 @@
+
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+	<div class="row">
+	    <h3 class="page-heading">SQL Browser</h3>
+	</div>
+	<div class="row" id="section_tabs">	
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#select_tab" data-batch="" data-toggle="tab">Select</a></li>		
+			<li><a href="#insert_tab" data-toggle="tab">Insert</a></li>
+		</ul>       
+		<div class="tab-content">
+		
+			<!--  this is the select * from tab content  -->	
+			<div class="tab-pane active" id="select_tab">			
+				<div class="row row-padded">    
+				    <div class="col-xs-2 table-label">SELECT * FROM</div>                            
+				    <div class="col-xs-3 table-value">
+				         <select class="form-control" id="table_select" name="table_select">
+				         {% for table in data.tables %}
+				         	<option value="{{table}}">{{table}}</option>
+				         {% endfor %}
+				         </select>
+				     </div>
+					<div class="col-xs-2 table-label">DB ENV</div>
+					<div class="col-xs-3 table-value">
+						<select class="form-control" id="db_env_select" name="db_env">
+							<option value="TEST">Test</option>
+							<option value="BETA">Beta</option>
+							<option value="PROD" selected>Production</option>
+						</select>
+					</div>
+				</div>
+				<div class="panel panel-default">
+				   <div class="panel-heading">  
+				   	<span class="table-heading" id="select_table_name">Table</span>	    
+				   </div>
+					<div class="panel-body">				
+				 		<table id="table_data" width="100%" class="table table-striped table-bordered table-hover"></table>
+					</div>
+				</div>
+			</div>
+			<!--  this is the insert into tab content  -->	
+			<div class="tab-pane" id="insert_tab">			
+				<div class="row row-padded">    
+				    <div class="col-xs-2 table-label">INSERT INTO</div>                            
+				    <div class="col-xs-3 table-value">
+				         <select class="form-control" id="table_insert" name="table_insert">
+				         {% for table in data.tables %}
+				         	<option value="{{table}}">{{table}}</option>
+				         {% endfor %}
+				         </select>
+				     </div>
+					<div class="col-xs-2 table-label">DB ENV</div>
+					<div class="col-xs-3 table-value">
+						<select class="form-control" id="db_env_insert" name="db_env">
+							<option value="TEST">Test</option>
+							<option value="BETA">Beta</option>
+							<option value="PROD" selected>Production</option>
+						</select>
+					</div>
+				</div>
+				<div class="panel panel-default">
+				   <div class="panel-heading">  
+				   	<span class="table-heading" id="insert_table_name">Table</span>	    
+				   </div>
+					<div class="panel-body">
+						<form id="save_entity_form" method="POST" action="{{url_for('PhenomeDBBrowserView.insert_entity_view')}}">
+							<input type="hidden" name="entity_name" id="entity_name" value="empty"/>		
+							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+							<input type="hidden" name="db_env" id="db_env_save" value="PROD">
+							<div id="table_fields"></div>
+							<div class="col-xs-12 table-label"><button type="submit" id="field_save" class="btn btn-primary">Save</button></div>
+						</form>		
+						
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block head_js %}
+{{ super() }}
+
+
+<script>
+$(function() {	
+	
+	var displayTable = null;
+			
+	$("#table_select, #db_env_select").on("change", function(e){
+		table = $('#table_select').children("option:selected").val();
+		db_env = $('#db_env_select').children("option:selected").val();
+
+		url = "{{ url_for('PhenomeDBBrowserView.get_table_json') }}?ro=yes&table=" + table + "&db_env="+db_env;
+		$('#select_table_name').html(table);
+
+		$.get(url, function( data ) {		
+			if (displayTable !== null) {
+				displayTable.destroy();
+				displayTable = null;
+	            $("#table_data").empty();
+	        }
+		    displayTable = $("#table_data").DataTable({
+              data: data.table_data,
+              columns: data.columns,
+              'pageLength':50,
+          	'dom': 'Bfrtip',    
+      	    lengthMenu: [
+      	        [ 25, 50, 100 ],
+      	        [ '25 rows', '50 rows', '100 rows' ]
+      	    ],
+      	    'buttons': [ 'pageLength', {
+      	       extend: 'collection',
+      	       text: 'Export Options',
+      	       buttons: [
+      	           'copy',
+      	           'excel',
+      	           'csv',
+      	           {
+      	     	    	extend: 'pdf',
+      	     	      	orientation : 'landscape',
+      	     	    	pageSize : 'A3',
+      	     	      	title: $('h1').text(),
+      	     	      	exportOptions: {
+      	     	      	  columns: ':not(.no-print)'
+      	     	      	}
+      	     	    },
+      	           'print'
+      	       ]
+      	    }],
+            });	    
+		});
+	});
+	
+	$("#field_save_x").on("click", function(e){
+		e.preventDefault();
+		serializeForm($("#save_entity_form"));
+	});
+	
+	$("#table_insert, #db_env_insert").on("change", function(e){
+		table = $('#table_insert').children("option:selected").val();
+		db_env = $('#db_env_insert').children("option:selected").val();
+		console.log(db_env);
+		$('#db_env_save').val($('#db_env_insert').children("option:selected").val());
+		console.log($('#db_env_save').val());
+		
+		//url = "{{ url_for('PhenomeDBBrowserView.list') }}" + table + "/fields/json";
+		url = "{{ url_for('PhenomeDBBrowserView.get_table_fields') }}?table=" + table + "&db_env=" + db_env;
+		console.log("url " + url);
+		$('#insert_table_name').html(table);
+		$('#entity_name').val(table);
+		
+		var promise = $.getJSON(url)
+		.done(function(data) {  
+						
+			$("#table_fields").empty();		
+			console.log(data);
+			$.each( data, function(col_name, col_type) {					
+				
+				if ( col_name != 'id') {
+					// make an input to edit the value
+					var editBox = $("<input/>"); 
+					editBox.addClass("form-control");			
+					editBox.attr("type", "text");
+					editBox.attr("name", col_name)
+					if ( col_type == 'DATETIME' || col_type == 'timestamp') {
+						//console.log('adding datepicker');
+						editBox.datepicker();
+						
+					}
+					$("#table_fields").append( $("<div/>").attr("class", "row")
+							.append( $("<td/>").attr("class", "col-xs-3 table-label").html(col_name))
+							.append( $("<td/>").attr("class", "col-xs-7 table-value").html(editBox))
+							.append( $("<td/>").attr("class", "col-xs-2 table-value").html("(" + col_type.toLowerCase() + ")"))
+					);	
+				}
+			});
+			
+		})
+        .fail( function(data) { 	
+			console.log("error " + JSON.stringify(data));
+		});
+	});
+	
+	// make a selection depending on argument 'table'
+	table = "{{request.args.get('table')}}" == "None" ? "measurement" : "{{request.args.get('table')}}";
+	console.log("Table is " + table);
+	$("#table_select option[value='{{data.table}}']").attr('selected','selected');
+	$("#table_select").trigger('change');
+	
+});
+
+</script>
+{% endblock %}

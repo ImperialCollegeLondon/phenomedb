@@ -1,0 +1,77 @@
+<div class="card sticky-top">
+    <div class="card-body">
+        <form>
+            <div class="form-group-sm">
+                <label for="x-axis">X axis</label>
+                <select class="form-control" id="x-axis" name="scores-x-axis">
+                    {% for pc in data.task_run_output.t2%}
+                        <option value="{{loop.index}}">{{loop.index}}</option>
+                    {% endfor %}
+                </select>
+                <label for="y-axis">Y axis</label>
+                <select class="form-control" id="y-axis" name="scores-y-axis">
+                    {% for pc in data.task_run_output.t2  %}
+                        <option value="{{loop.index}}" {% if loop.index == 2 %}selected{% endif %}>{{loop.index}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="metadata-colour-filter">Select field to colour by</label>
+                <select class="form-control" id="metadata-colour-filter" name="metadata-colour-filter">
+                    {% for metadata_field in data.task_data.sample_metadata.keys() %}
+                        <option value="{{ metadata_field }}">{{ metadata_field }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="metadata-colour-scale">Select colour scale</label>
+                <select class="form-control" id="metadata-colour-scale" name="metadata-colour-scale">
+                    <option value="plasma" selected>Plasma</option>
+                    <option value="turbo">Turbo</option>
+                    <option value="cubehelixdefault">Cube Helix Default</option>
+                </select>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label" for="colour-sample-types-dropdown">Colour SampleTypes?</label>
+                <select class="form-control" id="colour-sample-types-dropdown" name="colour-sample-types-dropdown" multiple="multiple">
+                    <option value="Study Sample" selected>Study Sample</option>
+                    <option value="Study Pool" selected>Study Pool</option>
+                    <option value="External Reference" selected>External Reference</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="metadata-colour-interval">Set numeric group colour interval</label>
+                <input type="text" class="form-control" id="metadata-colour-interval" name="metadata-colour-interval" />
+            </div>
+            <div class="form-group">
+                <label for="metadata-colour-opacity-percent">Set metadata colour opacity %</label>
+                <input type="text" class="form-control" id="metadata-colour-opacity-percent" name="metadata-colour-opacity-percent" value="100" />
+            </div>
+            <div class="form-group">
+                <label for="scores-marker-size">Set scores marker size</label>
+                <input type="text" class="form-control" id="scores-marker-size" name="scores-marker-size" value="5" />
+            </div>
+            <div class="form-group">
+                <label for="metadata-label-filter">Select fields to label</label>
+                <select class="form-control" id="metadata-label-filter" name="metadata-label-filter" multiple="multiple">
+                    {% for metadata_field in data.task_data.sample_metadata.keys() %}
+                        <option value="{{ metadata_field }}" {% if metadata_field == 'Sample ID' %}selected{% endif %}>{{ metadata_field }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label" for="legend-checkbox">Show Legend?</label>
+                <input class="form-check-input" value="" type="checkbox" id="legend-checkbox"/>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label" for="widescreen-plots-checkbox">Wide plots</label>
+                <input class="form-check-input" value="" type="checkbox" id="widescreen-plots-checkbox"/>
+            </div>
+            <div class="form-group">
+                <label for="selected-samples">Selected samples</label>
+                <input type="text" class="form-control" id="selected-samples" name="selected-samples" />
+                <button class="btn btn-danger disabled" id="remove-from-saved-query">Remove from Query & Re-run analysis</button>
+            </div>
+        </form>
+    </div>
+</div>

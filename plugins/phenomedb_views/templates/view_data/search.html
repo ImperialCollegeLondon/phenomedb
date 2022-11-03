@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+
+     <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3>Search PhenomeDB</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="table-label col-xs-4">
+                            <label for="search">General search</label>
+                        </div>
+                        <div class="col-xs-8">
+                            <input type="text" id="search" class="form-control" placeholder="Enter search terms">
+                        </div>
+                    </div>
+                    <div class="table-label col-xs-12">
+                    	<button type="submit" id="submit" class="btn btn-primary" placeholder="Search">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+     <div id="search-results"> </div>
+
+{% endblock %}
+{% block head_js %}
+{{ super() }}
+<script>
+
+    $(function() {
+
+        $('#submit').on('click',function(ev) {
+
+            $.post("{{ url_for('ViewData.search') }}",
+                { 'search_term': $('#search').val(),
+                  'csrf_token': '{{ csrf_token() }}',
+                },
+                function (data) {
+
+                    $('#search-results').html(data);
+                    //$('#search-results').show();
+
+                });
+        });
+    });
+
+</script>
+{% endblock %}

@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+    {% include "analysis/common.html" %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="task-run-chevron" href="#task_runs" data-toggle="collapse">Task Runs</a></div>
+        <div class="panel-body collapse" id="task_runs">
+            <div class="row table-wrapper">
+                <div class="col-md-12 table-outer">
+                    <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Task ID</th>
+                            <th>Task Run ID</th>
+                        </tr>
+                    </thead>
+                    {% for task_id,task_run_id in data['task_run_map'].items() %}
+                        <tr>
+                            <td>{{ task_id }}</td>
+                            <td><a target="_blank" href="{{ url_for('AnalysisView.analysisresult',id=task_run_id) }}">{{ task_run_id }}</a></td></td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                    <a target="_blank" href="{{ data['mwas_compare_url'] }}">Compare MWAS</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="pcpr2-chevron" href="#pcpr2" data-toggle="collapse">PCPR<sup>2</sup> results</a></div>
+        <div class="panel-body collapse" id="pcpr2">
+            <div class="row table-wrapper">
+                <div class="col-md-12 table-outer">
+                    <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Task ID</th>
+                            {% for pcpr2_field in data['pcpr2_fields'] %}
+                                <th>{{ pcpr2_field }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    {% for task_id,results in data['pcpr2'].items() %}
+                        <tr>
+                            <td>{{ task_id }}</td>
+                            {% for pcpr2_field in data['pcpr2_fields'] %}
+                                <td>{{ results[pcpr2_field] }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="pcpr2-tasks-to-plot-chevron" href="#pcpr2-tasks-to-plot" data-toggle="collapse">PCPR<sup>2</sup> tasks to plot</a></div>
+        <div class="panel-body collapse" id="pcpr2-tasks-to-plot">
+            <form>
+                <div class="form-group">
+                    <label for="tasks-to-plot">Select Tasks to include in plots</label>
+                    <select class="form-control" id="task-id-filter" name="task-id-filter" multiple>
+                        {% for task_id in data['pcpr2'].keys() %}
+                            <option value="{{ task_id }}" selected>{{ task_id }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="pcpr2-batch-toggle" href="#compare-pcpr2-batch" data-toggle="collapse">Compare PCPR<sup>2</sup> batch</a></div>
+        <div class="panel-body collapse" id="compare-pcpr2-batch">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="pcpr2-batch" class="plot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="pcpr2-project-toggle" href="#compare-pcpr2-project" data-toggle="collapse">Compare PCPR<sup>2</sup> Project</a></div>
+        <div class="panel-body collapse" id="compare-pcpr2-project">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="pcpr2-project" class="plot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" id="pcpr2-sample-matrix-toggle" href="#compare-pcpr2-sample-matrix" data-toggle="collapse">Compare PCPR<sup>2</sup> sample matrix</a></div>
+        <div class="panel-body collapse" id="compare-pcpr2-sample-matrix">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="pcpr2-sample-matrix" class="plot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-color@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-interpolate@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-scale-chromatic@3"></script>
+<script>
+
+     var plotly_settings = {
+        responsive:true,
+        modeBarButtonsToRemove: ['toImage', 'sendDataToCloud'],
+        modeBarButtonsToAdd: [{
+            name: 'toImageSVG',
+            icon: Plotly.Icons.camera,
+            click: function (gd) {
+                let title = $(gd).find('.gtitle').data('unformatted');
+                title = title.replaceAll(":","_").replaceAll('<br />','_').replaceAll('/',"_").replaceAll(" ","_");
+                title = title + "_" + (new Date().toJSON().slice(0,22)).replaceAll("-","").replaceAll(":","").replaceAll(".","");
+                Plotly.downloadImage(gd, {format: 'svg',filename: title});
+            }
+        }],
+    }
+
+    var pcpr2_data = JSON.parse('{{ data['pcpr2'] | tojson }}');
+    var pipeline_task_order = JSON.parse('{{ data['pipeline_task_order'] | tojson }}');
+    var saved_query_name = '{{ data['saved_query_name'] }}';
+    var colours = {
+        'ratio':'#EE6677',
+        'R2':'#66CCEE',
+        'h_metadata::Age':'#228833',
+        'h_metadata::BMI':'#CCBB44',
+        'h_metadata::Sex':'#4477AA',
+        'Unique Batch':'#AA3377',
+        'Project':'#AA3377',
+        'Sample Matrix':'#B88998',
+    }
+
+     draw_pcpr2 = function(task_type){
+
+        var task_id_filter = [];
+        $('#task-id-filter option:selected').each(function(){
+            task_id_filter.push($(this).val());
+        });
+
+         var task_types = {};
+         if (task_type == 'Unique Batch') {
+              task_types['batch'] = [];
+         } else if (task_type == 'Project'){
+              task_types['project'] = [];
+         } else if (task_type == 'Sample Matrix'){
+              task_types['sample_matrix'] = [];
+         }
+         var x = {}
+         var y = {}
+         var text = {};
+         let data = [];
+
+         for (let [task_id,results] of Object.entries(pcpr2_data)) {
+             if (task_id_filter.indexOf(task_id) >= 0){
+                 if (task_type == 'Unique Batch') {
+                     re = new RegExp("_batch$");
+                     if (re.test(task_id) === true){
+                         task_types['batch'].push(task_id);
+                    }
+                 } else if (task_type == 'Project'){
+                     re = new RegExp("_project$");
+                     if (re.test(task_id) === true){
+                         task_types['project'].push(task_id);
+                    }
+                 } else if (task_type == 'Sample Matrix'){
+                     re = new RegExp("_sample_matrix$");
+                     if (re.test(task_id) === true){
+                         task_types['sample_matrix'].push(task_id);
+                    }
+                 }
+
+                 for (let field of Object.keys(results)){
+                     if (field != 'task_run_id'){
+                        x[field.trim()] = [];
+                        y[field.trim()] = [];
+                        text[field.trim()] = [];
+                     }
+                 }
+             }
+
+         }
+
+         x['ratio'] = [];
+         y['ratio'] = [];
+         text['ratio'] = [];
+
+         for (let [type,task_ids] of Object.entries(task_types)){
+            //console.log("type: " + type);
+             for (i=0;i<task_ids.length;i++) {
+                 if (task_id_filter.indexOf(task_ids[i]) >= 0) {
+                     //console.log("task_id: " + task_ids[i]);
+                     let task_label = task_ids[i].replace("_pcpr2_" + type, "").replaceAll("_", " ");
+                     //console.log("task_label: " + task_label);
+                     for (let [field, value] of Object.entries(pcpr2_data[task_ids[i]])) {
+                         if (field.trim() !== 'task_run_id') {
+                             y[field.trim()].push(Math.log10(value + 1).toFixed(2));
+                             x[field.trim()].push(task_label);
+                             text[field.trim()].push(value.toFixed(2));
+
+                         }
+                     }
+                     if (task_type === 'Unique Batch') {
+                         if (Object.keys(x).indexOf('Unique Batch') >= 0) {
+                             if (x['Unique Batch'].length > 0) {
+                                 x['ratio'].push(task_label);
+                                 y['ratio'].push(Math.log10(pcpr2_data[task_ids[i]]['R2'] / pcpr2_data[task_ids[i]][task_type]).toFixed(2));
+
+                                 text['ratio'].push((pcpr2_data[task_ids[i]]['R2'] / pcpr2_data[task_ids[i]][task_type]).toFixed(2));
+
+                             }
+                         }
+                     } else if (task_type === 'Project') {
+                         if (Object.keys(x).indexOf('Project') >= 0) {
+                             if (x['Project'].length > 0) {
+                                 x['ratio'].push(task_label);
+                                 y['ratio'].push(Math.log10(pcpr2_data[task_ids[i]]['R2'] / pcpr2_data[task_ids[i]][task_type]).toFixed(2));
+                                 text['ratio'].push((pcpr2_data[task_ids[i]]['R2'] / pcpr2_data[task_ids[i]][task_type]).toFixed(2));
+
+                             }
+                         }
+                     } else if (task_type === 'Sample Matrix') {
+                         if (Object.keys(x).indexOf('Sample Matrix') >= 0) {
+                             if (x['Sample Matrix'].length > 0) {
+                                 x['ratio'].push(task_label);
+                                 y['ratio'].push(Math.log10(pcpr2_data[task_ids[i]]['R2'] / pcpr2_data[task_ids[i]][task_type]).toFixed(2));
+
+                                 text['ratio'].push((pcpr2_data[task_ids[i]]['R2'] / pcpr2_data[task_ids[i]][task_type]).toFixed(2));
+
+                             }
+                         }
+                     }
+                 }
+             }
+         }
+
+         var fields = [task_type];
+
+         for( let field of Object.keys(y)) {
+             if (field !== 'ratio' && field !== 'R2') {
+                 if (fields.indexOf(field) < 0) {
+                     fields.push(field)
+                 }
+             }
+         }
+         fields.push('ratio')
+         fields.push('R2')
+         //console.log(fields);
+
+         for(var i=0;i<fields.length;i++){
+             var field = fields[i];
+             //console.log('here');
+             console.log(field);
+             //console.log(task_type);
+             var trace = {
+                 x: x[field],
+                 y: y[field]
+             }
+              if (field === 'R2'){
+                  trace['type'] = 'line'
+                  trace['name'] = 'R<sup>2</sup>%'
+                  trace['mode'] = 'markers+text'
+                  trace['marker'] = {
+                    color: colours['R2'],
+                    size: 12,
+                    symbol: 'diamond'
+                  }
+                  trace['textposition'] = 'auto'
+                  trace['text'] = text['R2'];
+                  trace['font'] = {
+                      size: 9
+                  }
+                  trace['yaxis'] = 'y2';
+              } else if (field === 'ratio'){
+                  trace['type'] = 'line';
+                  trace['name'] = 'R<sup>2</sup>% / ' + task_type;
+                  trace['mode'] = 'markers+text';
+                  trace['marker'] = {
+                    color: colours['ratio'],
+                    size: 12,
+                    symbol: 'star'
+                  }
+                  trace['textposition'] = 'auto'
+                  trace['text'] = text['ratio'];
+                  trace['font'] = {
+                      size: 9
+                  }
+                  trace['yaxis'] = 'y2';
+              } else if (field === task_type){
+                  trace['type'] = 'bar';
+                  trace['textposition'] = 'top center';
+                  trace['marker'] = {
+                      color: colours[field]
+                  }
+                  //trace['text'] = text[field];
+                  trace['name'] = field;
+                  //trace['font'] = {
+                  //    size: 9
+                 // }
+                  trace['textposition'] = 'auto';
+                  trace['text'] = text[task_type];
+              } else {
+                  trace['type'] = 'bar';
+                  trace['marker'] = {
+                      color: colours[field]
+                  }
+                  //console.log(text[field.trim()]);
+                  trace['textposition'] = 'auto';
+                 // trace['font'] = {
+                 //     size: 9
+                 // }
+                  trace['name'] = field.replace("h_metadata::","");
+                  trace['text'] = text[field.trim()];
+              }
+              data.push(trace);
+              //console.log(trace);
+         }
+         console.log(data);
+
+         var layout = {
+              barmode: 'stack',
+              title: 'Log PCPR<sup>2</sup> factors for ' + saved_query_name,
+              height: 1000,
+              xaxis: {
+                title: 'Scaling/transformation/correction method',
+                automargin: true,
+              },
+              yaxis: {
+                title: 'Log(R<sup>2</sup> %)',
+                domain: [0, 0.66],
+                  //automargin: true//,
+                //range: [0, 8]
+              },
+             yaxis2: {
+                  title: 'Log(R<sup>2</sup> %)',
+                 //automargin: true,
+                    domain: [0.66, 1]
+             },
+             //grid: {rows: 2, columns: 1, pattern: 'independent'},
+             //legend: {traceorder: 'reversed'},
+            };
+
+        if (task_type === 'Unique Batch'){
+            if (Object.keys(x).indexOf('Unique Batch') >= 0) {
+                if (x['Unique Batch'].length > 0) {
+                    console.log("Unique Batch plotted")
+                    Plotly.newPlot('pcpr2-batch', data, layout, plotly_settings);
+                }
+            }
+        } else if (task_type === 'Project') {
+            if (Object.keys(x).indexOf('Project') >= 0) {
+                if (x['Project'].length > 0) {
+                    console.log("Project plotted")
+                    Plotly.newPlot('pcpr2-project', data, layout, plotly_settings);
+                }
+            }
+        } else if (task_type === 'Sample Matrix') {
+            if (Object.keys(x).indexOf('Sample Matrix') >= 0) {
+                if (x['Sample Matrix'].length > 0) {
+                    console.log("Sample Matrix plotted")
+                    Plotly.newPlot('pcpr2-sample-matrix', data, layout, plotly_settings);
+                }
+            }
+        }
+
+    }
+
+    draw_pcpr2('Unique Batch');
+    draw_pcpr2('Project');
+    draw_pcpr2('Sample Matrix');
+
+    $('#task-id-filter').on('change',function(e){
+
+        e.preventDefault();
+
+        draw_pcpr2('Unique Batch');
+        draw_pcpr2('Project');
+        draw_pcpr2('Sample Matrix');
+
+    });
+
+    (function() {
+      var d3 = Plotly.d3;
+      var WIDTH_IN_PERCENT_OF_PARENT = 100,
+          HEIGHT_IN_PERCENT_OF_PARENT = 90;
+
+      var gd3 = d3.selectAll(".plot")
+          .style({
+            width: WIDTH_IN_PERCENT_OF_PARENT + '%',
+            'margin-left': (100 - WIDTH_IN_PERCENT_OF_PARENT) / 2 + '%',
+
+            height: HEIGHT_IN_PERCENT_OF_PARENT + 'vh',
+            'margin-top': (100 - HEIGHT_IN_PERCENT_OF_PARENT) / 2 + 'vh'
+          });
+
+      var nodes_to_resize = gd3[0]; //not sure why but the goods are within a nested array
+      window.onresize = function() {
+        for (var i = 0; i < nodes_to_resize.length; i++) {
+          Plotly.Plots.resize(nodes_to_resize[i]);
+        }
+      };
+
+    })();
+
+
+</script>
+{% endblock %}

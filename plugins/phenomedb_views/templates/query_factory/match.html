@@ -1,0 +1,62 @@
+<div class="match">
+    <div class="row">
+        <div class="col-xs-11">
+            <div class="row">
+                <div class="col-xs-3 table-label">Select Field:</div>
+                <div class="col-xs-8 table-value">
+                    <select class="form-control" name="property">
+                        <option data-type="" value="">--Please select--</option>
+                        {% for optgroup,options in data.match_model_options.items() %}
+                            <optgroup label="{{ optgroup }}">
+                                {% for option,datatype in options.items() %}
+                                    <option data-type="{{ datatype }}" value="{{ optgroup }}.{{ option }}" {% if match and match.model == optgroup and match.property == option %}selected{% endif %}>{{ option }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+
+                    </select>
+                    <input type="hidden" name="selected_model" value="{% if match %}{{ match.model }}{% endif %}">
+                    <input type="hidden" name="selected_property" value="{% if match %}{{ match.property }}{% endif %}">
+                    <input type="hidden" name="selected_datatype" value="{% if match %}{{ data.match_model_options[match.model][match.property] }}{% endif %}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3 table-label">Filter Field:</div>
+                <div class="col-xs-8 table-value filter-field">{% if match %}{{ match.model }}.{{ match.property }} <span class="pull-right"><i>Datatype: {{ data.match_model_options[match.model][match.property] }}{% endif %}</i></div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3 table-label">Operator</div>
+                <div class="col-xs-8 table-value">
+                    <select class="form-control" name="operator">
+                        <option value="eq" {% if match and match.operator=='eq' %}selected{% endif %}>== x (equals)</option>
+                        <option value="not_eq" {% if match and match.operator=='not_eq' %}selected{% endif %}>!= x (not equals)</option>
+                        <option value="gt" {% if match and match.operator=='gt' %}selected{% endif %}>> x (greater than)</option>
+                        <option value="lt" {% if match and match.operator=='lt' %}selected{% endif %}>< x (less than)</option>
+                        <option value="gte" {% if match and match.operator=='gte' %}selected{% endif %}>>= x (greater than equals)</option>
+                        <option value="lte" {% if match and match.operator=='lte' %}selected{% endif %}><= x (less than equals)</option>
+                        <option value="between" {% if match and match.operator=='between' %}selected{% endif %}>between x,y</option>
+                        <option value="not_between" {% if match and match.operator=='not_between' %}selected{% endif %}>not between x,y</option>
+                        <option value="like" {% if match and match.operator=='like' %}selected{% endif %}>like x</option>
+                        <option value="not_like" {% if match and match.operator=='not_like' %}selected{% endif %}>not like x</option>
+                        <option value="ilike" {% if match and match.operator=='ilike' %}selected{% endif %}>ilike x</option>
+                        <option value="not_ilike" {% if match and match.operator=='not_ilike' %}selected{% endif %}>not ilike x</option>
+                        <option value="in" {% if match and match.operator=='in' %}selected{% endif %}>in x,y,z</option>
+                        <option value="not_in" {% if match and match.operator=='not_in' %}selected{% endif %}>not in x,y,z</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3 table-label">Value</div>
+                <div class="col-xs-8 table-value">
+                    <input class="form-control" type="text" name="value" placeholder="Text, Numeric, or CSV list" value="{% if match %}{{ match.display_value }}{% endif %}"/>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-1">
+            <a class="delete-match" href="#">
+                <span class="text-danger glyphicon glyphicon-remove"></span>
+            </a>
+        </div>
+    </div>
+    <hr />
+</div>

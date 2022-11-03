@@ -1,0 +1,18 @@
+
+{% block plugin_content %}{% endblock %}
+
+{% block head_css %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('phenomedb_browser.static', filename='phenomedb.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('phenomedb_browser.static', filename='jquery-ui-1.12.1/jquery-ui.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('phenomedb_browser.static', filename='chosen/chosen.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('phenomedb_browser.static', filename='DataTables/datatables.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ url_for('phenomedb_browser.static', filename='DataTables/datatables.min.css') }}"/>
+{% endblock %}
+
+{% block head_js %}
+<script type="text/javascript" src="{{ url_for('phenomedb_browser.static', filename='DataTables/datatables.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('phenomedb_browser.static', filename='jquery-ui-1.12.1/jquery-ui.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('phenomedb_browser.static', filename='phenomedb.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('phenomedb_browser.static', filename='chosen/chosen.jquery.min.js')}}"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}

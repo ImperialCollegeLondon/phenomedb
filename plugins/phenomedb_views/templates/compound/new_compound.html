@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+	<div class="row col-xs-12">
+	    <h3 class="page-heading"><a class="bc-back" href="{{url_for('CompoundView.list')}}">Compounds</a> New</h3>
+	</div>
+	<div class="row col-xs-12">						
+		<div class="panel panel-default">
+			<div class="panel-heading">New compounds</div>						
+			<div class="panel-body">
+				<form action="{{url_for('CompoundView.insert_compound_by_file')}}" method="post" enctype="multipart/form-data">	
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+				<div class="row">															
+					<div class="table-label col-xs-3">Upload by file</div>
+					<div class="table-value col-xs-6">
+						<input type="file" name="id_file">
+					</div>
+					<div class="table-value col-xs-3">
+						<div id="output-data-upload"></div>
+					</div>
+				</div>
+				<div class="col-xs-12 table-label"><button type="submit" class="btn btn-primary">Upload</button></div>			
+				</form>
+			</div>
+		</div>
+		
+	</div>
+</div>
+
+{% endblock %}
+{% block tail %}
+{{ super() }} 
+{% endblock %}

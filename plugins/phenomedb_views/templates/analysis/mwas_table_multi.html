@@ -1,0 +1,82 @@
+<div class="col-md-12 table-outer">
+    {% if data['table_key'] == 'filtered_table' %}
+    <h4>Summary stats</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>SavedQuery</th>
+                <th>Task ID</th>
+                <th>TaskRun</th>
+                <th>Number of samples</th>
+                <th>Min Y</th>
+                <th>Max Y</th>
+                <th>Number of analysed metabolites</th>
+                <th>Number of significant metabolites</th>
+                <th>Number of significant only in this cohort</th>
+                <th>Min significant p(FDR)</th>
+                <th>Max significant p(FDR)</th>
+                <th>Mean significant p(FDR)</th>
+            </tr>
+        </thead>
+        {% for task_run_id, summary in data['mwas_summary'].items() %}
+            <tr>
+                <td><a href="{{ url_for('QueryFactoryView.advanced_saved_query_editor') }}?id={{ data['saved_query_map'][task_run_id] }}">{{ data['saved_query_names'][data['saved_query_map'][task_run_id]] }}</a></td>
+                <td>{{ data['task_id_map'][task_run_id] }}</td>
+                <td><a href="{{ url_for('.analysisresult',id=task_run_id) }}">{{ task_run_id }}</a></td>
+                <td>{{ summary['n_samples'] }}</td>
+                <td>{{ summary['min_y'] }}</td>
+                <td>{{ summary['max_y'] }}</td>
+                <td>{{ summary['n_features'] }}</td>
+                <td>{{ summary['n_significant_features'] }}</td>
+                <td>{% if summary['n_sig_only_in_this_cohort'] %}summary['n_sig_only_in_this_cohort']{% else %}NA{% endif %}</td>
+                <td>{{ summary['min_significant_pvalue'] }}</td>
+                <td>{{ summary['max_significant_pvalue'] }}</td>
+                <td>{{ summary['mean_significant_pvalue'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+        <h4>{{ data['n_consistent_features'] }} metabolites consistent across MWAS sets (p < 0.05)</h4>
+    {% else %}
+        <h4>All metabolites</h4>
+        <p><a href="#" class="hide-insignificant-rows-multi">Hide insignificant metabolites</a></p>
+    {% endif %}
+    {% if data[data['table_key']] %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">CPD ID</th>
+                    <th scope="col">CPD Name</th>
+                    {% for task_run_id in data.task_run_ids %}
+                        <th scope="col"><a href="{{ url_for('.analysisresult', id=task_run_id) }}"/>{{ task_run_id }} Estimate</a></th>
+                        <th scope="col"><a href="{{ url_for('.analysisresult', id=task_run_id) }}"/>{{ task_run_id }} P-Value</a></th>
+                        <th scope="col"><a href="{{ url_for('.analysisresult', id=task_run_id) }}"/>{{ task_run_id }} p(FDR)</a></th>
+                        <th scope="col"><a href="{{ url_for('.analysisresult', id=task_run_id) }}"/>{{ task_run_id }} AIC</a></th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            {% for index,row in data[data['table_key']].items() %}
+
+                <tr>
+                    <td><a href="{{ url_for('CompoundView.harmonised_annotation',id=row['harmonised_annotation_id']) }}">{{ row['harmonised_annotation_id'] }}</a></td>
+                    <td>{{ row['cpd_id'] }}</td>
+                    <td>{{ row['cpd_name'] }}</td>
+
+                    {% for task_run_id in data.task_run_ids %}
+                        {% if not row['tr_' + task_run_id + '_estimates'] %}
+                            {% set estimate = None %}
+                        {% else %}
+                            {% set estimate = row['tr_' + task_run_id + '_estimates'] | float %}
+                        {% endif %}
+                        <td class="{% if not estimate %}{% elif estimate > 0 %}bg-danger{% else %}bg-primary{% endif %}"><a href="#" class="plot-feature-against-y" id="m-{{ row['harmonised_annotation_id'] }}-{{ task_run_id }}">{{ row['tr_' + task_run_id + '_estimates_str'] }}</a></td>
+                        <td class="{% if not estimate %}{% elif estimate > 0 %}bg-danger{% else %}bg-primary{% endif %}" id="{{ row['harmonised_annotation_id'] }}-{{ task_run_id }}-pvalue">{{ row['tr_' + task_run_id + '_pvalues_str'] }}</td>
+                        <td class="{% if not estimate %}{% elif estimate > 0 %}bg-danger{% else %}bg-primary{% endif %}" id="{{ row['harmonised_annotation_id'] }}-{{ task_run_id }}-adjusted-pvalue">{{ row['tr_' + task_run_id + '_adjusted_pvalues_str'] }}</td>
+                        <td class="{% if not estimate %}{% elif estimate > 0 %}bg-danger{% else %}bg-primary{% endif %}" id="{{ row['harmonised_annotation_id'] }}-{{ task_run_id }}-aic">{{ row['tr_' + task_run_id + '_aic_str'] }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        There are no consistently found significant metabolites!
+    {% endif %}
+</div>

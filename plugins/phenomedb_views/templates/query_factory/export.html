@@ -1,0 +1,395 @@
+<div class="panel panel-default">
+    <div class="panel-heading"><a class="accordion-toggle" href="#export" data-toggle="collapse">Data download</a></div>
+    <div class="panel-body collapse in" id="export">
+        The AnnotatedFeature cache is necessary for downstream caches, such as the CompoundClass cache.
+
+        {% if not data.saved_query %}
+            Please save the query before generating the cache.
+        {% else %}
+            <ul>
+            {% if not data.annotated_feature_cache_raw or data.annotated_feature_cache_raw != 'exists' %}
+                <li>If exporting raw, please generate first</li>
+            {% elif data.annotated_feature_cache_raw and data.annotated_feature_cache_raw == 'generating' %}
+                <li>Raw cache generating, please wait. You will receive an email when the task completed</li>
+            {% endif %}
+
+            {% if not data.annotated_feature_cache_sr_corrected or data.annotated_feature_cache_sr_corrected != 'exists' %}
+                <li>If exporting SR corrected data, please generate first</li>
+            {% elif data.annotated_feature_cache_sr_corrected and data.annotated_feature_cache_sr_corrected == 'generating' %}
+                <li>SR corrected cache generating, please wait. You will receive an email when the task completed</li>
+            {% endif %}
+
+            {% if not data.annotated_feature_cache_ltr_corrected or data.annotated_feature_cache_ltr_corrected != 'exists' %}
+                <li>If exporting LTR corrected data, please generate first</li>
+            {% elif data.annotated_feature_cache_ltr_corrected and data.annotated_feature_cache_ltr_corrected == 'generating' %}
+                <li>LTR corrected cache generating, please wait. You will receive an email when the task completed</li>
+            {% endif %}
+            </ul>
+
+            {% if data.saved_query.cache_state %}
+
+                {% if (data.annotated_feature_cache_raw and data.annotated_feature_cache_raw == 'exists') or (data.annotated_feature_cache_sr_corrected and data.annotated_feature_cache_sr_corrected == 'exists') or (data.annotated_feature_cache_ltr_corrected and data.annotated_feature_cache_ltr_corrected == 'exists') %}
+
+                    <div id="export-DownloadDataframe">
+                        <form>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="class-type">Model</label>
+                                    <select class="form-control" id="model">
+                                        <option value="AnnotatedFeature" selected>AnnotatedFeature</option>
+                                        <option value="CompoundClass">CompoundClass</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="class-type">Task Run (ie Batch-Corrected output)</label>
+                                    <select class="form-control" id="upstream-task-run" disabled>
+                                        <option value="" selected>--None--</option>
+                                        {% for task_run in data.task_runs_with_output %}
+                                            <option value="{{ task_run.id }}">{{ task_run.class_name }}-{{ task_run.id }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group" id="class-type-form">
+                                    <label for="class-type">Compound Class Type</label>
+                                    <select class="form-control" id="class-type" disabled>
+                                        <option value="hmdb">HMDB</option>
+                                        <option value="classyfire" selected>Classyfire</option>
+                                        <option value="lipidmaps">Lipidmaps</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="class-level-form">
+                                    <label for="class-level">Compound Class Level</label>
+                                    <select class="form-control" id="class-level" disabled>
+                                        <option value="kingdom">Kingdom</option>
+                                        <option value="category">Category</option>
+                                        <option value="main_class">Main Class</option>
+                                        <option value="sub_class" selected>Sub Class</option>
+                                        <option value="direct_parent">Direct Parent</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="aggregation-form">
+                                    <label for="aggregation-function">Compound Aggregation function</label>
+                                    <select class="form-control" id="aggregation-function" disabled>
+                                        <option value="mean" selected>Mean</option>
+                                        <option value="median">Median</option>
+                                        <option value="min">Min</option>
+                                        <option value="max">Max</option>
+                                        <option value="sum">Sum</option>
+                                    </select>
+                                </div>
+                                {% for metadata_field in data.harmonised_metadata_fields %}
+                                    <div class="metadata-bin-fields">
+                                        <input type='hidden' value="{{ metadata_field.name }}" class="metadata-bin"/>
+                                        <div class="form-group-sm">
+                                            <label for="label-{{ metadata_field.name }}">Enter Binned Harmonised {{ metadata_field.name }} column name</label>
+                                            <input class="form-control" type="text" id="label-{{ metadata_field.name }}" name="label-{{ metadata_field.name }}"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bins-{{ metadata_field.name }}">Enter Harmonised {{ metadata_field.name }} bins (CSV)</label>
+                                            <input class="form-control" type="text" id="bins-{{ metadata_field.name }}" name="bins-{{ metadata_field.name }}"/>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <div class="form-group">
+                                    <label for="master_unit">Convert Units</label>
+                                    <select class="form-control" id="master-unit">
+                                        <option value="">--None--</option>
+                                        {% for unit in data.units %}
+                                            <option value="{{ unit.name }}" {% if unit.name == 'mmol/L' %}selected{% endif %}>{{ unit.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" id='download-files' class="form-control btn btn-info">Download</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="class-type">Feature intensity type</label>
+                                    <select class="form-control" id="correction-type">
+                                        {% if data.annotated_feature_cache_raw and data.annotated_feature_cache_raw == 'exists' %}
+                                            <option value="">Raw</option>
+                                        {% endif %}
+                                        {% if data.annotated_feature_cache_sr_corrected and data.annotated_feature_cache_sr_corrected == 'exists' %}
+                                            <option value="SR">SR Corrected</option>
+                                        {% endif %}
+                                        {% if data.annotated_feature_cache_ltr_corrected and data.annotated_feature_cache_ltr_corrected == 'exists' %}
+                                            <option value="LTR">LTR Corrected</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="harmonise_annotations">Harmonise Annotations</label>
+                                    <input type="checkbox" id="harmonise-annotations" checked/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="for_npyc">For NPYC?</label>
+                                    <input type="checkbox" id="for-npyc"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="file-type">File Type</label>
+                                    <select class="form-control" id="file-type">
+                                        <option value="combined" selected>PhenomeDB Combined</option>
+                                        <option value="intensity_data">Intensity Data</option>
+                                        <option value="sample_metadata">Sample Metadata</option>
+                                        <option value="feature_metadata">Feature Metadata</option>
+                                        <option value="metaboanalyst_data">MetaboAnalyst Intensity Data</option>
+                                        <option value="metaboanalyst_metadata">MetaboAnalyst Metadata</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="file-type">Feature Label</label>
+                                    <select class="form-control" id="feature-label">
+                                        <option value="Feature Name" selected>Feature Name</option>
+                                        <option value="cpd_id">CPD ID</option>
+                                        <option value="RT_mz">RT_mz</option>
+                                        <option value="inchi_key">InChI Key</option>
+                                        {% for external_db in data.external_dbs %}
+                                            <option value="{{ external_db.name }}">{{ external_db.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!-- <div class="form-group" id="feature-orientation-form">
+                                    <label for="file-type">Features as rows or columns?</label>
+                                    <select class="form-control" id="feature-orientation" disabled>
+                                        <option value="rows" selected>Rows</option>
+                                        <option value="columns">Columns</option>
+                                    </select>
+                                </div> -->
+                                <div class="form-group" id="sample-label-form">
+                                    <label for="file-type">Sample Label</label>
+                                    <select class="form-control" id="sample-label" disabled>
+                                        <option value="Sample ID" selected>Sample ID</option>
+                                        <option value="Sample File Name">Sample File Name</option>
+                                    </select>
+                                </div>
+                                <!-- <div class="form-group" id="sample-orientation-form">
+                                    <label for="file-type">Sample as rows or columns?</label>
+                                    <select class="form-control" id="sample-orientation" disabled>
+                                        <option value="rows" selected>Rows</option>
+                                        <option value="columns">Columns</option>
+                                    </select>
+                                </div> -->
+                                <div class="form-group" id="columns-to-include-form">
+                                    <label for="file-type">Sample Metadata Columns to include</label>
+                                    <select class="form-control" id="columns-to-include">
+                                        <option value="">--All--</option>
+                                        {% for metadata_field in data.harmonised_metadata_fields %}
+                                            <option value="{{ metadata_field.name }}">Harmonised {{metadata_field.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="transform">Intensity Transform</label>
+                                    <select class="form-control" id="transform" disabled>
+                                        <option value="" selected>--None--</option>
+                                        <option value="log">Log</option>
+                                        <option value="sqrt">Square Root</option>
+                                        <!-- <option value="sqrt">Square Root</option> -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="scaling">Intensity Scaling</label>
+                                    <select class="form-control" id="scaling" disabled>
+                                        <option value="" selected>--None--</option>
+                                        <option value="uv">Univariate</option>
+                                        <option value="mc">Mean-centred</option>
+                                        <option value="pa">Pareto</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+    </div>
+    {% if data.saved_query %}
+        <input type="hidden" id="saved_query_id" value="{{ data.saved_query.id }}" />
+    {% endif %}
+</div>
+
+<script>
+    $(document).on('click','#download-files',function(e) {
+
+        e.preventDefault();
+        var model = $('#model').val();
+        var file_type = $('#file-type').val();
+        if ($('#correction-type').is(':enabled') && $('#correction-type').val() != ''){
+            var correction_type = $('#correction-type').val();
+        }
+        if ($('#columns-to-include').is(':enabled') && $('#columns-to-include').val() != ''){
+            var columns_to_include = $('#columns-to-include').val().split(",");
+        }
+        if ($('#task-run-id').is(':enabled') && $('#task-run-id').val() != ''){
+            var task_run_id = $('#task-run_id').val();
+        }
+        if ($('#feature-label').is(':enabled') && $('#feature-label').val() != ''){
+            var feature_label = $('#feature-label').val();
+        }
+        //if ($('#feature-orientation').is(':enabled') && $('#feature-orientation').val() != ''){
+        //    var feature_orientation = $('#feature-orientation').val();
+       // }
+        if ($('#sample-label').is(':enabled') && $('#sample-label').val() != ''){
+            var sample_label = $('#sample-label').val();
+        }
+        //if ($('#sample-orientation').is(':enabled') && $('#sample-orientation').val() != ''){
+        //    var sample_orientation = $('#sample-orientation').val();
+       // }
+        if ($('#class-type').is(':enabled') && $('#class-type').val() != '') {
+            var class_type = $('#class-type').val();
+        }
+        if ($('#class-level').is(':enabled') && $('#class-level').val() != '') {
+            var class_level = $('#class-level').val();
+        }
+        if ($('#aggregation-function').is(':enabled') && $('#aggregation-function').val() != '') {
+            var aggregation_function = $('#aggregation-function').val();
+        }
+        if ($('#transform').is(':enabled') && $('#transform').val() != '') {
+            var transform = $('#transform').val();
+        }
+        if ($('#scaling').is(':enabled') && $('#scaling').val() != '') {
+            var scaling = $('#scaling').val();
+        }
+        if ($('#for-npyc').is(":checked")){
+            var for_npyc = true;
+        } else {
+            var for_npyc = false;
+        }
+        if ($('#harmonise_annotations').is(":checked")){
+            var harmonise_annotations = true;
+        } else {
+            var harmonise_annotations = false;
+        }
+        var metadata_bin_definition = {};
+        $('.metadata-bin').each(function(ev){
+            var field_name = $(this).val();
+            var label = $('#label-' + field_name).val();
+            var bins = $('#bins-' + field_name).val();
+
+            if (label != '' && bins == ''){
+                alert("Enter the bins in the format 18,30,50,70");
+                //DO NOTHING
+            } else if (label != '' && bins != '') {
+                metadata_bin_definition[label] = {
+                    'm':'bin',
+                    'c': 'h_metadata::' + field_name,
+                    'b': bins.split(",")
+                }
+            }
+        });
+
+        var url_params = '?id={{data.saved_query.id}}';
+        url_params = url_params + '&m=' + model;
+        url_params = url_params + '&ft=' + file_type;
+        if (task_run_id !== undefined) {
+            url_params = url_params + '&tr=' + task_run_id;
+        }
+        if (correction_type !== undefined) {
+            url_params = url_params + '&ct=' + correction_type;
+        }
+        if (columns_to_include !== undefined) {
+            url_params = url_params + '&cti=' + columns_to_include;
+        }
+        if (feature_label !== undefined) {
+            url_params = url_params + '&fl=' + feature_label;
+        }
+       // if (feature_orientation !== undefined) {
+       //     url_params = url_params + '&fo=' + feature_orientation;
+       // }
+        if (sample_label !== undefined) {
+            url_params = url_params + '&sl=' + sample_label;
+        }
+       // if (sample_orientation !== undefined) {
+        //    url_params = url_params + '&so=' + sample_orientation;
+       // }
+        if (class_type !== undefined) {
+            url_params = url_params + '&ct=' + class_type;
+        }
+        if (class_level !== undefined) {
+            url_params = url_params + '&cl=' + class_level;
+        }
+        if (aggregation_function !== undefined) {
+            url_params = url_params + '&af=' + aggregation_function;
+        }
+        if (transform !== undefined) {
+            url_params = url_params + '&t=' + transform;
+        }
+        if (scaling !== undefined) {
+            url_params = url_params + '&s=' + scaling;
+        }
+        url_params = url_params + '&ha=' + harmonise_annotations + "&npyc=" + for_npyc;
+
+        if (Object.keys(metadata_bin_definition).length > 0){
+            url_params = url_params + '&mbin=' + JSON.stringify(metadata_bin_definition);
+        }
+        var url = '{{url_for('QueryFactoryView.download_file')}}' + url_params;
+        console.log(url);
+
+        window.open(url,'_blank');
+    });
+
+    $(document).on('change','#model',function(e){
+        if ($(this).val() == 'CompoundClass'){
+            $('#class-type').prop('disabled', false);
+            $('#class-level').prop('disabled', false);
+            $('#aggregation-function').prop('disabled', false);
+        } else {
+            $('#class-type').prop('disabled', true);
+            $('#class-level').prop('disabled', true);
+            $('#aggregation-function').prop('disabled', true);
+        }
+    });
+    $(document).on('change','#file-type',function(e) {
+
+        $('#feature-label').prop('disabled', true);
+        $('#feature-orientation').prop('disabled', true);
+        $('#sample-orientation').prop('disabled', true);
+        $('#sample-label').prop('disabled', true);
+        $('#transform').prop('disabled', true);
+        $('#scaling').prop('disabled', true);
+
+        if ($(this).val() == 'combined'){
+            $('#feature-label').prop('disabled', false);
+            if($('#for-npyc').is(":checked")){
+                $('#for-npyc').prop('checked',false);
+            }
+
+        } else if ($(this).val() == 'intensity_data'){
+            $('#feature-orientation').prop('disabled', false);
+            $('#transform').prop('disabled', false);
+            $('#scaling').prop('disabled', false);
+            console.log('here');
+            if($('#for-npyc').not(":checked")){
+                $('#for-npyc').prop('checked',true);
+            }
+
+        } else if ($(this).val() == 'feature_metadata') {
+            $('#feature-orientation').prop('disabled', false);
+            $('#feature-label').prop('disabled', false);
+            if($('#for-npyc').not(":checked")){
+                $('#for-npyc').prop('checked',true);
+            }
+
+        } else if ($(this).val() == 'sample_metadata') {
+            $('#sample-orientation').prop('disabled', false);
+            if($('#for-npyc').not(":checked")){
+                $('#for-npyc').prop('checked',true);
+            }
+
+        } else if ($(this).val() == 'metaboanalyst_data'){
+            $('#feature-orientation').prop('disabled', false);
+            $('#feature-label').prop('disabled', false);
+            if($('#for-npyc').is(":checked")){
+                $('#for-npyc').prop('checked',false);
+            }
+
+        } else if ($(this).val() == 'metaboanalyst_metadata'){
+            $('#sample-orientation').prop('disabled', false);
+            $('#sample-label').prop('disabled', false);
+            if($('#for-npyc').is(":checked")){
+                $('#for-npyc').prop('checked',false);
+            }
+        }
+    });
+</script>

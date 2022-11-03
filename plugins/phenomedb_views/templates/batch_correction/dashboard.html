@@ -1,0 +1,150 @@
+{% if data.json_render is defined and data.render_json == True %}
+{% extends 'base_json.html' %}
+{% else %}
+{% extends 'base.html' %}
+{% endif %}
+{% block plugin_content %}
+<div class="container-fluid">
+    <h3>Batch correction dashboard for {{ data.saved_query.name }}</h3>
+
+    <ul class="nav nav-tabs" role="tab-list">
+        <li class="nav-item active"><a class="nav-link" href="#sr-corrected" role="tab" data-toggle="tab">SR Corrected</a></li>
+        <li class="nav-item"><a class="nav-link" href="#ltr-corrected" role="tab" data-toggle="tab">LTR Corrected</a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#combat-corrected" role="tab" data-toggle="tab">COMBAT Corrected</a></li>
+        <li class="nav-item"><a class="nav-link disabled" href="#sr-combat-corrected" role="tab" data-toggle="tab">SR-COMBAT Corrected</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="sr-corrected">
+            {% if data.sr_committed_batch_correction_task_run %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">Committed SR batch correction {{ data.sr_committed_batch_correction_task_run.id | pprint }}</div>
+                    <div class="panel-body" id="container-{{data.sr_committed_batch_correction_task_run.id}}">
+                        <ul>
+                            <li><a target="_blank" href="{{ data.sr_committed_batch_correction_task_run.get_log_url() }}">View log</a></li>
+                        {% if data.sr_committed_batch_correction_task_run.reports %}
+                            {% if 'batch correction assessment' in data.sr_committed_batch_correction_task_run.reports %}
+                                <li><a target="_blank" href="{{ url_for('ReportView.viewreport',id=data.sr_committed_batch_correction_task_run.id,report_name='batch correction assessment')}}">View batch correction assessment report</a></li>
+                            {% endif %}
+                            {% if 'batch correction summary' in data.sr_committed_batch_correction_task_run.reports %}
+                                <li><a target="_blank" href="{{ url_for('ReportView.viewreport',id=data.sr_committed_batch_correction_task_run.id,report_name='batch correction summary')}}">View batch correction summary report</a></li>
+                            {% endif %}
+                        {% else %}
+                            <li><a href="#" id="generate-sr-reports" data_correction_task_run_id="{{ data.sr_committed_batch_correction_task_run.id }}">Click here to generate the missing reports</a></li>
+                        {% endif %}
+                            <li><a target="_blank" href="{{ url_for('QueryFactoryView.advanced_saved_query_editor')}}?id={{ data.saved_query.id }}">Saved Query: {{ data.saved_query.id}}</a></li>
+                            <li>Parameters: <ul>
+                                {% for key, value in data.sr_committed_batch_correction_task_run.args.items() %}
+                                    {% if key not in ['intensity_data','sample_metadata','feature_metadata','query_factory_dict','query_factory_factory'] %}
+                                        <li>{{ key }}: {{ value }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+            {% for task_run in data.sr_uncommitted_batch_correction_task_runs %}
+               {% include 'batch_correction/batch_correction_run.html' %}
+            {% endfor %}
+        </div>
+        <div class="tab-pane" id="ltr-corrected">
+
+            {% if data.ltr_committed_batch_correction_task_run %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">Committed LTR batch correction {{ data.ltr_committed_batch_correction_task_run.id | pprint }}</div>
+                    <div class="panel-body" id="container-{{data.ltr_committed_batch_correction_task_run.id}}">
+                        <ul>
+                            <li><a target="_blank" href="{{ data.ltr_committed_batch_correction_task_run.get_log_url() }}">View log</a></li>
+                        {% if data.ltr_committed_batch_correction_task_run.reports %}
+                            {% if 'batch correction assessment' in data.ltr_committed_batch_correction_task_run.reports %}
+                                <li><a target="_blank" href="{{ url_for('ReportView.viewreport',id=data.ltr_committed_batch_correction_task_run.id,report_name='batch correction assessment')}}">View batch correction assessment report</a></li>
+                            {% endif %}
+                            {% if 'batch correction summary' in data.ltr_committed_batch_correction_task_run.reports %}
+                                <li><a target="_blank" href="{{ url_for('ReportView.viewreport',id=data.ltr_committed_batch_correction_task_run.id,report_name='batch correction summary')}}">View batch correction summary report</a></li>
+                            {% endif %}
+                        {% else %}
+                            <li><a href="#" id="generate-ltr-reports">Click here to generate the missing reports</a></li>
+                        {% endif %}
+                            <li><a target="_blank" href="{{ url_for('QueryFactoryView.advanced_saved_query_editor')}}?id={{ data.saved_query.id }}">Saved Query: {{ data.saved_query.id}}</a></li>
+                            <li>Parameters: <ul>
+                                {% for key, value in data.ltr_committed_batch_correction_task_run.args.items() %}
+                                    {% if key not in ['intensity_data','sample_metadata','feature_metadata','query_factory_dict','query_factory_factory'] %}
+                                        <li>{{ key }}: {{ value }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+            {% for task_run in data.ltr_uncommitted_batch_correction_task_runs %}
+                {% include 'batch_correction/batch_correction_run.html' %}
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script>
+    $( function() {
+        $('.commit-batch-correction').on('click',function(ev) {
+            ev.preventDefault();
+            var task_run_id = $(this).data('id');
+            if (confirm('Are you sure you wish to commit batch correction ' + task_run_id + '?')){
+                $.post("{{ url_for('BatchCorrectionView.savebatchcorrection') }}",
+                    {
+                        'task_run_id':task_run_id,
+                        'csrf_token':$('[name=csrf_token]').val()
+                    },
+                    function(data){
+                        alert("Batch correction commit running!")
+                    }
+                );
+            }
+        });
+
+        $('#generate-sr-reports').on('click',function(ev) {
+            if ($(this).prop('id') == 'generate-sr-reports'){
+                var correction_type = 'SR';
+            } else {
+                var correction_type = 'LTR';
+            }
+            ev.preventDefault();
+            var pipeline_name = 'RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset'
+            var task_id = pipeline_name.toLowerCase().replace("-","_").replace(" ","_").replace(".","_").replace(")","_").replace("(","_")
+            var run_config = {}
+            run_config[task_id] = {'saved_query_id':{{ data.saved_query.id }},
+                                    'correction_type':correction_type};
+
+            var data = {"pipeline_name":pipeline_name,
+                        "run_config":run_config,
+                        "csrf_token": $('[name=csrf_token]').val()}
+
+            console.log(data);
+
+            $.ajax("{{ url_for('PipelineFactoryView.run_pipeline') }}", {
+                type: "POST",
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(data),
+                success: function (data,status,xhr) {
+                    console.log(data);
+                    if (data['success'] === 'true') {
+                        alert("Pipeline scheduled: " + data['pipeline_url']);
+                        window.location.href = window.location.href;
+                    } else {
+                        console.log("it didnt work!");
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

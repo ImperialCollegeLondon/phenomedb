@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+    {% include "analysis/common.html" %}
+
+<div class="panel panel-default">
+    <div class="panel-heading"><a class="accordion-toggle" href="#reports" data-toggle="collapse">View Reports</a></div>
+    <div class="panel-body collapse" id="reports">
+        <ul>
+        {% if data.task_run_output and 'pdf_report' in data.task_run_output.keys() %}
+            <li>
+                <a href="{{url_for('ReportView.downloadpdfreport',task_run_id=data.task_run.id,report_name='pdf_report')}}">PDF report</a>
+            </li>
+        {% endif %}
+
+        {% for report_name,report_path in data.task_run.reports.items() %}
+            <li>
+                <a href="{{url_for('ReportView.viewreport',id=data.task_run.id,report_name=report_name)}}">{{ report_name }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+</div>
+{% endblock %}

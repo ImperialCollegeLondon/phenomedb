@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% block plugin_content %}	
+<style>
+/* hide the global search box */
+/*.dataTables_filter  {margin:2px;	padding:2px; visibility:hidden; }*/
+
+</style>
+    <div class="row" id="section_tabs">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#harmonise-tab" data-batch="" data-toggle="tab">Harmonise Annotations</a></li>
+			<li><a href="#search-tab" data-toggle="tab">Search Annotations</a></li>
+		</ul>
+
+		<div class="tab-content">
+
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane active" id="harmonise-tab">
+
+            <div class="panel-heading">Unharmonised Annotations</div>
+            <div class="panel-body">
+                <div class="col-md-6">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">CPD Name</th>
+                            <th scope="col">CPD ID</th>
+                            <th scope="col">Version</th>
+                            <th scope="col">AnnotationMethod</th>
+                            <th scope="col">Assay</th>
+                            <th scope="col">Feature Datasets</th>
+                            <th scope="col">Assign?</th>
+                        </tr>
+                    </thead>
+                    {% for annotation in data.unharmonised_annotations %}
+                        <tr>
+                            <td>{{ annotation.cpd_name }}</td>
+                            <td>{{ annotation.cpd_id }}</td>
+                            <td>{{ annotation.version }}</td>
+                            <td>{{ annotation.annotation_method.name }}</td>
+                            <td>{{ annotation.feature_metadatas[0].annotated_features[0].sample_assay.assay.name }}</td>
+                            <td>{% for feature_dataset in data.feature_datasets[annotation.id] %}{{ feature_dataset.name }},{% endfor %}</td>
+                            <td><input class="form-control" type="checkbox" name="annotation-checkbox" id="{{ annotation.id }}" /></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                </div>
+                <div class="col-md-6">
+                    <label for="harmonised_annotations">Select Harmonised Annotation</label>
+                    <select name="harmonised_annotations" id="harmonised_annotations" class="form-control">
+                        {% for harmonised_annotation in data.harmonised_annotations %}
+                            <option value="{{ harmonised_annotation.id }}">{{ harmonised_annotation.annotation_method.name }} {{ harmonised_annotation.cpd_id }}: {{ harmonised_annotation.cpd_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <br />
+                    <div class="col-md-6">
+                        <button type="submit" id="submit-assignment" class="btn btn-primary mb-3">Assign checked to selected</button>
+                    </div>
+                    <div class="col-md-6 pull-right">
+                        <button type="submit" id="delete-harmonised" class="btn btn-danger mb-3">Delete Harmonised Annotation</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="tab-pane fade" id="search-tab">
+
+            <div class="panel-heading"><a class="accordion-toggle" href="#filter_list" data-toggle="collapse">Measurements search filters</a></div>
+                <div class="panel-body collapse" id="filter_list">
+                    <div class="row">
+                         <div class="col-sm-9">
+                            <div class="panel-body">
+                                <div id="filter_table" class="table-responsive">  </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="panel-body shadow-panel">
+                               <ul>
+
+                                    <li>Search is case sensitive.</li>
+                                    <li>If using 'range' parameters, separate values using a colon, eg 100:200</li>
+
+                               </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 table-label"><button id="btn_filter" class="btn btn-primary">Apply filters</button></div>
+                </div>
+
+            <div class="dataTable_wrapper">
+               <table class="display" id="fields_table">
+                        <thead>
+                        <tr>
+                        {% for f in data.display %}
+                        <th>{{f.label}}</th>
+                        {% endfor %}
+
+                            <!--<th data-priority="2">example usage data priority for responsive table.</th>-->
+                        </tr>
+                        </thead>
+                   <tbody>
+                   </tbody>
+               </table>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block head_js %}
+{{ super() }}
+<script>
+
+var conditions = [{"name":"equal to","symbol":"="},
+				  {"name":"not equal to", "symbol":"!="},
+				  {"name":"greater than", "symbol":">="},
+				  {"name":"less than", "symbol":"<="},
+				  {"name":"range", "symbol":"<>"},
+				  {"name":"in", "symbol":"in"},
+				  {"name":"not in", "symbol":"not in"}];
+//column names come from the server side; convert to json
+var filter_cols = {{data.filters|tojson|safe}};
+	
+function populateFilters() {	
+
+	$("#filter_table").empty();
+
+	$.each( filter_cols, function(idx, f) {	
+		//var idx = f.index;
+		var label = f.label;
+		var val = f.data;
+		var t = f.type;
+		
+		var tr = $("<div/>")
+			.attr("class", "row col-xs-12")
+			
+			.attr("id", "filter_col"+idx);
+
+		tr.append( $('<div/>').attr("class","table-label col-xs-2").html(label) );	
+		tr.append( $('<div/>').attr("class","table-value col-xs-2").html( makeConditionSelect(idx) ) );
+		var colId = "col" + idx + "_filter";
+		tr.append( $('<div/>')
+					.attr("class","table-value col-xs-8")
+					.attr("data-column", idx)
+					.html( $('<input class="form-control column-filter"/>')
+					.attr('id', colId)					
+					.attr('datatype', t)
+					.attr('name', 'value-' + idx) ));
+		
+		$("#filter_table").append(tr);
+	});			
+}
+
+
+function populateFiltersTable() {	
+
+	$("#filter_table").empty();
+
+	$.each( filter_cols, function(idx, f) {	
+		//var idx = f.index;
+		var label = f.label;
+		var val = f.name;
+		var t = f.type;
+		
+		var tr = $("<tr/>").attr("data-column", idx).attr("id", "filter_col"+idx);
+
+		tr.append( $('<td class="table-label"/>').html(label) );	
+		tr.append( $('<td/>').html( makeConditionSelect(idx) ) );
+		var colId = "col" + idx + "_filter";
+		tr.append( $('<td/>').html( $('<input class="form-control column-filter"/>')
+					.attr('id', colId)
+					.attr('datatype', t)
+					.attr('name', 'value-' + idx) ));
+		
+		$("#filter_table").append(tr);
+	});			
+}
+
+function makeConditionSelect(id, selection) {	
+	var s = $("<select class='form-control column-filter' id='cond-" + id + "'/>");
+	$.each( conditions, function(idx, c) {	
+		var opt = $("<option/>").attr("value", c.symbol).html(c.name);	
+		
+		if ( selection ) {
+			if ( selection===c.symbol || selection===c.name) {
+				opt.attr("selected", true);
+			} 
+		}	
+		s.append(opt);
+	});
+	return s;
+}
+function makeColumnSelect(id, selection) {	
+	var s = $("<select class='form-control' id='col-" + id + "'/>");
+	$.each( filter_cols, function(idx, c) {	
+		var opt = $("<option/>").attr("value", c).html(c);	
+		
+		if ( selection ) {
+			if ( selection===c) {
+				opt.attr("selected", true);
+			} 
+		}	
+		s.append(opt);
+	});
+	return s;
+}
+ 
+function filterColumn ( i ) {
+	console.log("index=" + i);
+	console.log("Filter column " + $('#col' + i + '_filter').val());
+    $('#fields_table').DataTable().column( i ).search(
+        $('#col'+i+'_filter').val()
+    ).draw();
+}
+
+function filter ( i ) {
+	console.log("index=" + i);
+	console.log("Filter " + $('#col' + i + '_filter').val());
+    $('#fields_table').DataTable().search(
+        $('#col'+i+'_filter').val()
+    ).draw();
+}
+
+$( function() {
+   		   
+   	populateFilters();
+	url = "{{ url_for('.get_annotations_json') }}";
+	
+   	$('#fields_table').DataTable( {
+   		
+       	responsive: true,
+       	scrollY: 500,
+		paging: true,
+    	processing : true,
+    	order: [[ 1, "desc" ]],
+    	serverSide : true,
+    	pageLength:25,
+    	dom: 'Bfrtip',    
+	    lengthMenu: [
+	        [ 25, 50, 100, 200, 500, 1000, 2500],
+	        [ '25 rows', '50 rows', '100 rows', '200 rows', '500 rows', '1000 rows', '2500 rows']
+	    ],
+	    buttons: [ 'pageLength', {
+	       extend: 'collection',
+	       text: 'Export Options',
+	       buttons: [
+	           'copy',
+	           'excel',
+	           'csv',
+	           {
+	     	    	extend: 'pdf',
+	     	      	orientation : 'landscape',
+	     	    	pageSize : 'A3',
+	     	      	title: $('h1').text(),
+	     	      	exportOptions: {
+	     	      	  columns: ':not(.no-print)'
+	     	      	}
+	     	    },
+	           'print'
+	       ]
+	    }],
+	    ajax : {
+	        url : url,
+	        dataSrc : "data",
+	        type: "POST",
+	        dataType: "json",	       
+	        contentType: "application/json",
+	        headers: {
+	            "X-CSRFToken": "{{csrf_token()}}"
+	        },
+	        data : function(d) {
+	        	$.each( filter_cols, function(idx, c) {	  
+	        	//$.each( d.columns, function(idx, c) {	  
+	        		
+	        	
+	        		c["search"]["condition"] =  $('#cond-' + idx).val();
+	        		c["search"]["value"] =  $('#col' + idx + '_filter').val();
+	        		c["search"]["type"] =  $('#col' + idx + '_filter').attr("datatype");
+	        		//console.log(JSON.stringify(c));
+	        	});	   
+	        	
+	        	json_d =  { "dt_args": d, "custom": filter_cols  };	
+	        	console.log(JSON.stringify( json_d ));
+	        	console.log(json_d);
+	        	
+	        	return JSON.stringify(json_d);
+	        	//return { "dt_args": JSON.stringify( d ) };	
+	        }
+	    },
+	    
+	    columns: [     
+	    	{ data : "project"},
+	    	{ data : "sample_name",
+	              	"fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {		
+	              		
+	              		ref = "{{url_for('ViewData.list')}}/sample/" + oData.sample_id;
+	                    $(nTd).html("<a href='" + ref + "'>" + oData.sample_name + "</a>");
+	                }
+	            },
+            { data : "assay"},
+            { data : "annotation_method"},
+            { data : "cpd_name",
+              	"fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {		
+              		
+              		ref = "{{url_for('CompoundView.list')}}/compound/" + oData.compound_id;
+                    $(nTd).html("<a href='" + ref + "'>" + oData.cpd_name + "</a>");
+                }
+            },
+            { data : "intensity"},
+            { data : "unit"},
+            { data : "retention_time"},
+            { data : "mz"},
+            { data : "lod"},
+            { data : "lloq"},
+            { data : "uloq"}
+           	]
+    });
+   	
+   
+    $('.xxcolumn-filter').on( 'keyup click', function () {
+    	
+    	var colId = $(this).parents('div').attr('data-column');  	
+        filterColumn( colId );
+       
+    } ); 
+    
+    $('#btn_filter').on( 'click', function () {	  	
+    	console.log("button clicked");
+    	$('#fields_table').DataTable().draw();
+    } );
+
+    $('#submit-assignment').on('click',function(){
+        console.log($(this));
+        var annotation_ids = [];
+        $('[name=annotation-checkbox]:checkbox:checked').each(function(ev){
+            annotation_ids.push($(this).prop('id'));
+        });
+        if (annotation_ids.length == 0){
+            alert("Please select an unharmonised Annotation to assign");
+        } else {
+            var harmonised_annotation_text = $('#harmonised_annotations option:selected').text();
+            var harmonised_annotation_id = $('#harmonised_annotations option:selected').val();
+            if (confirm('Are you sure you wish to harmonise the following Annotations to ' + harmonised_annotation_text + '? ' + annotation_ids.join(","))){
+
+                $.post("{{ url_for('AnnotationView.harmonise_annotations') }}",
+                    {
+                        'annotation_ids': JSON.stringify(annotation_ids),
+                        'harmonised_annotation_id':harmonised_annotation_id,
+                        'csrf_token':$('[name=csrf_token]').val()
+                    },
+                    function(data){
+                        window.location.href = window.location.href;
+                    });
+                    }
+        }
+    });
+
+    $('#delete-harmonised').on('click',function(){
+        console.log($(this));
+        var harmonised_annotation_id = $('#harmonised_annotations option:selected').val();
+        var harmonised_annotation_text = $('#harmonised_annotations option:selected').text();
+        if (confirm('Are you sure you wish to delete this harmonised annotation?' + harmonised_annotation_text + '?')){
+
+            $.post("{{ url_for('AnnotationView.delete_harmonised_annotation') }}",
+            {
+                'harmonised_annotation_id':harmonised_annotation_id,
+                'csrf_token':$('[name=csrf_token]').val()
+            },
+            function(data){
+                window.location.href = window.location.href;
+            });
+        }
+
+    });
+});
+
+</script>
+{% endblock %}

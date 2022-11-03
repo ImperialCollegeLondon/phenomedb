@@ -1,0 +1,113 @@
+﻿Feature Name,Matrix,Analyte,Unit
+TPTG,Total Plasma,Triglycerides,mg/dL
+TPCH,Total Plasma,Cholesterol,mg/dL
+LDCH,LDL,Cholesterol,mg/dL
+HDCH,HDL,Cholesterol,mg/dL
+TPA1,Total Plasma,Apo-A1,mg/dL
+TPA2,Total Plasma,Apo-A2,mg/dL
+TPAB,Total Plasma,Apo-B,mg/dL
+LDHD,LDL/HDL,LDL-Chol/HDL-Chol,-/-
+ABA1,Apo-B/Apo-A1,Apo-B/Apo-A1,-/-
+TBPN,Total Plasma,Particle Number,nmol/L
+VLPN,VLDL,Particle Number,nmol/L
+IDPN,IDL,Particle Number,nmol/L
+LDPN,LDL,Particle Number,nmol/L
+L1PN,LDL-1,Particle Number,nmol/L
+L2PN,LDL-2,Particle Number,nmol/L
+L3PN,LDL-3,Particle Number,nmol/L
+L4PN,LDL-4,Particle Number,nmol/L
+L5PN,LDL-5,Particle Number,nmol/L
+L6PN,LDL-6,Particle Number,nmol/L
+VLTG,VLDL,Triglycerides,mg/dL
+IDTG,IDL,Triglycerides,mg/dL
+LDTG,LDL,Triglycerides,mg/dL
+HDTG,HDL,Triglycerides,mg/dL
+VLCH,VLDL,Cholesterol,mg/dL
+IDCH,IDL,Cholesterol,mg/dL
+VLFC,VLDL,Free Cholesterol,mg/dL
+IDFC,IDL,Free Cholesterol,mg/dL
+LDFC,LDL,Free Cholesterol,mg/dL
+HDFC,HDL,Free Cholesterol,mg/dL
+VLPL,VLDL,Phospholipids,mg/dL
+IDPL,IDL,Phospholipids,mg/dL
+LDPL,LDL,Phospholipids,mg/dL
+HDPL,HDL,Phospholipids,mg/dL
+HDA1,HDL,Apo-A1,mg/dL
+HDA2,HDL,Apo-A2,mg/dL
+VLAB,VLDL,Apo-B,mg/dL
+IDAB,IDL,Apo-B,mg/dL
+LDAB,LDL,Apo-B,mg/dL
+V1TG,VLDL-1,Triglycerides,mg/dL
+V2TG,VLDL-2,Triglycerides,mg/dL
+V3TG,VLDL-3,Triglycerides,mg/dL
+V4TG,VLDL-4,Triglycerides,mg/dL
+V5TG,VLDL-5,Triglycerides,mg/dL
+V1CH,VLDL-1,Cholesterol,mg/dL
+V2CH,VLDL-2,Cholesterol,mg/dL
+V3CH,VLDL-3,Cholesterol,mg/dL
+V4CH,VLDL-4,Cholesterol,mg/dL
+V5CH,VLDL-5,Cholesterol,mg/dL
+V1FC,VLDL-1,Free Cholesterol,mg/dL
+V2FC,VLDL-2,Free Cholesterol,mg/dL
+V3FC,VLDL-3,Free Cholesterol,mg/dL
+V4FC,VLDL-4,Free Cholesterol,mg/dL
+V5FC,VLDL-5,Free Cholesterol,mg/dL
+V1PL,VLDL-1,Phospholipids,mg/dL
+V2PL,VLDL-2,Phospholipids,mg/dL
+V3PL,VLDL-3,Phospholipids,mg/dL
+V4PL,VLDL-4,Phospholipids,mg/dL
+V5PL,VLDL-5,Phospholipids,mg/dL
+L1TG,LDL-1,Triglycerides,mg/dL
+L2TG,LDL-2,Triglycerides,mg/dL
+L3TG,LDL-3,Triglycerides,mg/dL
+L4TG,LDL-4,Triglycerides,mg/dL
+L5TG,LDL-5,Triglycerides,mg/dL
+L6TG,LDL-6,Triglycerides,mg/dL
+L1CH,LDL-1,Cholesterol,mg/dL
+L2CH,LDL-2,Cholesterol,mg/dL
+L3CH,LDL-3,Cholesterol,mg/dL
+L4CH,LDL-4,Cholesterol,mg/dL
+L5CH,LDL-5,Cholesterol,mg/dL
+L6CH,LDL-6,Cholesterol,mg/dL
+L1FC,LDL-1,Free Cholesterol,mg/dL
+L2FC,LDL-2,Free Cholesterol,mg/dL
+L3FC,LDL-3,Free Cholesterol,mg/dL
+L4FC,LDL-4,Free Cholesterol,mg/dL
+L5FC,LDL-5,Free Cholesterol,mg/dL
+L6FC,LDL-6,Free Cholesterol,mg/dL
+L1PL,LDL-1,Phospholipids,mg/dL
+L2PL,LDL-2,Phospholipids,mg/dL
+L3PL,LDL-3,Phospholipids,mg/dL
+L4PL,LDL-4,Phospholipids,mg/dL
+L5PL,LDL-5,Phospholipids,mg/dL
+L6PL,LDL-6,Phospholipids,mg/dL
+L1AB,LDL-1,Apo-B,mg/dL
+L2AB,LDL-2,Apo-B,mg/dL
+L3AB,LDL-3,Apo-B,mg/dL
+L4AB,LDL-4,Apo-B,mg/dL
+L5AB,LDL-5,Apo-B,mg/dL
+L6AB,LDL-6,Apo-B,mg/dL
+H1TG,HDL-1,Triglycerides,mg/dL
+H2TG,HDL-2,Triglycerides,mg/dL
+H3TG,HDL-3,Triglycerides,mg/dL
+H4TG,HDL-4,Triglycerides,mg/dL
+H1CH,HDL-1,Cholesterol,mg/dL
+H2CH,HDL-2,Cholesterol,mg/dL
+H3CH,HDL-3,Cholesterol,mg/dL
+H4CH,HDL-4,Cholesterol,mg/dL
+H1FC,HDL-1,Free Cholesterol,mg/dL
+H2FC,HDL-2,Free Cholesterol,mg/dL
+H3FC,HDL-3,Free Cholesterol,mg/dL
+H4FC,HDL-4,Free Cholesterol,mg/dL
+H1PL,HDL-1,Phospholipids,mg/dL
+H2PL,HDL-2,Phospholipids,mg/dL
+H3PL,HDL-3,Phospholipids,mg/dL
+H4PL,HDL-4,Phospholipids,mg/dL
+H1A1,HDL-1,Apo-A1,mg/dL
+H2A1,HDL-2,Apo-A1,mg/dL
+H3A1,HDL-3,Apo-A1,mg/dL
+H4A1,HDL-4,Apo-A1,mg/dL
+H1A2,HDL-1,Apo-A2,mg/dL
+H2A2,HDL-2,Apo-A2,mg/dL
+H3A2,HDL-3,Apo-A2,mg/dL
+H4A2,HDL-4,Apo-A2,mg/dL

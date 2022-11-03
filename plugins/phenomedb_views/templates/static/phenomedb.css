@@ -1,0 +1,170 @@
+@font-face { 
+	font-family: Quicksand; 
+	src: url('fonts/Quicksand-Regular.ttf'); 
+	} 
+@font-face { 
+	font-family:"Julius Sans One"; 
+	src: url('fonts/JuliusSansOne-Regular.ttf'); 
+	} 
+@font-face { 
+	font-family: Raleway; 
+	src: url('fonts/Raleway-Regular.ttf'); 
+	} 
+		
+.body-font {
+	font-family: "Raleway";
+}
+
+.plot-feature-against-y .bg-primary a:hover{
+	color: #FFFFFF;
+}
+
+.plot-feature-against-y .bg-primary a:visited{
+	color: #FFFFFF;
+}
+
+#section_tabs .nav-tabs > li {
+border-radius: 4px 4px 0 0 ;
+font-family: "Quicksand";
+font-size: 1.2em;
+font-weight:bold;
+color: #777
+
+}
+
+em { 
+	color: red; 
+	}
+
+#section_tabs .tab-content {
+  padding : 15px 15px 5px 5px;
+}
+
+.shadow-panel {
+	margin:5px;
+	background-color: #f5f5f5;
+    padding: 20px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;   
+}
+
+.saved:after {
+	color: #b00;
+	font-style: italic;
+    content: ' saved';
+}
+.table-sized {
+	width: 67%; 
+	margin: 0 auto 2em auto;
+
+	background-color: #d6e2e9 ;
+  	border: 1px solid black;
+  	padding: 10px;
+  	font-family: "Quicksand";
+	font-weight:bold;
+ 	font-size:1.1em;
+  	display: inline-block;
+  	vertical-align: middle;
+}
+.selected-row { 
+	background: #dddddd;
+	border: solid 2px #123456;
+	}
+.img-panel {
+	border: solid 1px #123456; 
+	margin: 5px;
+	padding: 5px;
+}
+.page-heading {	
+	font-family: "Julius Sans One";
+	margin-top:5px;
+	padding-bottom:5px; 
+	font-weight:bold;
+	font-size:1.6em;
+}
+.table-heading {
+	font-family: "Quicksand";
+	font-size: 1.1em;
+	font-weight:bold;
+	border:2px;
+}
+.small-heading {	
+	font-family: "Raleway";
+	margin-top:2px;
+	padding-bottom:2px; 
+	font-size:0.8em;
+	font-weight:bold;
+}
+.section-heading {
+	color:#383838;
+	font-weight:bold;
+	text-decoration:underline; 	
+	text-align:left;
+	font-size: 1.2em;
+	font-style: italic;
+	padding:10px 10px 10px 10px;	
+}
+.row-padded {
+	display:flex;
+	border: dashed 1px #eeeeee;	 
+	color:#777;
+	padding:5px;
+	margin:5px;
+}
+.table-value {
+	font-family: "Quicksand";
+	border-top: solid 0px #777;
+	font-weight:bold;
+	font-size: 12pt;
+	padding:5px 10px 5px 10px;
+}
+.table-label {
+	color:#484848;
+	--text-decoration:underline; 	
+	border-top: solid 0px #777;
+	text-align:right;
+	font-size:12pt;
+	font-style: italic;
+	padding:5px 5px 5px 20px;	
+}
+.bc-back {
+	border-bottom: dotted 0px grey;
+}
+.bc-back:before {
+        font-family: "Glyphicons Halflings";
+  		content: "\e079";       
+        padding: 2px;   
+}
+.hide-me { display:none }
+.i-am-invisible { visibility:hidden }
+
+.breakword {
+	overflow-wrap: break-word;
+	word-break: break-all;
+}
+
+/*
+table.dataTable th{
+	table-layout:fixed;
+	max-width:120px;
+    word-break: break-word;
+}*/
+table.dataTable tbody td {
+	word-break: break-word;
+	vertical-align: top;
+}
+
+hr.strong-hr {
+	border-color: darkgray;
+}
+
+.panel-heading .accordion-toggle:after {
+	/* symbol for "opening" panels */
+	font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+	content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+	float: right;        /* adjust as needed */
+	color: grey;         /* adjust as needed */
+}
+.panel-heading .accordion-toggle.collapsed:after {
+	/* symbol for "collapsed" panels */
+	content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+}

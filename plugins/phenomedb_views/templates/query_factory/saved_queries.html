@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid" id="saved_query-view-container">
+
+    <div class="row">
+        <h3 class="page-heading"><a class="bc-back" href="{{url_for('QueryFactoryView.list')}}">Query Factory</a></h3>
+    </div>
+
+    <div class="row" id="section_tabs">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="{{url_for('QueryFactoryView.list')}}">Saved Queries</a></li>
+            <li><a href="{{url_for('QueryFactoryView.project_summaries')}}">Project Summaries</a></li>
+            <li><a href="{{url_for('QueryFactoryView.simple_query_builder', id='new')}}">Simple Query Builder</a></li>
+            <li><a href="{{url_for('QueryFactoryView.advanced_saved_query_editor', id='new')}}">Advanced Query Builder</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="existing-saved_queries-tab">
+
+                <div class="row col-lg-12">
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading">
+                            <span class="table-heading">Saved Queries</span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="dataTable_wrapper">
+                                <table id="table_data" width="100%" class="table table-striped table-bordered table-hover wrap"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block tail %}
+{{ super() }}
+
+<script>
+    $(function() {
+
+        url = "{{ url_for('QueryFactoryView.get_table_json') }}";
+        var displayTable = null;
+
+        var jqxhr = $.get(url, function( data ) {
+            displayTable = $("#table_data").DataTable({
+                //autoWidth: false,
+                data: data.table_data,
+                columns: data.columns,
+                pageLength:50,
+                dom: 'lBfrtip',
+                buttons: [ {
+                    extend: 'collection',
+                    text: 'Export',
+                    className: 'btn btn-default',
+                    buttons: [
+                        'copy',
+                        'excel',
+                        'csv',
+                        {
+                            extend: 'pdf',
+                            orientation : 'landscape',
+                            pageSize : 'A3',
+                            title: $('h1').text(),
+                            exportOptions: {
+                                columns: ':not(.no-print)'
+                            }
+                        },
+                        'print'
+                    ]
+                }]
+            });
+        });
+        jqxhr.fail(function(data) {
+            console.log(JSON.stringify(data));
+        });
+        jqxhr.always(function() {
+            if ( displayTable != null ) {
+                displayTable.order( [ 0, 'desc' ] ).draw();
+            }
+        });
+
+
+    });
+</script>
+
+{% endblock %}

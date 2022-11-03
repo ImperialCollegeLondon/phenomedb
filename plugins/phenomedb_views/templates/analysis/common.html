@@ -1,0 +1,223 @@
+<h3>{{ data.task_run.module_name}}.{{ data.task_run.class_name }} ID: {{ data.task_run.id }} Status: {{ data.task_run.status }}</h3>
+<input type="hidden" name="cache-clear-target-task-view-{{ data.task_run.id }}" />
+<p>
+    <ul>
+        <li><a href="{{ data.task_run.get_log_url() }}">Log file</a></li>
+        {% if data.task_run.saved_query_id %}
+            <li><a href="{{ url_for('QueryFactoryView.advanced_saved_query_editor') }}?id={{ data.task_run.saved_query_id }}">View SavedQuery {{ data.task_run.saved_query_id }} {{ data.task_run.saved_query.name }}</a></li>
+        {% endif %}
+        {% if data.upstream_task_run %}
+            <li><a href="{{ url_for('AnalysisView.analysisresult',id=data.upstream_task_run.id) }}">Upstream task run ID: {{ data.upstream_task_run.id }}</a></li>
+            <li><a href="{{ data.upstream_task_run.get_log_url() }}">Upstream task run Log file</a></li>
+        {% endif %}
+    </ul>
+</p>
+{% if data.upstream_task_run %}
+<div class="panel panel-default">
+    <div class="panel-heading"><a class="accordion-toggle" href="#upstream-arguments" data-toggle="collapse">View Upstream Arguments</a> {% if 'feature_metadata' in data.upstream_task_run.args.keys() %}
+            <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.upstream_task_run.id}}&task_run_data_type=args&property=feature_metadata&format=table">Download ARGS feature metadata CSV</a> |
+        {% endif %}
+        {% if 'sample_metadata' in data.upstream_task_run.args.keys() %}
+            <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.upstream_task_run.id}}&task_run_data_type=args&property=sample_metadata&format=table">Download ARGS sample metadata CSV</a> |
+        {% endif %}
+        {% if 'intensity_data' in data.upstream_task_run.args.keys() %}
+            <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.upstream_task_run.id}}&task_run_data_type=args&property=intensity_data&format=table">Download ARGS intensity data CSV</a> |
+        {% endif %}
+        {% if 'intensity_data' in data.upstream_task_run.args.keys() and 'sample_metadata' in data.upstream_task_run.args.keys() and 'intensity_data' in data.upstream_task_run.args.keys() %}
+            <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.upstream_task_run.id}}&task_run_data_type=args&property=combined&format=table">Download ARGS combined data CSV</a> |
+        {% endif %}</div>
+    <div class="panel-body collapse" id="upstream-arguments">
+        <pre>{{ data.upstream_task_run.args | pprint }}</pre>
+    </div>
+</div>
+{% endif %}
+<div class="panel panel-default">
+    <div class="panel-heading"><a class="accordion-toggle" href="#arguments" data-toggle="collapse">View Arguments</a> {% if 'feature_metadata' in data.task_run.args.keys() %}
+            <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=args&property=feature_metadata&format=table">Download ARGS feature metadata CSV</a> |
+        {% endif %}
+        {% if 'sample_metadata' in data.task_run.args.keys() %}
+            <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=args&property=sample_metadata&format=table">Download ARGS sample metadata CSV</a> |
+        {% endif %}
+        {% if 'intensity_data' in data.task_run.args.keys() %}
+            <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=args&property=intensity_data&format=table">Download ARGS intensity data CSV</a> |
+        {% endif %}
+        {% if 'intensity_data' in data.task_run.args.keys() and 'sample_metadata' in data.task_run.args.keys() and 'intensity_data' in data.task_run.args.keys() %}
+            <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=args&property=combined&format=table">Download ARGS combined data CSV</a> |
+            <a href="#" class="plot-intensities" id="plot-args-intensities">Plot intensities</a>
+        {% endif %}</div>
+    <div class="panel-body collapse" id="arguments">
+        <pre>{{ data.task_run.args | pprint }}</pre>
+    </div>
+</div>
+{% if data.task_run.status.value in ['success','error'] %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" href="#rerun-task-panel" data-toggle="collapse">Re-run Task</a></div>
+        <div class="panel-body collapse" id="rerun-task-panel">
+            <form class="form-horizontal" id="rerun_form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                {% if data['task_run'].saved_query_id != None %}
+                    <div class="form-group">
+                        <label for="saved_query_id" class="col-sm-4 control-label">Saved Query</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id="saved_query_id" name="saved_query_id">
+                            {% for saved_query in data.saved_queries %}
+                                <option value="{{ saved_query.id }}"{% if saved_query.id == data['task_run'].saved_query_id %} selected{% endif %}>{{ saved_query.id }} - {{ saved_query.name }}</option>
+                            {%  endfor %}
+                            </select>
+                        </div>
+                    </div>
+                {% endif %}
+                {% for arg_name,arg_spec in data['task_params'].items() %}
+                    {% if arg_name != 'saved_query_id' %}
+                        <div class="form-group">
+                            <label for="{{ arg_name }}" class="col-sm-4 control-label">{{ arg_spec['label'] }}</label>
+                            <div class="col-sm-8">
+                            {% if arg_spec['type'] in ['dropdown'] %}
+                                <select class="form-control" name="{{ arg_name }}" id="{{ arg_name }}">
+                                {% for option_value,option_text in arg_spec['options'].items() %}
+                                    <option value="{{ option_value }}"{% if arg_name in data['task_run'].args.keys() and data['task_run'].args[arg_name] == option_value %} %} selected{% endif %}>{{ option_text }}</option>
+                                {%  endfor %}
+                                </select>
+                            {% elif arg_spec['type'] == 'list' %}
+                                <input type="text" class="form-control arg" name="{{ arg_name }}" id="{{ arg_name }}" data-type="{{arg_spec['type']}}" data-required="{{ arg_spec['required'] }}" data-label="{{ arg_spec['label'] }}" value="{% if arg_name in data['task_run'].args.keys() and data['task_run'].args[arg_name] != None %}{{ data['task_run'].args[arg_name] | replace("'", "")  | replace('"', "")  | replace("[", "") | replace("]", "") | replace(", ",",") | trim }}{% endif %}" />
+                            {% else %}
+                                <input type="text" class="form-control arg" name="{{ arg_name }}" id="{{ arg_name }}" data-type="{{arg_spec['type']}}" data-required="{{ arg_spec['required'] }}" data-label="{{ arg_spec['label'] }}" value="{% if arg_name in data['task_run'].args.keys() and data['task_run'].args[arg_name] != None %}{{ data['task_run'].args[arg_name] }}{% endif %}" />
+                            {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <button type="button" id="rerun_button" class="btn btn-danger">Rerun task</button>
+            </form>
+        </div>
+    </div>
+{% endif %}
+{% if data.task_run.status.value == 'success' %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" href="#data" data-toggle="collapse">View Data</a> {% if 'feature_metadata' in data.task_data.keys() %}
+                <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=data&property=feature_metadata&format=table">Download DATA feature metadata CSV</a> |
+            {% endif %}
+            {% if 'sample_metadata' in data.task_data.keys() %}
+                <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=data&property=sample_metadata&format=table">Download DATA sample metadata CSV</a> |
+            {% endif %}
+            {% if 'intensity_data' in data.task_data.keys() %}
+                <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=data&property=intensity_data&format=table">Download DATA intensity data CSV</a> |
+            {% endif %}
+            {% if 'intensity_data' in data.task_data.keys() and 'sample_metadata' in data.task_data.keys() and 'intensity_data' in data.task_data.keys() %}
+                <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=data&property=combined&format=table">Download DATA combined data CSV</a> |
+               <!-- <a href="#" class="plot-intensities" id="plot-data-intensities">Plot intensities</a> -->
+            {% endif %}</div>
+        <div class="panel-body collapse" id="data">
+            <pre>{{ data.task_data | pprint }}</pre>
+        </div>
+    </div>
+
+    {% if data.task_run.reports %}
+        <div class="panel panel-default">
+            <div class="panel-heading"><a class="accordion-toggle" href="#reports" data-toggle="collapse">Reports</a></div>
+            <div class="panel-body collapse" id="reports">
+                {% for report_name,report_location in data.task_run.reports.items() %}
+                    <a href="{{ url_for("ReportView.viewreport", id=data.task_run.id, report_name=report_name) }}">{{ report_name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if data.task_run_output %}
+        {% if 'r_output' in data.task_run_output.keys() %}
+        <div class="panel panel-default">
+            <div class="panel-heading"><a class="accordion-toggle" href="#r_code" data-toggle="collapse">View R Code</a></div>
+            <div class="panel-body collapse" id="r_code">
+                <pre>{{ data.task_run_output.r_script_path | pprint }}</pre>
+                <pre>{{ data.task_run_output.r_output | pprint }}</pre>
+            </div>
+        </div>
+        {% endif %}
+        <div class="panel panel-default">
+        <div class="panel-heading"><a class="accordion-toggle" href="#results" data-toggle="collapse">View Results</a><a href="{{url_for('AnalysisView.download_results')}}?id={{data.task_run.id}}">Download results JSON</a> {% if 'feature_metadata' in data.task_run_output.keys() %}
+            <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=output&property=feature_metadata&format=table">Download OUTPUT feature metadata CSV</a> |
+            {% endif %}
+            {% if 'sample_metadata' in data.task_run_output.keys() %}
+                <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=output&property=sample_metadata&format=table">Download OUTPUT sample metadata CSV</a> |
+            {% endif %}
+            {% if 'intensity_data' in data.task_run_output.keys() %}
+                <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=output&property=intensity_data&format=table">Download OUTPUT intensity data CSV</a> |
+            {% endif %}
+            {% if 'intensity_data' in data.task_run_output.keys() and 'sample_metadata' in data.task_run_output.keys() and 'intensity_data' in data.task_run_output.keys() %}
+                <a href="{{url_for('AnalysisView.download_task_run_data')}}?id={{data.task_run.id}}&task_run_data_type=output&property=combined&format=table">Download OUTPUT combined data CSV</a> |
+               <!-- <a href="#" class="plot-intensities" id="plot-output-intensities">Plot intensities</a> -->
+            {% endif %}
+
+        </div>
+        <div class="panel-body collapse" id="results">
+            <pre>{#  data.task_run_output | pprint #}</pre>
+        </div>
+    </div>
+    {% endif %}
+{% endif %}
+
+<script>
+
+    function sleep(milliseconds) {
+      const date = Date.now();
+      let currentDate = null;
+      do {
+        currentDate = Date.now();
+      } while (currentDate - date < milliseconds);
+    }
+
+
+     $('#rerun_button').click(function(e){
+        console.log("here")
+        var pipeline_name = '{{ data['task_run'].class_name}}';
+        var task_id = '{{ data['task_run'].class_name.lower().replace("_","")}}';
+        var run_config = {}
+        run_config[task_id] = {}
+        $('#rerun_form :input').each(function(e) {
+            console.log($(this).attr('data-type'));
+            if ($(this).val() === 'true') {
+                var value = true;
+            } else if ($(this).val() === 'false') {
+                var value = false;
+            } else if ($(this).attr('data-type') == 'list' && $(this).val() != '') {
+                var value = $(this).val().split(",");
+            } else if ($(this).attr('data-type') == 'json' && $(this).val() != '') {
+                var value = JSON.parse($(this).val());
+            } else {
+                var value = $(this).val();
+            }
+            if($(this).prop('name') != 'csrf_token'){
+                run_config[task_id][$(this).prop('name')] = value;
+            }
+        });
+        run_config[task_id]['task_run_id'] = {{ data['task_run'].id }};
+
+        console.log(run_config);
+        var data = {"pipeline_name":pipeline_name,
+                    "run_config":run_config,
+                    "csrf_token": $('[name=csrf_token]').val()}
+
+        console.log(data);
+
+        $.ajax("{{ url_for('PipelineFactoryView.run_pipeline') }}", {
+            type: "POST",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(data),
+            success: function (data,status,xhr) {
+                console.log(data);
+                if (data['success'] === 'true') {
+                    //$('#run_task').addClass('disabled');
+                    //sleep(5000)
+                    alert("Pipeline scheduled: " + data['pipeline_url'] + " - New results open in new tab");
+                    window.open(window.location.href, "_blank");
+                    $('body').css('background-color','#df4759')
+                } else {
+                    console.log("it didnt work!");
+                }
+            }
+        });
+    });
+
+</script>

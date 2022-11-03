@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+
+	<div class="row">
+	    <h3 class="page-heading"><a class="bc-back" href="{{url_for('CompoundView.list')}}">Compounds</a>&nbsp;{{data.compound.name}}</h3>
+	</div>
+	
+	<div class="row" id="section_tabs">	
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#compound_tab" data-batch="" data-toggle="tab">Attributes</a></li>		
+			<li><a href="#standards_tab" data-toggle="tab">Standards</a></li>
+		</ul>
+        
+		<div class="tab-content">
+			<div class="tab-pane active" id="compound_tab">
+			
+				<div class="row col-lg-12">
+
+
+						<div class="panel panel-default">
+					   		<div class="panel-heading">
+					   			<span class="panel-heading">Attributes</span>
+								<div class="pull-right">
+						        	<div class="btn-group"> 
+						        	<a class="edit-compound" data-"{{data.compound}}" href="#">
+						        	<span class="glyphicon glyphicon-edit"></span></a>&nbsp;     	
+						            </div>
+						        </div>
+					    	</div>
+							<div class="display-panel panel-body">				  		
+						   		<div class="row">
+									<div class="table-label col-xs-2">Name</div>
+									<div class="table-value col-xs-10">{{data.compound.name}}</div>
+								</div>	
+								<div class="row">
+									<div class="table-label col-xs-2">Chemical formula</div>
+									<div class="table-value col-xs-10">{{data.compound.chemical_formula}}</div>
+								</div>				   
+								<div class="row">
+									<div class="table-label col-xs-2">Monoisotopic mass</div>
+									<div class="table-value col-xs-10">{{data.compound.monoisotopic_mass}}</div>
+								</div>
+				
+								<div class="row">
+									<div class="table-label col-xs-2">InChI</div>
+									<div class="table-value col-xs-10">{{data.compound.inchi}}</div>
+								</div>
+								<div class="row">	
+									<div class="table-label col-xs-2">InChI key</div> 
+									<div class="table-value col-xs-10">{{data.compound.inchi_key}}</div>
+								</div>
+								<div class="row">
+									<div class="table-label col-xs-2">IUPAC</div>
+									<div class="table-value col-xs-10">{{data.compound.iupac}}</div>
+								</div>
+                                <div class="row">
+									<div class="table-label col-xs-2">SMILES</div>
+									<div class="table-value col-xs-10">{{data.compound.smiles}}</div>
+								</div>
+                                <div class="row">
+									<div class="table-label col-xs-2">log P</div>
+									<div class="table-value col-xs-10">{{data.compound.log_p}}</div>
+								</div>
+							</div>					
+							<div class="edit-panel panel-body hide-me">										
+							<form method="POST" action="{{url_for('CompoundView.compound', id=data.compound.id)}}">
+								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+					  			<input type="hidden" name="id" value="{{ data.compound.id }}"/>				     	
+						     	<div class="row col-lg-12">
+	  	
+							   		<div class="row">
+										<div class="table-label col-xs-2">Name</div>
+										<div class="table-value col-xs-8"><input type="text" class="form-control" name="name" value="{{data.compound.name}}"></div>
+									</div>	
+									<div class="row">
+										<div class="table-label col-xs-2">Chemical formula</div>
+										<div class="table-value col-xs-8"><input type="text" class="form-control" name="chemical_formula" value="{{data.compound.chemical_formula}}"></div>
+									</div>				   
+									<div class="row">
+										<div class="table-label col-xs-2">Neutral mass</div>
+										<div class="table-value col-xs-8"><input type="text" class="form-control" name="monoisotopic_mass" value="{{data.compound.monoisotopic_mass}}"></div>
+									</div>
+					
+									<div class="row">
+										<div class="table-label col-xs-2">InChI</div>
+										<div class="table-value col-xs-8"><textarea rows="4" class="form-control" name="inchi">{{data.compound.inchi}}</textarea></div>
+									</div>
+									<div class="row">	
+										<div class="table-label col-xs-2">InChI key</div> 
+										<div class="table-value col-xs-8"><input type="text" class="form-control" name="inchi_key" value="{{data.compound.inchi_key}}"></div>
+									</div>
+
+
+								</div>
+								<div class="row col-lg-12">
+	
+										<div class="section-heading">External databases </div>   
+		
+										{% for row in data.external_dbs %}		       		
+										<div class="row">
+								    		<div class="col-xs-2 table-label">{{ row.db_name }}</div>
+								        	<div class="col-xs-8 table-value">
+								        		<input type="text" class="form-control" id="db_{{row.db_id}}" name="db_{{row.db_id}}" value="{{','.join(row.database_refs)}}">
+								        	</div>
+								        	{% if row.cts_lookup %}
+								        	<div class="col-xs-2 table-value"><button data-id="{{row.db_id}}" data-target="{{row.db_name}}" class="look_up_refs btn btn-default">Find...</button></div>
+											{% endif %}
+										</div>	           
+							     		{% endfor %} 
+
+					 			</div>
+				    			<div class="col-xs-12 table-label"><button id="button_save" type="submit" class="btn btn-primary">Save</button></div>				
+					   		</form>	
+							</div>
+						</div>
+				</div>			
+
+				<div class="row col-lg-12">	
+				
+					<div class="col-lg-4">
+						<div class="display-panel panel panel-default">
+							<div class="panel-heading">Classes</div>
+							<div class="panel-body">
+
+								<div class="row">
+									{% for row in data.groups %}
+										<div class="col-xs-4 table-label">{{ row.type.value }}</div>
+										<div class="col-xs-8 table-value">
+											<a href="{{ url_for('CompoundView.compound_class', id=row.compound_id, group_id=row.compound_class_id) }}">
+												{% if row.type.value == 'isomer' %}
+													{{row.name}} {{row.inchi_key_backbone}}
+												{% else %}
+													{{ kingdom }} - {{row.category}} - {{row.main_class }} - {{row.sub_class}} - {{ row.direct_parent }}
+												{% endif %}
+												</a>
+										</div>
+									{% endfor %}
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4">
+
+						<div class="display-panel panel panel-default">
+							<div class="panel-heading">External links</div>
+							<div class="panel-body">
+								{% for row in data.external_dbs %}
+								{% if row.links %}
+								<div class="row">
+									<div class="col-xs-4 table-label">{{ row.db_name }}</div>
+									<div class="col-xs-8 table-value">
+									{% for i in row.links %}
+										<a href="{{ i.link }}" target="_blank">{{i.ref}}</a>&nbsp;
+									{% endfor %}
+									</div>
+								</div>
+								{% endif %}
+								{% endfor %}
+							</div>
+						</div>
+
+			 		</div>
+			 		
+			 		<div class="col-lg-4">
+						<div class="display-panel panel panel-default">
+							<div class="panel-heading">Annotations</div>
+							<div class="panel-body">
+								{% for row in data.annotation_methods %}
+								<div class="row">
+									<div class="col-xs-4 table-label"><a href="{{ url_for('CompoundView.annotation', compound_id=data.compound.id,annotation_id=row.id) }}">{{ row.annotation_method_name }} {{ row.assay_name }} v{{ row.version }}</a></div>
+
+									<div class="col-xs-5 table-value">{{ row.cpd_name }}</div>
+
+									{% if row.secondary_compound_id and row.secondary_compound_operator %}
+										<div class="col-xs-3 table-value">
+											{% if data.compound.id == row.secondary_compound_id %}
+												<a href="{{url_for('.compound',id=data.compound.id)}}">{{ data.compound.id }}</a>
+												{{ row.secondary_compound_operator.value }}
+												<a href="{{url_for('.compound',id=row.compound_id)}}">{{ row.compound_id }}</a>
+											{% else %}
+												<a href="{{url_for('.compound',id=row.secondary_compound_id)}}">{{ row.secondary_compound_id }}</a>
+												{{ row.secondary_compound_operator.value }}
+												<a href="{{url_for('.compound',id=row.compound_id)}}">{{ row.compound_id }}</a>
+											{% endif %}
+										</div>
+									{% endif %}
+								</div>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+				<div class="row col-lg-12">
+					
+								 		
+			 		<div class="col-lg-4">					
+						<div class="display-panel panel panel-default">
+							<div class="panel-heading">LIMS aliquots</div>
+							<div class="panel-body">
+
+								<div class="row">
+									<div class="col-xs-4 table-label">LIMS ID</div>
+									<div class="col-xs-8 table-value">
+									{% for row in data.aliquots %}
+										{{ row.legacy_lims_ids }}
+									{% endfor %}
+									</div>
+								</div>
+							</div>
+						</div>
+			 		</div>
+					<div class="col-lg-4">
+						<div class="display-panel panel panel-default ">
+							<div class="panel-heading ">Structure</div>
+							<div class="panel-body">
+								<div class="col-xs-12">
+									<img clas ="img-responsive" width = "100%" src="https://cactus.nci.nih.gov/chemical/structure/InChIKey={{data.compound.inchi_key}}/image">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			
+			<div class="tab-pane" id="standards_tab">	
+				{% if data.chemical_standard_datasets %}
+				<div class="col-lg-6">
+					<div class="display-panel panel panel-default">
+						<div class="panel-heading">Retention Time - M/Z</div>
+						<div class="panel-body">	 			
+						     {% for row in data.chemical_standard_datasets %}
+						     	
+								<div class="row">
+						           	{% if row.acquired_date %}<div class="col-xs-2 table-label">{{ row.acquired_date }}</div>{%endif%}
+						           	<div class="col-xs-10 table-value"><a href="{{ url_for('CompoundView.chemical_standard_dataset', id=row.chemical_standard_dataset_id) }}">{{row.source_file}}</a></div>
+								</div>	
+								<div class="row">
+									<div id="chart-rt-{{row.chemical_standard_dataset_id}}" data-id="{{row.chemical_standard_dataset_id}}" data-rt="{{row.rt_seconds}}" data-mz="{{row.mz}}"></div>
+								</div>          
+						     {% endfor %}     
+						</div>
+				 	</div> 
+				 </div>
+				 <div class="col-lg-6">
+					<div class="display-panel panel panel-default">
+						<div class="panel-heading">M/Z - Intensity</div>
+						<div class="panel-body">	 			
+						     {% for row in data.chemical_standard_datasets %}
+								<div class="row">
+						           	{% if row.acquired_date %}<div class="col-xs-2 table-label">{{ row.acquired_date }}</div>{%endif%}
+						           	<div class="col-xs-10 table-value"><a href="{{ url_for('.chemical_standard_dataset', id=row.chemical_standard_dataset_id) }}">{{row.source_file}}</a></div>
+								</div>	
+								<div class="row">									
+									<div id="chart-intensity-{{row.chemical_standard_dataset_id}}" data-id="{{row.chemical_standard_dataset_id}}" data-mz="{{row.mz}}" data-intensity="{{row.intensity}}"></div>
+								</div>          
+						     {% endfor %}     
+						</div>
+				 	</div> 
+				 </div>
+				{%endif%}		
+			</div>	
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}
+{% block tail %}
+{{ super() }}   
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+
+$( function() {	
+	
+	$('div[data-rt]').each(function() {
+		
+		var id = $(this).data('id');
+		var mz = $(this).data('mz');
+		var rt = $(this).data('rt');
+		console.log('mz ' + mz);
+		console.log('rt ' + rt);
+		var range_x = Math.max(...rt) + 10;
+		var range_y = Math.max(...mz) + 10;
+
+		 var shapes = [];
+		 for (i = 0; i < rt.length; i++) {    
+			  var s =  {
+			      type: 'line',
+			      x0: rt[i], y0: 0,
+			      x1: rt[i], y1: mz[i]
+			    };
+		  	shapes.push(s);
+		 };
+		
+		var dataset = [  {  x: rt, y: mz, type: 'scatter', mode:'markers' }];
+		
+		var layout = {
+				  shapes: shapes,
+				  xaxis: { range: [0, range_x],  title: { text: 'retention time (s)', font: { size: 14 } } },
+				  yaxis: { range: [0, range_y],  title: { text: 'm/z', font: { size: 14 } } }
+				};
+		Plotly.newPlot('chart-rt-' + id, dataset, layout);
+	});
+	
+	$('div[data-intensity]').each(function() {
+		
+		var id = $(this).data('id');
+		var mz = $(this).data('mz');
+		var intensity = $(this).data('intensity');
+		
+		var range_x = Math.max(...mz) + 10;
+		var range_y = Math.max(...intensity) + 10;
+		var shapes = [];
+		for (i = 0; i < mz.length; i++) {    
+			  var s =  {
+			      type: 'line',
+			      x0: mz[i], y0: 0,
+			      x1: mz[i], y1: intensity[i]
+			    };
+		  	shapes.push(s);
+		};
+		var layout = {
+				  shapes: shapes,
+				  xaxis: { range: [0, range_x],  title: { text: 'm/z', font: { size: 14 } } },
+				  yaxis: { range: [0, range_y],  title: { text: 'intensity', font: { size: 14 } } }
+				};
+		var dataset = [  {  x: mz, y: intensity, type: 'scatter', mode:'markers' }];
+
+		Plotly.newPlot('chart-intensity-' + id, dataset, layout);
+	});
+	
+	$('.look_up_refs').on("click", function(e) {		   
+		   e.preventDefault();
+		   db = this.dataset;
+		   
+		   console.log("looking up " + db.target);
+		   lookupExtRefs(db);
+	});
+	
+	$('a.edit-compound').on("click", function(e) {
+		e.preventDefault();		
+	  	$('.edit-panel').toggle();
+	  	$('.display-panel').toggle();	
+	});
+});
+
+function lookupExtRefs(db) {	
+
+	var inputBox  = $('#db_' + db.id);
+	var CTS_URL_BASE = "https://cts.fiehnlab.ucdavis.edu/rest/"
+	var url = CTS_URL_BASE + 'convert/InChIKey/' + db.target + '/{{data.compound.inchi_key}}';
+	
+	var promise = $.getJSON(url)
+		.done(function(data) {   	
+			console.log("DONE fetching refs from " + url);			
+			var result = data[0];			
+			var answer = result.results;
+			if (answer && answer.length > 0) {
+				answer = answer.join();
+			} else {
+				answer = "None";
+			}
+			console.log(answer);
+			inputBox.val(answer);
+		})
+        .fail( function(data) { 		
+			console.log('failed ' + data.responseJSON);
+		});
+	return promise;
+};
+</script>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="row col-xs-12">
+    <h3 class="page-heading"><a class="bc-back" href="{{url_for('.list')}}?ro=true&table={{data.table}}">Tables</a> {{data.table}}</h3>
+</div>
+{%if not 'entity' in data %}
+		<div class="alert alert-error" role="alert">
+	  	missing entity info
+		</div>
+{%else%}
+<div class="row col-xs-12">
+	<div class="panel panel-default">
+	   <div class="panel-heading">
+	   		<span class="table-heading">&nbsp;{{data.table}}</span>
+			<div class="pull-right">
+	        	<div class="btn-group"> 
+	        	<a class="edit-entity" data-entity="{{data.entity}}" href="#">
+	        	<span class="glyphicon glyphicon-edit"></span></a>&nbsp;     	
+	            </div>
+	        </div>
+	    </div>
+		<div id="display-panel" class="panel-body">				  		
+			   	{%for k, v in data.entity.items() %}
+			   	{%if k != 'relations'%}
+				<div class="row">
+			    	<div class="col-xs-3 table-label">{{ k }}</div>
+			        <div class="col-xs-9 table-value">{{ v }}</div>
+				</div>
+				{% endif %}
+	    		{% endfor %}	
+		</div>
+		
+		<div id="edit-panel" class="panel-body hide-me">	
+			<form method="POST" action="{{url_for('PhenomeDBBrowserView.entity', table=data.table, id=data.entity.id)}}">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+	  			<input type="hidden" name="id" value="{{ data.entity.id }}"/>
+			   	{%for k, v in data.entity.items() %}
+			   	{%if k != 'relations' and k != 'id'%}
+				<div class="row">
+			    	<div class="col-xs-3 table-label">{{ k }}</div>
+			        <div class="col-xs-9 table-value"><input type="text" class="form-control" name="{{k}}" value="{{v}}"></div>
+				</div>
+				{% endif %}
+	    		{% endfor %}
+	    		<div class="col-xs-12 table-label"><button id="button_save" type="submit" class="btn btn-primary">Save</button></div>				
+	   		</form>	
+		</div>
+	</div>
+</div>
+<!--
+{% if data['table'] == 'compound' %}  
+<div class="row">
+	{% if data['external_dbs'] %}
+		<div class="col-xs-6">	
+			<div class="panel panel-default">
+		 		<div class="panel-heading">External databases</div>
+				<div class="panel-body">	   			
+			 		{% for row in data['external_dbs'] %}		       		
+					<div class="row">
+				    	<div class="col-xs-3 table-label">{{ row['name'] }}</div>
+				        <div class="col-xs-9 table-value"><a href="{{ row['link'] }}" target="_blank">{{row['database_ref']}}</a></div>
+					</div>	           
+			     	{% endfor %} 
+		    	</div>
+	 		</div>
+	 	</div>
+	{% endif %}
+	{% if data['ms_datasets'] %}
+		<div class="col-xs-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">MS Datasets</div>
+				<div class="panel-body">	 			
+				     {% for row in data['ms_datasets'] %}  		
+						<div class="row">
+				           	<div class="col-xs-4 table-label">[{{ row['id']}}]&nbsp;{{ row['acquiredDate'] }}</div>
+				           	<div class="col-xs-8 table-value"><a href="{{ url_for('.chemical_standard_dataset', id=row['id']) }}">{{row['source_file']}}</a></div>
+						</div>	           
+				     {% endfor %}     
+				</div>
+		 	</div> 
+		 </div>
+	{%endif%}	
+</div>
+<div class="row col-xs-12">
+	<div class="panel panel-default">
+   		<div class="panel-heading ">Structure</div>
+		<div class="panel-body">				 		
+			<img class="img-panel" src="https://cactus.nci.nih.gov/chemical/structure/InChIKey={{data.entity.inchi_key}}/image">	
+		</div>
+	</div>
+</div>
+-->
+{% endif %}
+{% endif %}
+{% endblock %}
+{% block head_js %}
+{{ super() }}   
+
+<script>
+$( function() {	
+	$('a.edit-entity').on("click", function(e) {
+		e.preventDefault();		
+	  	$('#edit-panel').toggle();
+	  	$('#display-panel').toggle();	
+	});
+});
+</script>
+{% endblock %}

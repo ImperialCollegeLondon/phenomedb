@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+	<div class="row">
+	    <h3 class="page-heading">User Permissions for {{ current_user }}</h3>
+		<h4>User Name : {{ current_user.username }} </h4>
+		<h4>Email : {{current_user.email}}</h4>
+		<h4>Roles : {{current_user.roles}}</h4>
+		<h4>Available Roles : {{}}</h4>
+
+		{% for role in current_user.roles %}
+		<br/>
+		  <b>{{role}}</b><br/>
+		 <table>
+		  {% for permission in role.permissions %}
+			 <tr><td><i>{{permission}}</i></td></tr>
+		  {% endfor %}
+
+		 </table>
+  		{% endfor %}
+		<hr/>
+	</div>
+</div>
+
+
+{% endblock %}

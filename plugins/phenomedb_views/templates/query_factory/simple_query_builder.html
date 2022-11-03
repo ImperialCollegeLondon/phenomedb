@@ -1,0 +1,855 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid" id="saved_query-builder-container">
+
+    <div class="row">
+        <h3 class="page-heading"><a class="bc-back" href="{{url_for('QueryFactoryView.list')}}">Saved Queries</a></h3>
+    </div>
+
+    <div class="row" id="section_tabs">
+        <ul class="nav nav-tabs">
+            <li><a href="{{url_for('QueryFactoryView.list')}}">Saved Queries</a></li>
+            <li><a href="{{url_for('QueryFactoryView.project_summaries')}}">Project Summaries</a></li>
+            <li class="active"><a href="{{url_for('QueryFactoryView.list')}}">Simple Query Builder</a></li>
+            <li><a href="{{url_for('QueryFactoryView.advanced_saved_query_editor')}}?id=new" >Advanced Query Builder</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="saved_query-editor-tab">
+
+                <div>
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading"><a class="accordion-toggle" href="#simple-query-builder" data-toggle="collapse">Query Builder</a></div>
+                        <div class="panel-body collapse in" id="simple-query-builder">
+                            <div>
+                                <div class="row">
+                                    <form id="add_saved_query_form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <input type="hidden" name="saved_query_id" value="{% if data.saved_query %}{{ data.saved_query.id }}{% endif %}"/>
+
+                                        <div class="row">
+                                            <div class="col-xs-3 table-label">Query name</div>
+                                            <div class="col-xs-8 table-value">
+                                                <input class="form-control" type="text" name="saved_query_name" placeholder="Query name" value="{% if data.saved_query %}{{ data.saved_query.name }}{% endif %}"/>
+                                            </div>
+                                            <div class="col-xs-3 table-label">Query description</div>
+                                            <div class="col-xs-8 table-value">
+                                                <textarea class="form-control" name="saved_query_description" placeholder="Query description">{% if data.saved_query %}{{ data.saved_query.description }}{% endif %}</textarea>
+                                            </div>
+                                            <div class="col-xs-3 table-label">Permissions Role</div>
+                                            <div class="col-xs-8 table-value">
+                                                <select class="form-control" name="saved_query_role_id">
+                                                    <option value="0"{% if data.saved_query and not data.saved_query.role_id %} selected{% endif %}>No role (all)</option>
+                                                    <option value="1"{% if data.saved_query and data.saved_query.role_id == 1 %} selected{% endif %}>Admin</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-xs-2 table-label">Select Projects</div>
+                                            <div class="col-xs-9 table-value">
+                                                <select class="form-control" name="projects" multiple>
+                                                    <option value="all">--------All--------</option>
+                                                    {% for project in data.projects %}
+                                                        <option value="{{ project.name }}"{% if data.preset_filters and data.preset_filters.Projects and project.name in data.preset_filters.Projects['values'] %} selected{% endif %}>{{ project.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-xs-2 table-label">Select Sample Matrices</div>
+                                            <div class="col-xs-9 table-value">
+                                                <select class="form-control" name="sample_matrices" multiple>
+                                                    <option value="all" selected>--------All--------</option>
+                                                    {% for sample_matrix in data.sample_matrices %}
+                                                    <option value="{{ sample_matrix.sample_matrix }}"{% if data.preset_filters and data.preset_filters.SampleMatrices and sample_matrix.sample_matrix in data.preset_filters.SampleMatrices['values'] %} selected{% endif %}>{{ sample_matrix.sample_matrix }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-xs-2 table-label">Select Sample Types</div>
+                                            <div class="col-xs-9 table-value">
+                                                <select class="form-control" name="sample_types" multiple>
+                                                    <option value="all" selected>--------All--------</option>
+                                                    {% for sample_type in data.sample_types %}
+                                                        <option value="{{ sample_type.name }}"{% if data.preset_filters and data.preset_filters.SampleTypes and sample_type.name in data.preset_filters.SampleTypes['values'] %} selected{% endif %}>{{ sample_type.value }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-xs-2 table-label">Select Assays</div>
+                                            <div class="col-xs-9 table-value">
+                                                <select class="form-control" name="assays" multiple>
+                                                    <option value="all" selected>--------All--------</option>
+                                                    {% for assay in data.assays %}
+                                                        <option value="{{ assay.name }}"{% if data.preset_filters and data.preset_filters.Assays and assay.name in data.preset_filters.Assays['values'] %} selected{% endif %}>{{ assay.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-xs-2 table-label">Select Annotation Methods</div>
+                                            <div class="col-xs-9 table-value">
+                                                <select class="form-control" name="annotation_methods" multiple>
+                                                    <option value="all" selected>--------All--------</option>
+                                                    {% for annotation_method in data.annotation_methods %}
+                                                        <option value="{{ annotation_method.name }}"{% if data.preset_filters and data.preset_filters.AnnotationMethods and annotation_method.name in data.preset_filters.AnnotationMethods['values'] %} selected{% endif %}>{{ annotation_method.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-xs-2 table-label">Exclude Sample IDs</div>
+                                            <div class="col-xs-9 table-value">
+                                                <input class="form-control" type="text" name="sample_ids_exclude" placeholder="Text, Numeric, or CSV list" value="{% if data.preset_filters and data.preset_filters.Samples %}{{ data.preset_filters.Samples['csv_values'] }}{% endif %}"/>
+                                            </div>
+
+                                            <div class="col-xs-2 table-label">Add metadata filters</div>
+                                            <div class="col-xs-9 table-value">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <button id="add_metadata_filter" class="btn btn-primary">Add filter</button>
+                                                        <i>Each filter selects a distinct group of samples. Multiple constraints can be added to a filter.</i>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div class="row metadata_container">
+                                                    <div class="col-xs-12">
+                                                        {% if data.preset_filters and data.preset_filters.Metadata %}
+                                                            {% for metadata_field in data.preset_filters.Metadata %}
+                                                                {% include "query_factory/metadata_filter.html" %}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xs-2  table-label">Add compound filters</div>
+                                            <div class="col-xs-9 table-value">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <button id="add_compound_filter" class="btn btn-primary">Add filter</button>
+                                                        <i>Each filter selects a distinct group of samples. Multiple constraints can be added to a filter.</i>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div class="row compound_container">
+                                                    <div class="col-xs-12">
+                                                        {% if data.preset_filters and data.preset_filters.Compounds %}
+                                                            {% for compound_field in data.preset_filters.Compounds %}
+                                                                {% include "query_factory/compound_filter.html" %}
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 table-value" id="user_message"></div>
+
+                                        {%  include "query_factory/action_buttons.html" %}
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><a class="accordion-toggle" href="#summary-stats" data-toggle="collapse">Summary stats</a></div>
+                        <div class="panel-body collapse in" id="summary-stats">
+                            {% if data.saved_query_summary_stats %}
+                            {% include 'query_factory/summary.html' %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {# include 'query_factory/export.html' #}
+                    {% include 'query_factory/analysis_results.html' %}
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <span class="table-heading">Metadata charts</span>
+                        </div>
+                        <div class="panel-body" id="metadata-charts">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script>
+
+    var time_start = Date.now();
+
+    $('#saved_query-builder-container').on('change','[name=harmonised_metadata_field],[name=metadata_operator]',function() {
+
+        var sub_filter = $(this).closest('.sub_filter');
+        var sub_filter_injection = sub_filter.find('.sub_filter_injection');
+        var loading = sub_filter.find('.loading');
+        loading.css('display','block');
+        var metadata_value_dropdown = sub_filter.find('.metadata_value_dropdown');
+        metadata_value_dropdown.html('');
+
+        var harmonised_metadata_field = sub_filter.find('[name=harmonised_metadata_field]');
+        var metadata_operator = sub_filter.find('[name=metadata_operator]').val();
+
+        if (metadata_operator == undefined){
+            metadata_operator = 'eq';
+        }
+
+        var url = "{{ url_for('QueryFactoryView.get_simple_query_builder_metadata_values') }}?harmonised_field_name=" + harmonised_metadata_field.val() + "&operator="+metadata_operator;
+
+        $.ajax(url).done( function(html) {
+            loading.css('display','none');
+            //sub_filter.find('.metadata_operator_group').css('display','block');
+            sub_filter_injection.html(html)
+            sub_filter.find('[name=metadata_operator]').val(metadata_operator);
+            //sub_filter.find('.metadata_value_csv').css('display','block');
+
+        }).fail( function(data) {
+            console.log('error fetching match html ' + JSON.stringify(html));
+        });
+
+    });
+
+    $('#saved_query-builder-container').on('click','#add_metadata_filter',function(ev) {
+
+        ev.preventDefault();
+        var url = "{{ url_for('QueryFactoryView.get_simple_query_builder_metadata_html') }}";
+
+        $.ajax(url).done( function(html) {
+            $('.metadata_container').append(html);
+        }).fail( function(data) {
+            console.log('error fetching match html ' + JSON.stringify(data));
+        });
+    });
+
+    $('#saved_query-builder-container').on('click','.add_metadata_sub_filter',function(ev) {
+
+        ev.preventDefault();
+        var url = "{{ url_for('QueryFactoryView.get_simple_query_builder_metadata_html') }}?sub_filter=1";
+
+        var filter = $(this).closest('.filter');
+
+        $.ajax(url).done( function(html) {
+            filter.append(html);
+        }).fail( function(data) {
+            console.log('error fetching match html ' + JSON.stringify(data));
+        });
+    });
+
+    $('#saved_query-builder-container').on('change','[name=compound_identifier],[name=compound_operator]',function() {
+
+        var sub_filter = $(this).closest('.sub_filter');
+        var sub_filter_injection = sub_filter.find('.sub_filter_injection');
+        var loading = sub_filter.find('.loading');
+        loading.css('display','block');
+        var compound_value_dropdown = sub_filter.find('.compound_value_dropdown');
+        compound_value_dropdown.html('');
+
+        var compound_identifier = sub_filter.find('[name=compound_identifier]');
+        var compound_operator = sub_filter.find('[name=compound_operator]').val();
+        if (compound_operator == undefined){
+            compound_operator = 'eq';
+        }
+
+        var url = "{{ url_for('QueryFactoryView.get_simple_query_builder_compound_identifier_values') }}?compound_identifier=" + compound_identifier.val() + "&operator="+compound_operator;
+
+        $.ajax(url).done( function(html) {
+            loading.css('display','none');
+            sub_filter_injection.html(html);
+            sub_filter.find('[name=compound_operator]').val(compound_operator);
+
+        }).fail( function(data) {
+            console.log('error fetching match html ' + JSON.stringify(html));
+        });
+
+    });
+
+    $('#saved_query-builder-container').on('click','#add_compound_filter',function(ev) {
+
+        ev.preventDefault();
+        var url = "{{ url_for('QueryFactoryView.get_simple_query_builder_compound_html') }}";
+
+        $.ajax(url).done( function(html) {
+            $('.compound_container').append(html);
+            $('.compound_container').find('.compound_dropdown').chosen();
+
+        }).fail( function(data) {
+            console.log('error fetching match html ' + JSON.stringify(data));
+        });
+    });
+
+    $('#saved_query-builder-container').on('click','.add_compound_sub_filter',function(ev) {
+
+        ev.preventDefault();
+        var url = "{{ url_for('QueryFactoryView.get_simple_query_builder_compound_html') }}?sub_filter=1";
+
+        var filter = $(this).closest('.filter');
+
+        $.ajax(url).done( function(html) {
+            filter.append(html);
+            filter.find('.compound_dropdown').chosen();
+            //sub_filter_container.find('.compound_dropdown').trigger("chosen:updated");
+
+        }).fail( function(data) {
+            console.log('error fetching match html ' + JSON.stringify(data));
+        });
+    });
+
+    $('#saved_query-builder-container').on('click','.delete-filter',function(ev) {
+
+        ev.preventDefault();
+        var sub_filter = $(this).closest(".sub_filter");
+
+        var filter = sub_filter.closest('.filter');
+
+        sub_filter.slideUp("slow");
+        sub_filter.remove();
+
+        if ($.trim(filter.html()) == '<hr class="strong-hr">'){
+
+            filter.slideUp('slow');
+            filter.remove();
+
+        }
+    });
+
+    build_filters = function(){
+
+        var filters = [];
+
+        if ($('[name=projects]').val() != 'all' && $('[name=projects]').val() != '') {
+            var project_match = {};
+            project_match['model'] = "Project";
+            project_match['property'] = "name";
+            project_match['operator'] = "in";
+            project_match['value'] = $('[name=projects]').val().join(',');
+            project_match['datatype'] = 'VARCHAR';
+            var project_subfilter = {
+                'sub_filter_operator': "AND",
+                'matches': [project_match]
+            };
+
+            filters.push({
+                'filter_operator': "AND",
+                'filter_preset': "Projects",
+                'sub_filters': [project_subfilter]
+            });
+        }
+        if ($('[name=sample_matrices]').val() != 'all' && $('[name=sample_matrices]').val() != '') {
+            var sample_matrix_match = {};
+            sample_matrix_match['model'] = "Sample";
+            sample_matrix_match['property'] = "sample_matrix";
+            sample_matrix_match['operator'] = "in";
+            sample_matrix_match['value'] = $('[name=sample_matrices]').val().join(',');
+            sample_matrix_match['datatype'] = 'VARCHAR';
+            var sample_matrix_subfilter = {
+                'sub_filter_operator': "AND",
+                'matches': [sample_matrix_match]
+            };
+
+            filters.push({
+                'filter_operator': "AND",
+                'filter_preset': "SampleTypes",
+                'sub_filters': [sample_matrix_subfilter]
+            });
+        }
+        if ($('[name=sample_types]').val() != 'all' && $('[name=sample_types]').val() != '') {
+            var sample_type_match = {};
+            sample_type_match['model'] = "Sample";
+            sample_type_match['property'] = "sample_type";
+            sample_type_match['operator'] = "in";
+            sample_type_match['value'] = $('[name=sample_types]').val().join(',');
+            sample_type_match['datatype'] = 'VARCHAR';
+            var sample_type_subfilter = {
+                'sub_filter_operator': "AND",
+                'matches': [sample_type_match]
+            };
+
+            filters.push({
+                'filter_operator': "AND",
+                'filter_preset': "SampleTypes",
+                'sub_filters': [sample_type_subfilter]
+            });
+        }
+        if ($('[name=assays]').val() != 'all' && $('[name=assays]').val() != '') {
+            var assay_match = {};
+            assay_match['model'] = "Assay";
+            assay_match['property'] = "name";
+            assay_match['operator'] = "in";
+            assay_match['value'] = $('[name=assays]').val().join(',');
+            assay_match['datatype'] = 'VARCHAR';
+            var assay_subfilter = {
+                'sub_filter_operator': "AND",
+                'matches': [assay_match]
+            };
+
+            filters.push({
+                'filter_operator': "AND",
+                'filter_preset': "Assays",
+                'sub_filters': [assay_subfilter]
+            });
+        }
+
+         if ($('[name=annotation_methods]').val() != 'all' && $('[name=annotation_methods]').val() != '') {
+            var annotation_method_match = {};
+            annotation_method_match['model'] = "AnnotationMethod";
+            annotation_method_match['property'] = "name";
+            annotation_method_match['operator'] = "in";
+            annotation_method_match['value'] = $('[name=annotation_methods]').val().join(',');
+            annotation_method_match['datatype'] = 'VARCHAR';
+            var annotation_method_subfilter = {
+                'sub_filter_operator': "AND",
+                'matches': [annotation_method_match]
+            };
+
+            filters.push({
+                'filter_operator': "AND",
+                'filter_preset': "AnnotationMethods",
+                'sub_filters': [annotation_method_subfilter]
+            });
+        }
+
+
+        if ($('[name=sample_ids_exclude]').val() != '') {
+            var sample_id_match = {};
+            sample_id_match ['model'] = "Sample";
+            sample_id_match ['property'] = "name";
+            sample_id_match ['operator'] = "not_in";
+            sample_id_match ['value'] = $('[name=sample_ids_exclude]').val();
+            sample_id_match ['datatype'] = 'VARCHAR';
+            var sample_id_subfilter = {
+                'sub_filter_operator': "AND",
+                'matches': [sample_id_match]
+            };
+
+            filters.push({
+                'filter_operator': "AND",
+                'filter_preset': "Samples",
+                'sub_filters': [sample_id_subfilter]
+            });
+        }
+        var metadata_filters = build_metadata_filters();
+        var compound_filters = build_compound_filters();
+
+        if(metadata_filters != undefined) {
+            filters = filters.concat(metadata_filters);
+        }
+        if(compound_filters != undefined) {
+            filters = filters.concat(compound_filters);
+        }
+
+        console.log(compound_filters);
+        console.log(metadata_filters);
+        console.log(filters);
+        return filters;
+    }
+
+    build_metadata_filters = function(){
+
+        var metadata_filters = [];
+
+        var filter = {};
+        filter['filter_operator'] = "OR";
+        filter['filter_preset'] = "Metadata";
+        filter['sub_filters'] = [];
+        var add_filter = false;
+
+        $('.metadata_container').find('.filter').each(function(ev){
+
+            var sub_filter = {'sub_filter_operator': "AND",
+                            'matches':[]};
+
+            $(this).find('.sub_filter').each(function(ev){
+
+                var metadata_field_name = $(this).find('[name=harmonised_metadata_field]').val();
+                var metadata_property = $(this).find('[name=harmonised_metadata_field] option:selected').data('type');
+
+                console.log($(this));
+                console.log(metadata_property);
+
+                var metadata_dropdown = $(this).find('[name=metadata_dropdown]').val();
+                var metadata_value_csv = $(this).find('[name=metadata_value_csv]').val();
+
+                console.log(metadata_dropdown);
+                console.log(metadata_value_csv);
+
+                if(metadata_dropdown != '' && metadata_value_csv == ''){
+                    if($(this).find('[name=metadata_dropdown]').prop('multiple')){
+                        var value = metadata_dropdown;
+                    } else {
+                        var value = metadata_dropdown;
+                    }
+                    var value = metadata_dropdown.join(',')
+                } else if (metadata_dropdown == '' && metadata_value_csv != ''){
+                    var value = metadata_value_csv;
+                } else if (metadata_dropdown == '' && metadata_value_csv == ''){
+                    alert("Metadata match value is NULL!")
+                } else if (metadata_dropdown != '' && metadata_value_csv != ''){
+                    alert("Metadata match cannot be dropdown AND CSV!");
+                }
+                var datatype = $(this).find('[name=datatype]').val();
+                console.log(datatype);
+
+                var match = {};
+                //MetadataHarmonisedField.name = 'Age'
+                match['model'] = 'MetadataHarmonisedField';
+                match['property'] = 'name';
+                match['operator'] = 'eq';
+                match['value'] = metadata_field_name;
+                match['datatype'] = 'VARCHAR';
+                sub_filter['matches'].push(match);
+
+                var match = {};
+                ////MetadataValue.harmonised_numeric_value > 30
+                match['model'] = "MetadataValue";
+                match['property'] = metadata_property;
+                match['operator'] = $(this).find('[name=metadata_operator]').val();
+                match['value'] = value;
+                match['datatype'] = datatype;
+                sub_filter['matches'].push(match);
+
+                add_filter = true;
+
+            });
+            if(add_filter == true) {
+                filter['sub_filters'].push(sub_filter);
+            }
+        });
+
+        if(add_filter == true){
+            metadata_filters.push(filter);
+            return metadata_filters;
+        } else {
+            return
+        }
+
+    }
+
+    build_compound_filters = function(){
+
+        var compound_filters = [];
+
+        var filter = {};
+        filter['filter_operator'] = "OR";
+        filter['filter_preset'] = "Compounds";
+        filter['sub_filters'] = [];
+
+        var add_filter = false;
+
+        $('.compound_container').find('.filter').each(function(ev){
+
+            var sub_filter = {'sub_filter_operator': "AND",
+                                'matches':[]};
+
+            $(this).find('.sub_filter').each(function(ev){
+
+                var match = {};
+
+                var compound_identifier = $(this).find('[name=compound_identifier] option:selected').val();
+                var model_and_property = compound_identifier.split('.');
+
+                var compound_dropdown = $(this).find('[name=compound_dropdown]').val();
+                var compound_value_csv = $(this).find('[name=compound_value_csv]').val();
+
+                console.log(compound_dropdown);
+                console.log(compound_value_csv);
+
+                if(compound_dropdown != '' && compound_value_csv == ''){
+                    if($(this).find('[name=compound_dropdown]').prop('multiple')){
+                        var value = compound_dropdown;
+                    } else {
+                        var value = compound_dropdown;
+                    }
+                    var datatype = $(this).closest('[name=datatype]').val();
+                } else if (compound_dropdown == '' && compound_value_csv != ''){
+                    var value = compound_value_csv;
+                } else if (compound_dropdown == '' && compound_value_csv == ''){
+                    alert("Compound match value is NULL!")
+                } else if (compound_dropdown != '' && compound_value_csv != ''){
+                    alert("Using the CSV instead of the dropdown");
+                    var value = compound_value_csv;
+                }
+                var datatype = $(this).find('[name=datatype]').val();
+                console.log(datatype);
+
+                var external_db_names = {{ data.external_dbs_list|tojson }};
+
+                if (external_db_names.indexOf(model_and_property[1]) > 0){
+
+                    console.log('external db!');
+
+                    var match = {};
+                    //ExternalDB.name = 'PubChem CID'
+                    match['model'] = 'ExternalDB';
+                    match['property'] = 'name';
+                    match['operator'] = 'eq';
+                    match['value'] = model_and_property[1];
+                    match['datatype'] = 'VARCHAR';
+                    sub_filter['matches'].push(match);
+
+                    console.log(match);
+
+                    var match = {};
+                    //CompoundExternalDB.database_ref = '121213'
+                    match['model'] = "CompoundExternalDB";
+                    match['property'] = "database_ref";
+                    match['operator'] = $(this).find('[name=compound_operator]').val();
+                    match['value'] = value;
+                    match['datatype'] = 'VARCHAR';
+                    sub_filter['matches'].push(match);
+
+                    console.log(match);
+
+                } else {
+
+                    console.log('not external db!');
+
+                    var match = {}
+                    match['model'] = model_and_property[0];
+                    match['property'] = model_and_property[1];
+                    match['operator'] = $(this).find('[name=compound_operator]').val();
+                    match['value'] = value;
+                    match['datatype'] = datatype;
+                    sub_filter['matches'].push(match);
+
+                    console.log(match);
+                }
+
+                add_filter = true;
+
+            });
+
+            if(add_filter == true) {
+                filter['sub_filters'].push(sub_filter);
+            }
+
+        });
+
+        if(add_filter == true){
+            compound_filters.push(filter);
+            return compound_filters;
+        } else {
+            return
+        }
+
+    }
+
+    $('#saved_query-editor-tab').on('click','.save_query',function(ev) {
+
+        ev.preventDefault();
+        save_query($('[name=saved_query_id]').val());
+
+    });
+
+    $('#saved_query-editor-tab').on('click','.copy_saved_query',function(ev) {
+        ev.preventDefault();
+        save_query('copy');
+    });
+
+    save_query = function(saved_query_id){
+
+        var data_to_post = {
+            'role_id': $('[name=saved_query_role_id]').find(":selected").val(),
+            'name': $('[name=saved_query_name]').val(),
+            'description': $('[name=saved_query_description]').val(),
+            'filters': JSON.stringify(build_filters()),
+            'saved_query_id': saved_query_id,
+            'type': 'preset',
+            'csrf_token':$('[name=csrf_token]').val()
+        };
+        console.log(data_to_post);
+
+        $.post("{{ url_for('QueryFactoryView.save_query') }}",
+            data_to_post,
+            function(data){
+
+                if ('error' in data) {
+
+                    $("#user_message").html("<em>Error saving! ** " + data['error'] + "</em>");
+
+                } else {
+
+                    if($('[name=saved_query_id]').val() != data['saved_query_id']){
+                        window.location.href = "{{ url_for('QueryFactoryView.simple_query_builder') }}?id=" + data['saved_query_id'];
+                    } else {
+                        $("#user_message").html("<em>Query saved!</em>");
+                        $('.delete-button').prop('disabled',false);
+                        $('.delete-button a').prop('href',"{{ url_for('QueryFactoryView.delete_saved_query') }}?id=" + data['saved_query_id']);
+                    }
+                }
+            });
+
+    }
+
+    $('#saved_query-editor-tab').on('click','.get_summary',function(ev) {
+
+        ev.preventDefault();
+
+        $('#summary-stats').slideUp();
+
+        $.post("{{ url_for('QueryFactoryView.get_summary') }}",
+            {
+                'filters': JSON.stringify(build_filters()),
+                'saved_query_id':$('[name=saved_query_id]').val(),
+                'csrf_token':$('[name=csrf_token]').val()
+            },
+            function(html){
+
+                $('#summary-stats').html(html);
+                $('#summary-stats').slideDown();
+            });
+
+    });
+
+
+    $('#saved_query-editor-tab').on('focusout','[name=compound_value_csv]',function(ev){
+
+        console.log($(this).val());
+
+        var compound_dropdown = $(this).closest('.sub_filter_injection').find('[name=compound_dropdown]');
+        if(compound_dropdown.prop('multiple')){
+            var value = $(this).val().split(",")
+        } else {
+            var value = $(this).val();
+        }
+        compound_dropdown.val(value);
+
+    });
+
+    $('#saved_query-editor-tab').on('focusout','[name=metadata_value_csv]',function(ev){
+        console.log($(this).val());
+        var metadata_dropdown = $(this).closest('.sub_filter_injection').find('[name=metadata_dropdown]');
+        if(metadata_dropdown.prop('multiple')){
+            var value = $(this).val().join(",")
+        } else {
+            var value = $(this).val();
+        }
+        metadata_dropdown.val(value);
+    });
+
+    $('#saved_query-editor-tab').on('change','[name=compound_dropdown]',function(ev){
+        console.log($(this).val());
+        if($(this).prop('multiple')){
+            var value = $(this).val().join(",")
+        } else {
+            var value = $(this).val();
+        }
+
+        $(this).closest('.sub_filter_injection').find('[name=compound_value_csv]').val(value);
+
+    });
+
+    $('#saved_query-editor-tab').on('change','[name=metadata_dropdown]',function(ev){
+        console.log($(this).val());
+        if($(this).prop('multiple')){
+            var value = $(this).val().join(",")
+        } else {
+            var value = $(this).val();
+        }
+
+        $(this).closest('.sub_filter_injection').find('[name=metadata_value_csv]').val(value);
+    });
+
+    $('#saved_query-editor-tab').on('click','.generate-dataframe-cache',function(ev) {
+
+        ev.preventDefault();
+
+        console.log("clicked");
+
+        id = $(this).prop('id');
+        model = id.substr('generate-dataframe-cache-'.length,id.length)
+        console.log(model)
+
+        $.post("{{ url_for('QueryFactoryView.generate_dataframe_cache') }}",
+            {
+                saved_query_id: $('[name=saved_query_id]').val(),
+                csrf_token: $('[name=csrf_token]').val(),
+                model: model
+            },
+            function(html){
+
+                $('#cache-'+model).text("Cache generating, please wait. You will receive an email when the Task completes.");
+
+            });
+
+    });
+
+    check_cache = function(){
+
+        var saved_query_id = $('[name=saved_query_id]').val();
+
+        //console.log(typeof(saved_query_id));
+
+        var time_now = Date.now();
+        var time_elapsed = time_now - time_start;
+
+        // if nearly an hour has elapsed, refresh the page
+        if (time_elapsed > 3500000){
+
+            window.location.href = window.location.href;
+
+        } else if(saved_query_id != 'new' && saved_query_id != ''){
+
+            var download_dataframe_url = "{{url_for('QueryFactoryView.download_dataframe')}}";
+            var download_intensity_csv = "{{url_for('QueryFactoryView.download_intensity_csv')}}";
+            var download_sample_metadata_csv = "{{url_for('QueryFactoryView.download_sample_metadata_csv')}}";
+            var download_feature_metadata_csv_path = "{{url_for('QueryFactoryView.download_feature_metadata_csv_path')}}";
+
+            $.post("{{url_for('QueryFactoryView.check_cache')}}", {
+                    saved_query_id: saved_query_id,
+                    csrf_token: $('[name=csrf_token]').val()
+                },
+                function (data) {
+                    console.log('cache check');
+                    console.log(data);
+
+                    for (var model in data['models']) {
+                        var cache_state = data['models'][model]
+
+
+                        if (cache_state == 'generating') {
+
+                            $('#cache-' + model).text("Cache generating, please wait. You will receive an email when the Task completes.");
+
+                        } else if (cache_state == 'none') {
+
+                            $('#cache-' + model).html('<a href="#" id="generate-dataframe-cache-' + model + '" class="button generate-dataframe-cache">Generate cache</a>');
+
+                        } else {
+
+                            html = 'Cache exists - ready for download/analysis <ul class="list-group">';
+                            html = html + '<li class="list-group-item">';
+                            html = html + '<a href="' + download_dataframe_url + '?id=' + saved_query_id + '&model=' + model + '">combined.csv</a>';
+                            html = html + '</li>';
+                            html = html + '<li class="list-group-item">';
+                            html = html + '<a href="' + download_intensity_csv + '?id=' + saved_query_id + '&model=' + model + '">intensity.csv</a>';
+                            html = html + '</li>';
+                            html = html + '<li class="list-group-item">';
+                            html = html + '<a href="' + download_sample_metadata_csv + '?id=' + saved_query_id + '&model=' + model + '">sample_metadata.csv</a>';
+                            html = html + '</li>';
+                            html = html + '<li class="list-group-item">';
+                            html = html + '<a href="' + download_feature_metadata_csv_path + '?id=' + saved_query_id + '&model=' + model + '">feature_metadata.csv</a>';
+                            html = html + '</li>';
+                            html = html + '</ul>';
+
+                            $('#cache-' + model).html(html);
+                        }
+                    }
+
+                });
+
+            setTimeout(check_cache, 5000);
+        }
+    };
+
+    //setTimeout(check_cache, 5000);
+
+
+    //$('[name=projects]').chosen();
+
+</script>
+
+{% endblock %}

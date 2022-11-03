@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+	<div class="row">
+        <h3 class="page-heading"><a class="bc-back" href="{{url_for('CompoundView.compound', id=data.compound.id)}}">{{data.compound.name}}</a></h3>
+    </div>
+    <div class="row">
+        <div class="section">
+            <ul>
+                <li>Annotation cpd_name: {{data.annotation.cpd_name}}</li>
+                <li>Version: {{ data.annotation.version }}</li>
+                <li>Assay: {{data.annotation.harmonised_annotation.assay.name}}</li>
+                <li>Annotation Method: {{data.annotation.harmonised_annotation.annotation_method.name}}</li>
+                <li>Harmonised cpd_id: {{data.annotation.cpd_name}}</li>
+                <li>Harmonised cpd_name: {{data.annotation.cpd_name}}</li>
+                <li>Compounds: {% for compound in data.annotation.harmonised_annotation.compounds %}<a href="{{url_for('CompoundView.compound', id=compound.compound.id)}}">{{compound.compound.name}}</a> {% if data.annotation.harmonised_annotation.multi_compound_operator %} {{ data.annotation.harmonised_annotation.multi_compound_operator.value }} {% endif %}{% endfor %}</li>
+                <li>Confidence Score: {{data.annotation.harmonised_annotation.confidence_score}}</li>
+                <li>Annotated By: {{data.annotation.harmonised_annotation.annotated_by}}</li>
+                <li>Config: {{data.annotation.config}}</li>
+            </ul>
+
+        </div>
+    </div>
+	<div class="row" id="section_tabs">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#evidence_tab" data-toggle="tab">Evidence</a></li>		
+			<li><a href="#new_evidence_tab" data-toggle="tab">Add new evidence</a></li>
+		</ul>
+	
+		<div class="tab-content">
+			<div class="tab-pane active" id="evidence_tab">			
+				<div class="row col-lg-12">			
+					<div class="col-md-6">
+						<div class="panel panel-default">
+						    <div class="panel-heading"> <span class="table-heading">Annotation Evidence</span></div>
+							<div class="panel-body">	
+								<div class="row-padded"> 
+									<table class="table table-bordered">
+									<thead>
+										<tr>
+											
+											<th>Evidence type</th>
+											<th>Type description</th>										
+											<th>Comments</th>
+											<th>Recorded by</th>		
+										</tr>
+									</thead>
+									{% for row in data.evidence %}									
+										<tr>
+											
+											<td><a class="show-evidence" href="#" 
+														data-annotation_id="{{row.annotation_id}}"
+														data-annotation_evidence_id="{{row.annotation_evidence_id}}"
+														data-comments="{{row.comments}}"
+														data-analysed_by="{{row.analysed_by_user}}"
+														data-validated_by="{{row.validated_by_user}}"
+														data-recorded_by="{{row.recorded_by_user}}"
+														data-date_analysed="{{row.date_analysed}}"
+														data-date_recorded="{{row.date_recorded}}"
+														data-date_validated="{{row.date_validated}}"
+														
+												   		data-json_data="{{row.json_data}}"
+														data-evidence_type_id="{{row.evidence_type_id}}"
+														data-files="{{row.files}}"
+														>
+												{{row.evidence_type_name}}</a></td>
+											<td>{{row.evidence_type_description}}</td>
+									   	   	<td>{{row.comments}}</td>
+									   	   	<td>{{row.recorded_by_user}}</td>				
+										</tr>	
+									{% endfor %}	
+									</table>	
+								</div>			   
+							</div>	
+						</div>
+					</div>
+					
+					<div class="col-md-6">
+					
+					
+						<div class="panel panel-default">
+						    <div class="panel-heading"> <span class="table-heading">Record details</span></div>	
+						    
+						    
+							<div class="panel-body">
+								
+								
+								<form id="edit_evidence_form" method="POST">	
+								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+								<input type="hidden" name="annotation_id" value="{{data.annotation.id}}"/>
+								
+								<input type="hidden" name="annotation_evidence_id" id="edit_annotation_evidence_id" value=""/>
+								<div class="row col-md-12">	
+									<div class="row">	 		
+										<div class="col-xs-3 table-label">Evidence type</div>	
+										<div class="col-xs-9 table-value">										 
+		   								<select class="form-control" name="evidence_type_id" id="edit_evidence_type">
+											{% for et in data.evidence_types%}
+											<option data-json_format="{{et.json_format}}" value="{{et.id}}">{{et.name}}</option>
+											{% endfor %}
+										</select>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-xs-3 table-label">JSON format</div>
+										<div class="col-xs-9 table-value"><span id="edit_json_format" class="json_format"></span></div>
+									</div>
+									<div class="row">	 		
+										<div class="col-xs-3 table-label">JSON data</div>											 
+		   								<div class="col-xs-9 table-value"><input class="form-control" value="" id="edit_json" name="json_data" ></div>	
+									</div>												
+									<div class="row">	 		
+										<div class="col-xs-3 table-label">Comments</div>											 
+		   								<div class="col-xs-9 table-value"><input class="form-control" value="" id="edit_comments" name="comments" ></div>	
+									</div>
+									<div class="row">	 		
+										<div class="col-xs-3 table-label">Analysed by</div>											 
+		   								<div class="col-xs-3 table-value"><input class="form-control" value="" id="edit_analysed_by" name="analysed_by_user" ></div>
+		   								<div class="col-xs-3 table-label">on date</div>		
+		   								<div class="col-xs-3 table-value"><input class="form-control datepicker" value="" id="edit_date_analysed" name="date_analysed" ></div>	
+									</div>		
+									<div class="row">	 		
+										<div class="col-xs-3 table-label">Validated by</div>											 
+		   								<div class="col-xs-3 table-value"><input class="form-control" value="" id="edit_validated_by" name="validated_by_user" ></div>	
+		   								<div class="col-xs-3 table-label">on date</div>	
+		   								<div class="col-xs-3 table-value"><input class="form-control datepicker" value="" id="edit_date_validated" name="date_validated" ></div>	
+									</div>	
+				
+									<div class="row">	 		
+										<div class="col-xs-3 table-label">Recorded by</div>											 
+		   								<div class="col-xs-3 table-value"><input class="form-control" value="" id="edit_recorded_by" name="recorded_by_user" ></div>
+		   								<div class="col-xs-3 table-label">on date</div>	
+		   								<div class="col-xs-3 table-value"><input class="form-control datepicker" value="" id="edit_date_recorded" name="date_recorded" ></div>		
+									</div>	
+									<div class="row">
+				  						<div class="col-xs-12 table-label">
+				  							<button id="remove_record" disabled class="btn btn-default">Delete record</button>
+				  						
+				  							<button id="update_record" disabled class="btn btn-primary">Save changes</button>
+				  						</div>    	    	
+									</div> 	
+								</div>
+								</form>   
+								<form id="file_upload_form" action="{{url_for('CompoundView.upload_annotation_evidence')}}" method="POST" enctype="multipart/form-data">
+									<input type="hidden" id="upload_annotation_evidence_id" name="annotation_evidence_id"/>
+									<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+									<input type="hidden" name="annotation_id" value="{{data.annotation.id}}"/>
+									
+									<div class="row col-md-12">
+													    			
+										<div class="row"> 
+											<div class="col-xs-3 table-label">Evidence files</div>
+											<div class="col-xs-9 table-value">
+												<table class="table-bordered">															
+													<tbody id="uploaded_files"/>
+												</table>	
+											</div>												
+										</div>
+										<div class="row">																																								
+											<div class="col-xs-3 table-label">Select files</div>
+											<div class="col-xs-3 table-value"><input required type="file" name="id_file" multiple></div>
+											<div class="col-xs-3 table-value"><div id="output-data-upload"></div></div>
+																																																		
+											<div class="col-xs-3 table-label">
+												<button class="btn btn-primary" id="upload_files" disabled type="submit">Upload files</button>
+											</div>																												
+										</div>
+									</div>
+									
+								</form>
+								
+							</div>
+						</div>	
+					</div>
+				</div>
+			</div>
+			
+			<div class="tab-pane " id="new_evidence_tab">			
+				<div class="row col-lg-10">				
+					<div class="panel panel-default">
+						<div class="panel-heading"> <span class="table-heading">New evidence</span></div>	
+						<div class="panel-body">							
+							<form action="{{url_for('CompoundView.insert_annotation_evidence')}}" method="post">
+								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+								<input type="hidden" name="annotation_id" value="{{data.annotation_id}}"/>
+								<div class="row">	 		
+									<div class="col-xs-2 table-label">Evidence type</div>	
+									<div class="col-xs-8 table-value">										 
+	   								<select class="form-control" name="evidence_type_id">
+										{% for et in data.evidence_types%}
+										<option data-json_format="{{et.json_format}}" value="{{et.id}}">{{et.name}}</option>
+										{% endfor %}
+									</select>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-2 table-label">JSON format</div>
+									<div class="col-xs-8 table-value"><span class="json_format">{% if data.evidence_types | length > 0 %}{{ data.evidence_types[0].json_format }}{% endif %}</span></div>
+								</div>
+								<div class="row">	 		
+									<div class="col-xs-2 table-label">JSON data</div>											 
+	   								<div class="col-xs-8 table-value"><input class="form-control" required name="json_data" placeholder="{% if data.evidence_types | length > 0 %}{{ data.evidence_types[0].json_format }}{% endif %}" ></div>
+								</div>												
+								<div class="row">	 		
+									<div class="col-xs-2 table-label">Comments</div>											 
+	   								<div class="col-xs-8 table-value"><input class="form-control" name="comments" ></div>	
+								</div>
+								<div class="row">	 		
+									<div class="col-xs-2 table-label">Analysed by</div>											 
+	   								<div class="col-xs-4 table-value"><input class="form-control" name="analysed_by_user" ></div>
+	   								<div class="col-xs-1 table-label">on date</div>		
+	   								<div class="col-xs-3 table-value"><input class="form-control datepicker" id="add_date_analysed" name="date_analysed" ></div>	
+								</div>		
+								<div class="row">	 		
+									<div class="col-xs-2 table-label">Validated by</div>											 
+	   								<div class="col-xs-4 table-value"><input class="form-control" name="validated_by_user" ></div>	
+	   								<div class="col-xs-1 table-label">on date</div>	
+	   								<div class="col-xs-3 table-value"><input class="form-control datepicker" id="add_date_validated" name="date_validated" ></div>	
+								</div>	
+			
+								<div class="row">	 		
+									<div class="col-xs-2 table-label">Recorded by</div>											 
+	   								<div class="col-xs-4 table-value"><input class="form-control" name="recorded_by_user" ></div>
+	   								<div class="col-xs-1 table-label">on date</div>	
+	   								<div class="col-xs-3 table-value"><input class="form-control datepicker" id="add_date_recorded" name="date_recorded" ></div>		
+								</div>		
+								<div class="row">
+									<div class="col-xs-9 table-label">(Supporting documentation can be uploaded later)</div>
+			  						<div class="col-xs-1 table-label"><button type="submit" class="btn btn-primary">Save</button></div>    	    	
+								</div> 	
+							</form>   
+							</div>	
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block tail %}
+{{ super() }}
+<script>
+$(function() {
+	$('.show-evidence').on("click", function(e) {
+		e.preventDefault();					 
+		highlightTableRow( this );	 
+		$("#update_record").attr("disabled", false);
+		$("#remove_record").attr("disabled", false);
+		$("#upload_files").attr("disabled", false);
+		
+		$("#edit_comments").val(this.dataset["comments"]);
+		var jsonData = this.dataset["json_data"];
+		console.log("json data is " + jsonData);
+		if ( jsonData ) {
+			$("#edit_json").val(jsonData);
+		}
+		$("#edit_analysed_by").val(this.dataset["analysed_by"]);
+		$("#edit_validated_by").val(this.dataset["validated_by"]);
+		$("#edit_recorded_by").val(this.dataset["recorded_by"]);
+		$("#edit_annotation_evidence_id").val(this.dataset["annotation_evidence_id"]);
+		$("#upload_annotation_evidence_id").val(this.dataset["annotation_evidence_id"]);
+		
+		$("#edit_date_recorded").val(this.dataset["date_recorded"]);
+		$("#edit_date_analysed").val(this.dataset["date_analysed"]);
+		$("#edit_date_validated").val(this.dataset["date_validated"]);
+		$("#edit_evidence_type").val(this.dataset["evidence_type_id"]).trigger("change");
+		
+		
+		$("#uploaded_files").empty();
+		var file_data = JSON.parse(this.dataset["files"]);
+		
+		$.each( file_data, function(idx, f) {
+			url = "{{ url_for('CompoundView.download_evidence_file') }}?id=" + f.id + "&annotation_compound_config_id={{data.annotation.id}}";
+			var tr = $("<tr/>");
+			var td = $("<td/>");			
+			var link = $("<a>").append(f.filename);
+			link.attr("href", url);
+			td.append( link );
+			tr.append(td);
+			$("#uploaded_files").append(tr);
+	    });	 	
+	}); 
+	
+	$("#remove_record").on ("click", function(e) {
+		e.preventDefault();
+		var ok = confirm("Are you sure?");
+		if ( ok ) {
+			$("#edit_evidence_form").attr("action", "{{url_for('CompoundView.remove_annotation_evidence')}}");
+			$("#edit_evidence_form").submit();
+		}
+	});
+	
+	$("#update_record").on ("click", function(e) {
+		e.preventDefault();
+		$("#edit_evidence_form").attr("action", "{{url_for('CompoundView.update_annotation_evidence')}}");
+		$("#edit_evidence_form").submit();
+	});
+
+	$("#edit_evidence_type").on('change',function (ev) {		
+		var option = $(this).find(":selected");
+	    var jsonFormat = option.data("json_format");       
+	    $("#edit_json_format").html(jsonFormat);
+	        
+	});
+	
+	$(".datepicker").datepicker();
+	$( ".show-evidence" ).first().click();
+});
+</script>
+{% endblock %}

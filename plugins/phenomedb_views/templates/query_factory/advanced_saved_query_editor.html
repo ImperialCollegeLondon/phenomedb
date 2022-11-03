@@ -1,0 +1,412 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid" id="saved_query-view-container">
+
+    <div class="row">
+        <h3 class="page-heading"><a class="bc-back" href="{{url_for('QueryFactoryView.list')}}">Saved Queries</a></h3>
+    </div>
+
+    <div class="row" id="section_tabs">
+        <ul class="nav nav-tabs">
+            <li><a href="{{url_for('QueryFactoryView.list')}}">Saved Queries</a></li>
+            <li><a href="{{url_for('QueryFactoryView.project_summaries')}}">Project Summaries</a></li>
+            <li><a href="{{url_for('QueryFactoryView.simple_query_builder', id='new')}}">Simple Query Builder</a></li>
+            <li class="active"><a href="{{url_for('QueryFactoryView.advanced_saved_query_editor')}}" >Advanced Query Builder</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="saved_query-editor-tab">
+
+                    <div class="panel panel-default">
+
+                        <div class="panel-heading"><a class="accordion-toggle" href="#simple-query-builder" data-toggle="collapse">Advanced Query Builder</a></div>
+                        <div class="panel-body collapse in" id="simple-query-builder">
+                            <div>
+                                <div class="row">
+                                    <form id="add_saved_query_form">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <input type="hidden" name="saved_query_id" value="{% if data.saved_query %}{{ data.saved_query.id }}{% endif %}"/>
+                                        <div class="row">
+                                            <div class="col-xs-3 table-label">Query name</div>
+                                            <div class="col-xs-8 table-value">
+                                                <input class="form-control" type="text" name="saved_query_name" placeholder="Query name" value="{% if data.saved_query %}{{ data.saved_query.name }}{% endif %}"/>
+                                            </div>
+                                            <div class="col-xs-3 table-label">Query description</div>
+                                            <div class="col-xs-8 table-value">
+                                                <textarea class="form-control" name="saved_query_description" placeholder="Query description">{% if data.saved_query %}{{ data.saved_query.description }}{% endif %}</textarea>
+                                            </div>
+                                            <div class="col-xs-3 table-label">Project short label</div>
+                                            <div class="col-xs-8 table-value">
+                                                <textarea class="form-control" name="project_short_label" placeholder="Project short label">{% if data.saved_query %}{{ data.saved_query.project_short_label }}{% endif %}</textarea>
+                                            </div>
+                                            <div class="col-xs-3 table-label">Permissions Role</div>
+                                            <div class="col-xs-8 table-value">
+                                                <select class="form-control" name="saved_query_role_id">
+                                                    <option value="0"{% if data.saved_query and not data.saved_query.role_id %} selected{% endif %}>No role (all)</option>
+                                                    <option value="1"{% if data.saved_query and data.saved_query.role_id == 1 %} selected{% endif %}>Admin</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div id="filter_container">
+                                            {% if data.saved_query %}
+                                                {% for filter in data.saved_query.display_query_dict.filters %}
+                                                    {% include 'query_factory/filter.html' %}
+                                                {% endfor %}
+                                            {% else %}
+                                                {% include 'query_factory/filter.html' %}
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-xs-12 table-value" id="user_message"></div>
+
+                                        {%  include "query_factory/action_buttons.html" %}
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><a class="accordion-toggle" href="#summary-stats" data-toggle="collapse">Summary stats</a></div>
+                        <div class="panel-body collapse in" id="summary-stats">
+                            {% if data.saved_query_summary_stats %}
+                                {% include 'query_factory/summary.html' %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if data.saved_query %}
+
+                        {% include 'query_factory/cache.html' %}
+
+                        {% include 'query_factory/export.html' %}
+
+                        {% include 'query_factory/analysis_results.html' %}
+
+                        {% include 'query_factory/batch_corrections.html' %}
+
+                        {% include 'query_factory/reports.html' %}
+
+                    {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block tail %}
+{{ super() }}
+
+<script>
+
+    var time_start = Date.now();
+
+    $('#filter_container').on('change','[name=property]',function() {
+        // 1. get the selected value, it's optgroup, and datatype,
+        // and build the string and hidden input field
+        var selected = $(this).find(":selected");
+
+        model_and_property = selected.val();
+
+        splitted = model_and_property.split('.');
+        model = splitted[0];
+        property = splitted[1];
+
+        datatype = selected.prop('dataset').type;
+        console.log(model);
+        console.log(property);
+        console.log(datatype);
+
+        selected.closest(".table-value").find('input[name=selected_model]').val(model);
+        selected.closest(".table-value").find('input[name=selected_property]').val(property);
+        selected.closest(".table-value").find('input[name=selected_datatype]').val(datatype);
+
+        selected.closest(".match").find('.filter-field').html(model + "." + property + "<span class='pull-right'><i>Datatype: " + datatype + "</i>")
+    });
+
+    $('#saved_query-editor-tab').on('click','.add_filter',function(ev) {
+
+        ev.preventDefault();
+
+        var url = "{{ url_for('QueryFactoryView.get_saved_query_filter_html') }}";
+        $.ajax(url).done( function(html) {
+            $('#filter_container').append(html);
+        }).fail( function(data) {
+            console.log('error fetching filter html ' + JSON.stringify(data));
+        });
+    });
+
+    $('#filter_container').on('click','.add_sub_filter',function(ev) {
+
+        ev.preventDefault();
+
+        var sub_filter_container = $(this).closest(".filter").find('.sub_filter_container');
+        console.log(sub_filter_container);
+
+        var url = "{{ url_for('QueryFactoryView.get_saved_query_subfilter_html') }}";
+        $.ajax(url).done( function(html) {
+            sub_filter_container.append(html);
+        }).fail( function(data) {
+            console.log('error fetching sub filter html ' + JSON.stringify(data));
+        });
+    });
+
+    $('#filter_container').on('click','.add_match',function(ev) {
+
+        ev.preventDefault();
+
+        var match_container = $(this).closest(".sub_filter").find('.match_container');
+        console.log(match_container);
+
+        var url = "{{ url_for('QueryFactoryView.get_saved_query_match_html') }}";
+        $.ajax(url).done( function(html) {
+            match_container.append(html);
+        }).fail( function(data) {
+            console.log('error fetching match html ' + JSON.stringify(data));
+        });
+    });
+
+    $('.match_container').on('click','.delete-match',function(ev) {
+
+        ev.preventDefault();
+        var match = $(this).closest(".match");
+
+        var match_container = match.closest('.match_container');
+
+        match.slideUp("slow");
+        match.remove();
+
+        if (!$.trim(match_container.html())){
+
+            var sub_filter = match_container.closest(".sub_filter");
+            var sub_filter_container = sub_filter.closest(".sub_filter_container");
+            sub_filter.slideUp('slow');
+            sub_filter.remove();
+
+            if (!$.trim(sub_filter_container.html())){
+
+                var filter = sub_filter_container.closest(".filter");
+
+                filter.slideUp('slow');
+                filter.remove();
+            }
+
+        }
+    });
+
+    build_filters = function(){
+
+        var filters = [];
+
+        $('.filter').each(function(ev){
+            var filter = {};
+            filter['filter_operator'] = $(this).find('[name=filter_operator]').val();
+            filter['sub_filters'] = [];
+
+            $(this).find('.sub_filter').each(function(ev){
+
+                var sub_filter_operator = $(this).find('[name=sub_filter_operator]').val();
+                var sub_filter = {'sub_filter_operator': sub_filter_operator,
+                                    'matches':[]}
+
+                $(this).find('.match').each(function(ev){
+
+                    var match = {};
+                    match['model'] = $(this).find('[name=selected_model]').val();
+                    match['property'] = $(this).find('[name=selected_property]').val();
+                    match['operator'] = $(this).find('[name=operator]').val();
+                    match['value'] = $(this).find('[name=value]').val();
+                    match['datatype'] = $(this).find('[name=selected_datatype]').val();
+                    sub_filter['matches'].push(match);
+
+                });
+                filter['sub_filters'].push(sub_filter)
+            })
+
+            filters.push(filter);
+
+        });
+
+        return filters;
+    }
+
+    $('#saved_query-editor-tab').on('click','.save_query',function(ev) {
+
+        ev.preventDefault();
+        save_query($('[name=saved_query_id]').val());
+
+    });
+
+    $('#saved_query-editor-tab').on('click','.copy_saved_query',function(ev) {
+        ev.preventDefault();
+        save_query('copy');
+    });
+
+    save_query = function(saved_query_id){
+
+        $.post("{{ url_for('QueryFactoryView.save_query') }}",
+            {
+                'role_id': $('[name=saved_query_role_id]').find(":selected").val(),
+                'name': $('[name=saved_query_name]').val(),
+                'description': $('[name=saved_query_description]').val(),
+                'project_short_label': $('[name=project_short_label]').val(),
+                'filters': JSON.stringify(build_filters()),
+                'saved_query_id':saved_query_id,
+                'type':'custom',
+                'csrf_token':$('[name=csrf_token]').val()
+            },
+            function(data){
+
+                if ('error' in data) {
+
+                    $("#user_message").html("<em>Error saving! ** " + data['error'] + "</em>");
+
+                } else {
+
+                    if($('[name=saved_query_id]').val() != data['saved_query_id']){
+                        window.location.href = "{{ url_for('QueryFactoryView.advanced_saved_query_editor') }}?id=" + data['saved_query_id'];
+                    } else {
+                        $("#user_message").html("<em>Query saved!</em>");
+                        $('.delete-button').prop('disabled',false);
+                        $('.delete-button a').prop('href',"{{ url_for('QueryFactoryView.delete_saved_query') }}?id=" + data['saved_query_id']);
+                    }
+                }
+            });
+
+    }
+
+
+
+    $('#saved_query-editor-tab').on('click','.get_summary',function(ev) {
+
+        ev.preventDefault();
+
+        $('#summary-stats').slideUp();
+
+        console.log(JSON.stringify(build_filters()));
+        console.log($('[name=saved_query_id]').val());
+        console.log($('[name=csrf_token]').val());
+
+        $.post("{{ url_for('QueryFactoryView.get_summary') }}",
+            {
+                'filters': JSON.stringify(build_filters()),
+                'saved_query_id':$('[name=saved_query_id]').val(),
+                'csrf_token':$('[name=csrf_token]').val()
+            },
+            function(html){
+
+                $('#summary-stats').html(html);
+                $('#summary-stats').slideDown();
+            });
+
+    });
+
+    $('#saved_query-editor-tab').on('click','.generate-dataframe-cache',function(ev) {
+
+        ev.preventDefault();
+
+        console.log("clicked");
+        var id = $(this).prop('id');
+        console.log(id)
+        var model = id.substr('generate-dataframe-cache-'.length,id.length)
+        console.log(model);
+        var correction_type = 'raw'
+        if (model.indexOf("-") >= 0){
+            correction_type = model.substr(model.indexOf("-")+1,model.length);
+            model = model.substr(0,model.indexOf("-"));
+        }
+        console.log(correction_type);
+        console.log(model);
+
+        $.post("{{ url_for('QueryFactoryView.generate_dataframe_cache') }}", {
+                saved_query_id: $('[name=saved_query_id]').val(),
+                csrf_token: $('[name=csrf_token]').val(),
+                correction_type: correction_type,
+                model: model
+        },
+        function(html){
+
+            //$('#cache-' + model).text("Cache generating, please wait. You will receive an email when the Task completes.");
+            window.location.href = window.location.href;
+
+        });
+
+    });
+
+    check_cache = function(){
+
+        var saved_query_id = $('[name=saved_query_id]').val();
+
+        console.log(saved_query_id);
+
+        var time_now = Date.now();
+        var time_elapsed = time_now - time_start;
+
+        // if nearly an hour has elapsed, refresh the page
+        if (time_elapsed > 3500000){
+            window.location.href = window.location.href;
+
+        } else if(saved_query_id != 'new' && saved_query_id != ''){
+
+            var download_dataframe_url = "{{url_for('QueryFactoryView.download_dataframe')}}";
+            var download_intensity_csv = "{{url_for('QueryFactoryView.download_intensity_csv')}}";
+            var download_sample_metadata_csv = "{{url_for('QueryFactoryView.download_sample_metadata_csv')}}";
+            var download_feature_metadata_csv_path = "{{url_for('QueryFactoryView.download_feature_metadata_csv_path')}}";
+
+            $.post("{{url_for('QueryFactoryView.check_cache')}}", {
+                saved_query_id: saved_query_id,
+                csrf_token: $('[name=csrf_token]').val()
+            },
+            function (data) {
+                console.log('cache check');
+                console.log(data);
+
+                for (var key in data['cache_state']) {
+
+                    if (key.indexOf('AnnotatedFeature') > 0){
+                        var model = "AnnotatedFeature";
+                    }
+
+                    if (data['cache_state'][key] == 'generating') {
+
+                        $('#cache-' + model).text("Cache generating, please wait. You will receive an email when the Task completes.");
+
+                    } else if (data['cache_state'][key] == 'none') {
+
+                        $('#cache-' + model).html('<a href="#" id="generate-dataframe-cache-' + model + '" class="button generate-dataframe-cache">Generate cache</a>');
+
+                    } else {
+                        window.location.href = window.location.href;
+                       // html = 'Cache exists - ready for download/analysis <ul class="list-group">';
+                       // html = html + '<li class="list-group-item">';
+                        // html = html + '<a href="' + download_dataframe_url + '?id=' + saved_query_id + '&model=' + model + '">combined.csv</a>';
+                        //html = html + '</li>';
+                        //html = html + '<li class="list-group-item">';
+                        //html = html + '<a href="' + download_intensity_csv + '?id=' + saved_query_id + '&model=' + model + '">intensity.csv</a>';
+                        //html = html + '</li>';
+                        //html = html + '<li class="list-group-item">';
+                        //html = html + '<a href="' + download_sample_metadata_csv + '?id=' + saved_query_id + '&model=' + model + '">sample_metadata.csv</a>';
+                        //html = html + '</li>';
+                        //html = html + '<li class="list-group-item">';
+                        //html = html + '<a href="' + download_feature_metadata_csv_path + '?id=' + saved_query_id + '&model=' + model + '">feature_metadata.csv</a>';
+                        //html = html + '</li>';
+                        //html = html + '</ul>';
+
+                        //$('#cache-' + model).html(html);
+                    }
+                }
+            });
+
+            setTimeout(check_cache, 600000);
+        }
+    };
+
+    setTimeout(check_cache, 600000);
+    
+
+</script>
+
+{% endblock %}

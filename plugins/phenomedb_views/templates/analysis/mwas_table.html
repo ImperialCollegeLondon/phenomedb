@@ -1,0 +1,95 @@
+<div class="col-md-12 table-outer">
+    <b><a href="{{ url_for('AnalysisView.analysisresult',id=data['task_run']['id']) }}">Task ID: {{ data['task_run']['task_id'] }} TaskRun ID:{{ data['task_run']['id'] }}</a> -
+        <a href="{{ url_for('QueryFactoryView.advanced_saved_query_editor') }}?id={{data['task_run']['saved_query']['id'] }}">{{ data['task_run']['saved_query']['name'] }}</a></b>
+    {% if 'n_samples' in data.keys() %}
+        <h4>Summary stats</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Number of samples</th>
+                    <th>Min Y</th>
+                    <th>Max Y</th>
+                    <th>Number of analysed metabolites</th>
+                    <th>Number of significant metabolites</th>
+                    <th>Min significant p(FDR)</th>
+                    <th>Max significant p(FDR)</th>
+                    <th>Mean significant p(FDR)</th>
+                </tr>
+            </thead>
+            <tr>
+                <td>{{ data['n_samples'] }}</td>
+                <td>{{ data['min_y'] }}</td>
+                <td>{{ data['max_y'] }}</td>
+                <td>{{ data['n_features'] }}</td>
+                <td>{{ data['n_significant_features'] }}</td>
+                <td>{{ data['min_significant_pvalue'] }}</td>
+                <td>{{ data['max_significant_pvalue'] }}</td>
+                <td>{{ data['mean_significant_pvalue'] }}</td>
+            </tr>
+        </table>
+    {% endif %}
+    {% if 'unique_kegg_ids_escaped' in data.keys() %}
+        <form method="POST" action="https://pathways.embl.de/mapping.cgi" target="_blank">
+            <textarea style="display:none;" name="selection">{% for kegg_id in data['unique_kegg_ids'] %}{{ kegg_id }}&#013; &#010;{% endfor %}</textarea>
+            <input type="hidden" name="export_type" value='svg'>
+            <input type="hidden" name="tax_filter" value="9606">
+            <input type="hidden" name="keep_colors" value="1">
+            <input type="hidden" name="whole_pathways" value="1">
+            <input type="hidden" name="whole_modules" value="0">
+            <input type="hidden" name="query_reactions" value="0">
+            <input type="hidden" name="map" value="metabolic">
+            <input type="submit" value="Get iPath3 pathway">
+        </form>
+        <br/>
+    {% endif %}
+    <p><a href="#" class="hide-insignificant-rows">Hide insignificant metabolites</a></p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th>Saved Query</th>
+                <th scope="col">Assay</th>
+                <th scope="col">Annotation Method</th>
+                <th scope="col">CPD ID</th>
+                <th scope="col">CPD Name</th>
+                <th scope="col">Estimate</th>
+                <th scope="col">P-value</th>
+                <th scope="col">Adjusted P-Value</th>
+                <th scope="col">Sign adjusted Log10(Adjusted P-Value)</th>
+                <th scope="col">AIC</th>
+                <th scope="col">KEGG</th>
+            </tr>
+        </thead>
+        {% for index,row in data['mwas_table'].items() %}
+            {#  if 'estimates' in row.keys() #}
+                {% set estimate = row['estimates'] | float %}
+                {% set adjusted_pvalue = row['adjusted_pvalues'] | float %}
+                <tr
+                    {% if adjusted_pvalue > 0.05 %}
+                        class='bg-active'
+                    {% elif estimate < 0 %}
+                        class='bg-primary'
+                    {% else %}
+                        class="bg-danger"
+                    {% endif %}>
+                    <td><a href="{{ url_for('CompoundView.harmonised_annotation',id=row['harmonised_annotation_id']) }}">{{ row['harmonised_annotation_id'] }}</a></td>
+                    {% if 'saved_query_id' in row.keys() and 'saved_query_name' in row.keys() %}
+                        <td><a href="{{ url_for('QueryFactoryView.advanced_saved_query_editor') }}?id={{ row['saved_query_id'] }}">{{ row['saved_query_name'] }}</a></td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    <td>{{ row['assay'] }}</td>
+                    <td>{{ row['annotation_method'] }}</td>
+                    <td>{{ row['cpd_id'] }}</td>
+                    <td>{{ row['cpd_name'] }}</td>
+                    <td><a href="#" class="plot-feature-against-y" id="{{ row['harmonised_annotation_id'] }}-{{ data.task_run.id }}">{{ row['estimates_str'] }}</a></td>
+                    <td id="{{ row['harmonised_annotation_id'] }}-{{ data.task_run.id }}-pvalue">{{ row['pvalues_str'] }}</td>
+                    <td id="{{ row['harmonised_annotation_id'] }}-{{ data.task_run.id }}-adjusted-pvalue">{{ row['adjusted_pvalues_str'] }}</td>
+                    <td>{{ row['log_adjusted_pvalues_str'] }}</td>
+                    <td>{{ row['aic_str'] }}</td>
+                    <td>{{ row['kegg_ids'] }}</td>
+                </tr>
+            {#  endif  #}
+        {% endfor %}
+    </table>
+</div>

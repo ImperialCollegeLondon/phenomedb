@@ -1,0 +1,61 @@
+<div class="row">
+    <input type="hidden" name="datatype" value="{% if compound_field %}{{ compound_field['datatype'] }}{% else %}{{ data.datatype }}{% endif %}"/>
+    <div class="col-md-5">
+        <div class="form-group compound_operator_group">
+            <label>Operator</label>
+            <select class="form-control" name="compound_operator">
+                <option value="eq"{% if compound_field and compound_field.operator == 'eq' %} selected{% endif %}>== x (equals)</option>
+                <option value="not_eq"{% if compound_field and compound_field.operator == 'not_eq' %} selected{% endif %}>!= x (not equals)</option>
+                <option value="in"{% if compound_field and compound_field.operator == 'in' %} selected{% endif %}>in x,y,z</option>
+                <option value="not_in"{% if compound_field and compound_field.operator == 'not_in' %} selected{% endif %}>not in x,y,z</option>
+
+                {% if data.datatype == 'VARCHAR' %}
+                <option value="like"{% if compound_field and compound_field.operator == 'like' %} selected{% endif %}>like x</option>
+                <option value="not_like"{% if compound_field and compound_field.operator == 'not_like' %} selected{% endif %}>not like x</option>
+                <option value="ilike"{% if compound_field and compound_field.operator == 'ilike' %} selected{% endif %}>ilike x</option>
+                <option value="not_ilike"{% if compound_field and compound_field.operator == 'not_ilike' %} selected{% endif %}>not ilike x</option>
+                {% else %}
+                <option value="gt"{% if compound_field and compound_field.operator == 'gt' %} selected{% endif %}>> x (greater than)</option>
+                <option value="lt"{% if compound_field and compound_field.operator == 'lt' %} selected{% endif %}>< x (less than)</option>
+                <option value="gte"{% if compound_field and compound_field.operator == 'gte' %} selected{% endif %}>>= x (greater than equals)</option>
+                <option value="lte"{% if compound_field and compound_field.operator == 'lte' %} selected{% endif %}><= x (less than equals)</option>
+                <option value="between"{% if compound_field and compound_field.operator == 'between' %} selected{% endif %}>between x,y</option>
+                <option value="not_between"{% if compound_field and compound_field.operator == 'not_between' %} selected{% endif %}>not between x,y</option>
+                {% endif %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="row">
+            <div class="col-xs-12">
+                <span style="display:none;" class="loading">Loading values...</span>
+                <div class="form-group compound_value_dropdown">
+                    <label>Select values</label>
+                    <select class="form-control" class="compound_dropdown" name="compound_dropdown" {% if data.multiple or compound_field and compound_field.operator in ['in','not_in','between','not_between'] %}multiple{% endif %}>
+                        <option data-type="" value="">--Please select--</option>
+                        {% if data.dropdown_values %}
+                            {% for dropdown_value in data.dropdown_values %}
+                                <option data-type="{{ data.datatype }}" value="{{ dropdown_value }}">{{ dropdown_value }}</option>
+                            {% endfor %}
+                        {% elif compound_field and compound_field.compound_values %}
+                            {% for dropdown_value in compound_field.compound_values %}
+                                <option data-type="{{ compound_field['datatype'] }}" value="{{ dropdown_value }}"
+                                        {% if compound_field and compound_field.operator in ['in','not_in','between','not_between'] %}
+                                            {% if dropdown_value|string in compound_field['values'] %} selected{% endif %}
+                                        {% else %}
+                                            {% if dropdown_value|string == compound_field['values']|string %} selected{% endif %}
+                                        {% endif %}
+                                        >{{ dropdown_value }}
+                                </option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="form-group compound_value_csv">
+                    <label>Or enter CSV values</label>
+                    <input class="form-control" type="text" data-type="{% if data %}{{ data.datatype }}{% elif compound_field %}{{ compound_field['datatype'] }}{% endif %}" name="compound_value_csv" placeholder="Text, Numeric, or CSV list" value="{% if compound_field %}{{compound_field.csv_values}}{% endif %}"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
