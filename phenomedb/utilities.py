@@ -262,7 +262,7 @@ def get_date(date_string):
     if is_number(date_string):
         return datetime.datetime.fromtimestamp(int(date_string))
 
-    formats = ['%d/%m/%Y %H:%M:%S','%d/%m/%Y %H:%M','%Y-%m-%d %H:%M:%S','%Y-%m-%dT%H:%M:%S']
+    formats = ['%d/%m/%Y %H:%M:%S','%d/%m/%Y %H:%M','%Y-%m-%d %H:%M:%S','%Y-%m-%dT%H:%M:%S','%Y-%m-%d','%d/%m/%Y']
 
     for format in formats:
         try:

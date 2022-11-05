@@ -17,7 +17,7 @@ RUN cd R-4.2.1 &&  ./configure --enable-R-shlib && make && make install && cd ..
 
 RUN apt install -y --no-install-recommends software-properties-common dirmngr
 RUN apt-get install -y dirmngr apt-transport-https ca-certificates software-properties-common gnupg2
-RUN apt-get install -y vim git xml2 libxml2-dev openssl libcurl4-openssl-dev curl libssl-dev libcurl4 libudunits2-dev libudunits2-dev
+RUN apt-get install -y vim git xml2 libxml2-dev openssl libcurl4-openssl-dev curl libssl-dev libcurl4 libudunits2-dev libudunits2-dev libchebipy
 RUN chown -R airflow /usr/local/lib/R/
 RUN chmod -R 777 /usr/local/lib/R/
 USER airflow

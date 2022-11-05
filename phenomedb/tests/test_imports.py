@@ -67,45 +67,6 @@ class TestImports:
         db_session = db.get_db_session('TEST')
         assert db_session.query(Sample).filter(Sample.name == 'test-update').count() == 1
 
- #   def test_b_import_data_locations_nmr(self,create_min_database,
- #                                        create_pipeline_testing_project,
- #                                        import_devset_sample_manifest,
- #                                        create_lab,
- #                                        create_nmr_assays,
- #                                        import_devset_datalocations_nmr):
-
- #       import_counts = {
- #           "project_id": 1,
- #           "subjects": 9,
- #           "samples": 92,
- #           "sample_assays": 84,
- #           "metadata_values": 312,
- #           "annotated_features": 0}
-
-     #   assert import_devset_datalocations_nmr['counts'] == import_counts
- #       assert 'error' not in import_devset_datalocations_nmr
- #       assert 'validation_error' not in import_devset_datalocations_nmr
-
-
- #   def test_c_import_data_locations_ms(self,create_min_database,
- #                                        create_pipeline_testing_project,
- #                                        import_devset_sample_manifest,
- #                                        create_lab,
- #                                        create_ms_assays,
- #                                        import_devset_datalocations_ms):#
-
- #       import_counts = {
- #           "project_id": 1,
- #           "subjects": 9,
- #           "samples": 104,
- #           "sample_assays": 174,
- #           "metadata_values": 312,
- #           "annotated_features": 0}
-
-     #   assert import_devset_datalocations_ms['counts'] == import_counts
- #       assert 'error' not in import_devset_datalocations_ms
- #       assert 'validation_error' not in import_devset_datalocations_ms
-
 
     def test_e_import_peakpanther_annotations(self,benchmark,
                                               create_min_database,
@@ -160,19 +121,6 @@ class TestImports:
         assert import_devset_ivdr_biquant_annotations['counts'] == import_counts
 
 
-    #     expected_dataframe = pd.read_csv(config['DATA']['test_data'] + "expected_biquant.csv")
-  #
-  #     query_factory = AnnotatedFeatureFactory(query_name='test query',query_description='test description',db_env='TEST')
-  #     query_factory.add_filter(query_filter=QueryFilter(model='Project',property='name',operator='eq',value='PipelineTesting'))
-  #     query_factory.add_filter(query_filter=QueryFilter(model='AnnotationMethod',property='name',operator='eq',value='BI-QUANT'))
-  #     df = query_factory.execute_and_build_dataframe(csv_path="/tmp/test_biquant.csv",convert_units=False)
-  #
-  #     actual_dataframe = pd.read_csv("/tmp/test_biquant.csv")
-  #
-  #     assert expected_dataframe.equals(actual_dataframe) == True
-
-
-
     def test_g_import_ivdr_bilisa_annotations(self,create_min_database,
                                               #add_single_task_pipelines,
                                                create_pipeline_testing_project,
@@ -194,18 +142,6 @@ class TestImports:
         assert import_devset_ivdr_bilisa_annotations['counts'] == import_counts
 
 
-  #
-  #      expected_dataframe = pd.read_csv(config['DATA']['test_data'] + "expected_bilisa.csv")
-  #
-  #      query_factory = AnnotatedFeatureFactory(query_name='test query',query_description='test description',db_env='TEST')
-  #      query_factory.add_filter(query_filter=QueryFilter(model='Project',property='name',operator='eq',value='PipelineTesting'))
-  #      query_factory.add_filter(query_filter=QueryFilter(model='AnnotationMethod',property='name',operator='eq',value='BI-LISA'))
-  #      df = query_factory.execute_and_build_dataframe(csv_path="/tmp/test_bilisa.csv",convert_units=False)
-  #
-  #      actual_dataframe = pd.read_csv("/tmp/test_bilisa.csv")
-  #
-  #      assert expected_dataframe.equals(actual_dataframe) == True
-
     def test_h_targetlynx_import_task_bile_acid_plasma_unified_csv_local(self,create_min_database,
                                                                          create_pipeline_testing_project,
                                                                          import_devset_sample_manifest,
@@ -226,40 +162,8 @@ class TestImports:
         assert import_devset_bile_acid_targeted_annotations['counts'] == import_counts
 
 
-    def test_import_extra_metadata(self):
 
-        id_column = 'BARCODE'
-
-        columns_to_import = ['BODY_MASS_INDEX', 'HOURS_SINCE_EAT_BLOOD']
-
-        filepath = config['DATA']['app_data'] + "backfill_files/AW2_metabolomics_metadata_Gordon.csv"
-        task = ImportExtraMetadata(project_name='AIRWAVE2', filepath=filepath, id_type='Subject',
-                                   id_column=id_column, columns_to_import=columns_to_import)
-        task.run()
-
-        columns_to_import = ['BMI_cont', 'HOURS_SINCE_EAT_BLOOD']
-
-        filepath = config['DATA']['app_data'] + "backfill_files/AW1_metabolomics_metadata_Gordon.csv"
-        task = ImportExtraMetadata(project_name='AIRWAVE',filepath=filepath,id_type='Subject',
-                                   id_column=id_column,columns_to_import=columns_to_import)
-        task.run()
-
-
-
-
- #     expected_dataframe = pd.read_csv(config['DATA']['test_data'] + "expected_targetlynx.csv")
- #
- #     query_factory = AnnotatedFeatureFactory(query_name='test query',query_description='test description',db_env='TEST')
- #     query_factory.add_filter(query_filter=QueryFilter(model='Project',property='name',operator='eq',value='PipelineTesting'))
- #     query_factory.add_filter(query_filter=QueryFilter(model='AnnotationMethod',property='name',operator='eq',value='TargetLynx'))
- #     df = query_factory.execute_and_build_dataframe(csv_path="/tmp/test_targetlynx.csv",convert_units=False)
- #
- #     actual_dataframe = pd.read_csv("/tmp/test_targetlynx.csv")
- #
- #     assert expected_dataframe.equals(actual_dataframe) == True
- #
-    def test_import_metabolights(self,create_min_database):
-         #TODO: add this to conftest.py including the exported values
+    def test_import_metabolights(self):
 
         from phenomedb.imports import ImportMetabolightsStudy
 
@@ -267,6 +171,6 @@ class TestImports:
 
         study_folder_path = config["DATA"]['test_data'] + study_id
 
-        task = ImportMetabolightsStudy(study_folder_path=study_folder_path,username=config['TEST']['USERNAME'],db_env='TEST')
+        task = ImportMetabolightsStudy(study_id=study_id,username=config['TEST']['USERNAME'])
 
         task.run()

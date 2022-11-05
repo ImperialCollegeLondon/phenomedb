@@ -12,7 +12,7 @@ services:
         restart: on-failure
         volumes:
             - ./docker/postgres/a_create_dbs.sql:/docker-entrypoint-initdb.d/a_create_dbs.sql
-            - ./sql/phenomedb_v0.9.4_postgres.sql:/docker-entrypoint-initdb.d/b_schema.sql
+            - ./sql/phenomedb_v0.9.5_postgres.sql:/docker-entrypoint-initdb.d/b_schema.sql
             - ../dockerdb/:/var/lib/postgresql/data
         stdin_open: true
         tty: true

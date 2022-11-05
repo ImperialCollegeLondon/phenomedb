@@ -119,7 +119,7 @@ class Task(ABC):
         return project_name.lower().replace("-","_")
 
 
-    def load_tabular_file(self,file,sheet_name=0,dtype=None,header='infer',na_values=None,replace_na_with_none=True):
+    def load_tabular_file(self,file,sheet_name=0,dtype=None,header='infer',na_values=None,replace_na_with_none=True,strip_whitespace=True):
         """Load a tabular file into a pandas dataframe. Works with xlsx, xls, csv, tsv, and txt files.
 
         :param file: The file (and path) to open.
@@ -162,6 +162,9 @@ class Task(ABC):
 
         if replace_na_with_none:
             dataframe = dataframe.where(pd.notnull(dataframe),None)
+
+        if strip_whitespace:
+            dataframe.rename(columns=lambda x: x.strip() if isinstance(x, str) else x, inplace=True)
 
         self.logger.info("Dataset loaded: %s \n Shape: %s \n Head: %s \n Columns: %s" % (filename,dataframe.head(),dataframe.shape,dataframe.columns))
 

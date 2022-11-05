@@ -530,7 +530,7 @@ class Assay(Base):
     platform = Column(Enum(AnalyticalPlatform))
     targeted = Column(String)
     ms_polarity = Column(String)
-    annotated_feature_type = Column(String)
+    measurement_type = Column(String)
     long_name = Column(String)
     long_platform = Column(String)
     quantification_type = Column(Enum(QuantificationType))
@@ -691,7 +691,8 @@ class Sample(Base):
         try:
             return biological_tissue_map[sample_matrix]
         except KeyError:
-            raise NotImplementedError("sample matrix mapping does not exist - %s" % sample_matrix)
+            return 'unknown'
+            #raise NotImplementedError("sample matrix mapping does not exist - %s" % sample_matrix)
 
 
     def build_search_index(self):
@@ -713,6 +714,7 @@ class SampleAssay(Base):
     __searchfields__ = '_all'
 
     id = Column(Integer, primary_key=True)
+    name = Column(String)
     sample_id = Column(Integer, ForeignKey('sample.id'))
     sample = relationship("Sample", back_populates="sample_assays")
     assay_id = Column(Integer, ForeignKey('assay.id'))
@@ -843,6 +845,7 @@ class FeatureDataset(Base):
     class Type(enum.Enum):
         unified_csv = 'unified_csv'
         separate_csvs = 'separate_csvs'
+        metabolights = 'metabolights'
 
     class CorrectionType(enum.Enum):
         LOESS_SR = 'SR'
@@ -1007,15 +1010,26 @@ class Compound(Base):
         return document
 
     def set_inchi_key_from_rdkit(self):
-        my_chem = Chem.MolFromInchi(self.inchi)
-        if my_chem:
-            self.inchi_key = Chem.inchi.MolToInchiKey(my_chem)
-            
+        if self.inchi:
+            try:
+                my_chem = Chem.MolFromInchi(self.inchi)
+                if my_chem:
+                    self.inchi_key = Chem.inchi.MolToInchiKey(my_chem)
+            except Exception as err:
+                self.inchi_key = None
+        else:
+            self.inchi_key = None
 
     def set_log_p_from_rdkit(self):
-        my_chem = Chem.MolFromInchi(self.inchi)
-        self.log_p = Crippen.MolLogP(my_chem,includeHs=True)
-
+        if self.inchi:
+            try:
+                my_chem = Chem.MolFromInchi(self.inchi)
+                if my_chem:
+                    self.log_p = Crippen.MolLogP(my_chem, includeHs=True)
+            except Exception as err:
+                self.log_p = None
+        else:
+            self.log_p = None
 
 class CompoundClass(Base):
     """CompoundClass

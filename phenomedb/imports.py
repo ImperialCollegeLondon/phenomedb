@@ -21,7 +21,7 @@ import json
 import redis
 import requests
 from phenomedb.query_factory import *
-
+from libchebipy._chebi_entity import ChebiEntity
 
 class ImportTask(Task):
 
@@ -4139,17 +4139,17 @@ class ImportMetabolightsStudy(ImportTask):
         self.metabolite_information_dataframes = {}
         self.study_description_dict = {}
         self.annotation_assay_map = {}
-        self.annotation_run_map = {}
+        self.feature_dataset_map = {}
         self.annotation_method_map = {}
-        self.annotation_compound_map = {}
+        self.annotation_map = {}
 
     def load_dataset(self):
         """Loads the dataset
         """        
 
         if self.study_id and not self.study_folder_path:
-            raise NotImplementedError('API download not yet implemented')
-            #self.download_files_from_metabolights()
+            #raise NotImplementedError('API download not yet implemented')
+            self.download_files_from_metabolights()
 
         study_files = os.listdir(self.study_folder_path)
 
@@ -4169,23 +4169,34 @@ class ImportMetabolightsStudy(ImportTask):
         """        
 
         self.study_folder_path = config['DATA']['app_data'] + "metabolights/" + self.study_id
+        from ftplib import FTP
+        self.ebi_ftp = FTP('ftp.ebi.ac.uk')  # connect to host, default port
+        self.ebi_ftp.login()
+        self.ebi_ftp.cwd('pub/databases/metabolights/studies/public/%s' % (self.study_id))
+        self.download_from_api(['i','s','m','a'])
+        try:
+            self.ebi_ftp.quit()
+        except Exception as err:
+            self.logger.exception(err)
+            self.ebi_ftp.close()
 
-        self.download_from_api('investigation')
-        self.download_from_api('sample')
-        self.download_from_api('assays')
-        self.download_from_api('metabolites')
-
-    def download_from_api(self,type):
+    def download_from_api(self,prefixes):
         """Download the study via the API (not yet implemented)
 
         :param type: file type to download ('investigation','sample','assays','metabolites')
         :type type: str
-        """        
+        """
+        if not isinstance(prefixes,list) and isinstance(prefixes,str):
+            prefixes = [prefixes]
 
-        url = 'https://www.ebi.ac.uk/metabolights/ws/studies/' + self.study_id + '/' + type +'?list_only=true&api_key=' +  config['API_KEYS']['metabolights']
-
-        response = requests.get(url=url)
-
+        filenames = self.ebi_ftp.nlst()
+        for filename in filenames:
+            for prefix in prefixes:
+                if re.search(r'^' + re.escape(prefix) + r"_",filename):
+                    if not os.path.exists(self.study_folder_path):
+                        os.makedirs(self.study_folder_path)
+                    with open(self.study_folder_path + '/' + filename, 'wb') as local_file:
+                        self.ebi_ftp.retrbinary('RETR ' + filename, local_file.write)
 
 
     def load_study_description_file(self,filepath):
@@ -4207,22 +4218,31 @@ class ImportMetabolightsStudy(ImportTask):
         file = open(filepath,'r')
         lines = file.readlines()
         file.close()
-
+        
         current_section = ''
         for line in lines:
-            if line.strip().isupper():
-                current_section = line.strip()
-                self.study_description_dict[current_section] = {}
-            else:
-                split_line = line.strip().split('\t')
-                split_line = [i.replace('"', '') for i in split_line]
-                key = split_line.pop(0)
-                # If its an array, or the current_section is a plural
-                if len(split_line) > 1 or re.search('S$',current_section):
-                    self.study_description_dict[current_section][key] = split_line
+            try:
+                line = line.rstrip()
+                if line.strip().isupper():
+                    current_section = line.strip()
+                    self.study_description_dict[current_section] = {}
                 else:
-                    self.study_description_dict[current_section][key] = split_line.pop(0)
+                    split_line = line.strip().split('\t')
+                    split_line = [i.replace('"', '') for i in split_line]
+                    key = split_line.pop(0)
+                    if key == 'Investigation Description':
+                        bp = True
 
+                    # If its an array, or the current_section is a plural
+                    if len(split_line) > 1 or re.search('S$',current_section):
+                        self.study_description_dict[current_section][key] = split_line
+                    elif len(split_line) == 1:
+                        self.study_description_dict[current_section][key] = split_line.pop(0)
+                    else:
+                        self.study_description_dict[current_section][key] = None
+            except Exception as err:
+                self.logger.error('load_study_description_file error' + line)
+                raise Exception(err)
 
     def map_and_add_dataset_data(self):
         """Map and add dataset data
@@ -4230,6 +4250,9 @@ class ImportMetabolightsStudy(ImportTask):
 
         self.parse_study_description()
         self.parse_sample_information()
+
+        from phenomedb.compounds import CompoundTask
+        self.compoundtask = CompoundTask(db_session=self.db_session)
 
         for assay_file, data in self.assay_information_dataframes.items():
             self.parse_assay_file(assay_file,data)
@@ -4246,6 +4269,19 @@ class ImportMetabolightsStudy(ImportTask):
         """        
 
         assay = self.assays[assay_file]
+        metabolite_assignment_files = self.assay_information_dataframes[assay_file]['Metabolite Assignment File'].unique()
+        if len(metabolite_assignment_files) == 1:
+            self.add_annotation_compounds(assay, metabolite_assignment_files[0])
+        else:
+            raise NotImplementedError("Multiple maf files per assay %s" % metabolite_assignment_files)
+
+        assay_index = self.study_description_dict['STUDY ASSAYS']['Study Assay File Name'].index(assay_file)
+        measurement_type = self.study_description_dict['STUDY ASSAYS']['Study Assay Measurement Type'][assay_index]
+        if measurement_type == 'metabolite profiling':
+            unit = self.get_or_add_unit('noUnit',"no unit, for dimensionless variables (ie untargeted LC-MS)")
+        else:
+            self.logger.debug(self.study_description_dict['STUDY ASSAYS'])
+            raise NotImplementedError("Unknown measurement_type %s" % measurement_type)
 
         for row in data.iterrows():
             if assay.platform == AnalyticalPlatform.NMR:
@@ -4258,6 +4294,7 @@ class ImportMetabolightsStudy(ImportTask):
             assay_parameters = row[1].where(pd.notnull(row[1]), None).to_dict()
 
             sample_name = row[1]['Sample Name']
+            extract_name = row[1]['Sample Name']
 
             sample = self.db_session.query(Sample).join(Subject).filter(Sample.name==sample_name,
                                                                                        Subject.project_id==self.project.id).first()
@@ -4265,26 +4302,28 @@ class ImportMetabolightsStudy(ImportTask):
             if sample:
 
                 sample_assay = self.db_session.query(SampleAssay).filter(SampleAssay.sample_id==sample.id,
+                                                                         SampleAssay.name==extract_name,
                                                                                         SampleAssay.assay_id==assay.id).first()
 
                 if not sample_assay:
-                    sample_assay = SampleAssay(sample_id=sample.id,
-                                                              assay_id=assay.id,
-                                                              sample_file_name=sample_file_name,
-                                                              assay_parameters=assay_parameters)
+                    sample_assay = SampleAssay(name=extract_name,
+                                               sample_id=sample.id,
+                                               assay_id=assay.id,
+                                               sample_file_name=sample_file_name,
+                                               assay_parameters=assay_parameters)
                     self.db_session.add(sample_assay)
                     self.db_session.flush()
 
                 metabolite_assignment_file = row[1]['Metabolite Assignment File']
 
-                self.add_annotations_and_annotated_features(assay,metabolite_assignment_file,sample_assay)
+                self.add_annotated_features(assay,metabolite_assignment_file,sample_assay,unit)
 
             else:
                 self.logger.info("No Sample found for %s" % sample_name)
 
             self.annotation_assay_map[row[1]['Metabolite Assignment File']] = assay
 
-    def add_annotations_and_annotated_features(self,assay,metabolite_assignment_file,sample_assay):
+    def add_annotated_features(self,assay,metabolite_assignment_file,sample_assay,unit):
         """Add Annotations and AnnotatedFeatures
 
         :param assay: The Assay
@@ -4295,57 +4334,79 @@ class ImportMetabolightsStudy(ImportTask):
         :type sample_assay: `phenomedb.models.SampleAssay`
         """
 
-        self.add_annotation_compounds(assay,metabolite_assignment_file)
-
-        annotation_run = self.annotation_run_map[metabolite_assignment_file]
+        feature_dataset = self.feature_dataset_map[metabolite_assignment_file]
+        
+        annotated_features = []
 
         for row in self.metabolite_information_dataframes[metabolite_assignment_file].iterrows():
 
             the_row = row[1].where(pd.notnull(row[1]), None)
 
-            intensity = the_row[sample_assay.sample.name]
+            if sample_assay.name in the_row.keys():
 
-            if intensity:
+                intensity = the_row[sample_assay.name]
+            else:
+                self.logger.info("%s not in columns for %s" % (sample_assay.sample.name,self.metabolite_information_dataframes[metabolite_assignment_file].columns))
+                intensity = None
 
-                annotation_compound = self.annotation_compound_map[assay.id][the_row['database_identifier']]
+            if intensity is not None:
 
-                annotation = self.db_session.query(Annotation).filter(Annotation.annotation_compound_id==annotation_compound.id,
-                                                                      Annotation.annotation_run_id==annotation_run.id).first()
+                annotation = self.annotation_map[assay.id][the_row['database_identifier']]
 
-                if not annotation:
-                    annotation = Annotation(annotation_compound_id=annotation_compound.id,
-                                            annotation_run_id=annotation_run.id,
-                                            comment='added from Metabolights maf file')
-                    self.db_session.add(annotation)
+                mz = None
+                retention_time = None
+
+                if assay.platform == AnalyticalPlatform.MS:
+                    if 'mass_to_charge' in the_row:
+                        mz = the_row['mass_to_charge']
+                    elif 'mz' in the_row:
+                        mz = the_row['mz']
+
+                    if 'retention_time' in the_row:
+                        retention_time = the_row['retention_time']
+
+                feature_metadata = self.db_session.query(FeatureMetadata).filter(FeatureMetadata.feature_dataset_id==feature_dataset.id,
+                                                                                 FeatureMetadata.rt_average==retention_time,
+                                                                                 FeatureMetadata.mz_average==mz,
+                                                                                 FeatureMetadata.annotation_id==annotation.id).first()
+                
+                if not feature_metadata:
+                    feature_metadata = FeatureMetadata(feature_dataset_id=feature_dataset.id,
+                                                       rt_average=retention_time,
+                                                       mz_average=mz,
+                                                       annotation_id=annotation.id#,
+                                                       #feature_metadata=utils.convert_to_json_safe(
+                                                       #    self.clean_data_for_jsonb(the_row.to_dict()))
+                                                       )
+                    self.db_session.add(feature_metadata)
                     self.db_session.flush()
+                    self.logger.info("FeatureMetadata added %s" % feature_metadata)
+                else:
+                    self.logger.info("FeatureMetadata found %s" % feature_metadata)
 
                 annotated_feature = self.db_session.query(AnnotatedFeature).filter(AnnotatedFeature.sample_assay_id==sample_assay.id,
-                                                                        AnnotatedFeature.annotation_id==annotation.id).first()
+                                                                                    AnnotatedFeature.feature_metadata_id==feature_metadata.id).first()
 
                 if not annotated_feature:
 
-                    mz = None
-                    retention_time = None
+                    annotated_feature = AnnotatedFeature(feature_metadata_id=feature_metadata.id,
+                                                        sample_assay_id=sample_assay.id,
+                                                        intensity=intensity,
+                                                         unit_id=unit.id)
+                    annotated_features.append(annotated_feature)
 
-                    if assay.platform == AnalyticalPlatform.MS:
-                        if 'mass_to_charge' in the_row:
-                            mz = the_row['mass_to_charge']
-                        elif 'mz' in the_row:
-                            mz = the_row['mz']
-
-                        if 'retention_time' in the_row:
-                            retention_time = the_row['retention_time']
-
-                    annotated_feature = AnnotatedFeature(annotation_id=annotation.id,
-                                              sample_assay_id=sample_assay.id,
-                                              mz=mz,
-                                              rt=retention_time,
-                                              intensity=intensity)
-                    self.db_session.add(annotated_feature)
-                    self.db_session.flush()
+                    self.logger.info("AnnotatedFeature added %s" % annotated_feature)
+                else:
+                    self.logger.info("AnnotatedFeature found %s" % annotated_feature)
+        self.db_session.add_all(annotated_features)
+        self.db_session.flush()
 
     def add_annotation_compounds(self,assay,annotation_file):
-        """Add the AnnotationCompounds
+        """Add the AnnotationCompounds.
+
+        1. Add the Compound
+        3. Add the HarmonisedAnnotation
+        4. Add the AnnotationCompound
 
         :param assay: the Assay
         :type assay: `phenomedb.models.Assay`
@@ -4353,8 +4414,8 @@ class ImportMetabolightsStudy(ImportTask):
         :type annotation_file: str
         """        
 
-        if assay.id not in self.annotation_compound_map.keys():
-            self.annotation_compound_map[assay.id] = {}
+        if assay.id not in self.annotation_map.keys():
+            self.annotation_map[assay.id] = {}
 
         # 1. What is the annotation_method? Is this findable in the Metabolights data?
         annotation_method = self.db_session.query(AnnotationMethod).filter(AnnotationMethod.name=='Unknown').first()
@@ -4365,16 +4426,28 @@ class ImportMetabolightsStudy(ImportTask):
             self.db_session.add(annotation_method)
             self.db_session.flush()
 
-        annotation_run = self.db_session.query(AnnotationRun).filter(AnnotationRun.annotation_method_id==annotation_method.id,
-                                                                     AnnotationRun.name==annotation_file).first()
+        sample_matrices = self.sample_information_dataframe['Characteristics[Organism part]'].unique()
+        if len(sample_matrices) == 1:
+            sample_matrix = sample_matrices[0]
+        else:
+            sample_matrix = ",".join(sample_matrices)
 
-        if not annotation_run:
-            annotation_run = AnnotationRun(annotation_method_id=annotation_method.id,
-                                           name=annotation_file)
-            self.db_session.add(annotation_run)
+        feature_dataset = self.db_session.query(FeatureDataset).filter(FeatureDataset.filetype==FeatureDataset.Type.metabolights,
+                                                                     FeatureDataset.assay_id==assay.id,
+                                                                       FeatureDataset.sample_matrix==sample_matrix).first()
+
+        if not feature_dataset:
+            feature_dataset = FeatureDataset(filetype=FeatureDataset.Type.metabolights,
+                                             assay_id=assay.id,
+                                             sample_matrix=sample_matrix)
+            self.db_session.add(feature_dataset)
             self.db_session.flush()
+            self.logger.info("FeatureDataset added %s" % feature_dataset)
+        else:
+            self.logger.info("FeatureDataset found %s" % feature_dataset)
 
-        self.annotation_run_map[annotation_file] = annotation_run
+
+        self.feature_dataset_map[annotation_file] = feature_dataset
         self.annotation_method_map[annotation_file] = annotation_method
 
         for row in self.metabolite_information_dataframes[annotation_file].iterrows():
@@ -4383,18 +4456,10 @@ class ImportMetabolightsStudy(ImportTask):
 
             chebi_id = the_row['database_identifier']
 
-            if chebi_id not in self.annotation_compound_map[assay.id].keys():
+            if chebi_id not in self.annotation_map[assay.id].keys():
+                self.annotation_map[assay.id][chebi_id] = self.get_or_add_metabolights_compound(assay,annotation_method,the_row)
 
-                chemical_formula = the_row['chemical_formula']
-                smiles = the_row['smiles']
-                inchi = the_row['inchi']
-                cpd_name = the_row['metabolite_identification']
-
-                #1. Add AnnotationCompound + Compound
-
-                self.annotation_compound_map[assay.id][chebi_id] = self.get_or_add_metabolights_compound(assay,annotation_method,chebi_id,chemical_formula,smiles,inchi,cpd_name)
-
-    def get_or_add_metabolights_compound(self,assay,annotation_method,chebi_id,chemical_formula,smiles,inchi,cpd_name):
+    def get_or_add_metabolights_compound(self,assay,annotation_method,the_row):
         """Get or add Metabolights Compound
 
         :param assay: Assay
@@ -4413,45 +4478,94 @@ class ImportMetabolightsStudy(ImportTask):
         :type cpd_name: str
         :return: AnnotationCompound
         :rtype: `phenomedb.models.AnnotationCompound`
-        """        
+        """
+        chebi_id = the_row['database_identifier']
+        chebi_split = chebi_id.split(':')
 
-        annotation_compound = self.db_session.query(AnnotationCompound).filter(AnnotationCompound.cpd_name==cpd_name,
-                                                                               AnnotationCompound.annotation_method_id==annotation_method.id,
-                                                                               AnnotationCompound.assay_id==assay.id).first()
+        cpd_name = the_row['metabolite_identification']
 
-        if not annotation_compound:
-            annotation_compound = AnnotationCompound(cpd_name=cpd_name,
-                                                     annotation_method_id=annotation_method.id,
-                                                     assay_id=assay.id)
+        harmonised_annotation = self.db_session.query(HarmonisedAnnotation).filter(HarmonisedAnnotation.cpd_name == cpd_name,
+                                                                               HarmonisedAnnotation.annotation_method_id == annotation_method.id,
+                                                                               HarmonisedAnnotation.assay_id == assay.id).first()
 
-            self.db_session.add(annotation_compound)
+        if not harmonised_annotation:
+            harmonised_annotation = HarmonisedAnnotation(cpd_name=cpd_name,
+                                                        annotation_method_id=annotation_method.id,
+                                                         assay_id=assay.id)
+
+            self.db_session.add(harmonised_annotation)
             self.db_session.flush()
+            self.logger.info("HarmonisedAnnotation added %s" % harmonised_annotation)
+        else:
+            self.logger.info("HarmonisedAnnotation found %s" % harmonised_annotation)
 
-        compound = self.db_session.query(Compound).filter(Compound.inchi==inchi).first()
+        annotation = self.db_session.query(Annotation).filter(Annotation.cpd_name == cpd_name,
+                                                            Annotation.annotation_method_id == annotation_method.id,
+                                                            Annotation.assay_id == assay.id,
+                                                            Annotation.harmonised_annotation_id==harmonised_annotation.id).first()
+
+        if not annotation:
+            annotation = Annotation(cpd_name=cpd_name,
+                                    annotation_method_id=annotation_method.id,
+                                    assay_id=assay.id,
+                                    harmonised_annotation_id=harmonised_annotation.id,
+                                    config=utils.convert_to_json_safe(
+                                                           self.clean_data_for_jsonb(the_row.to_dict())))
+
+            self.db_session.add(annotation)
+            self.db_session.flush()
+            self.logger.info("Annotation added %s" % annotation)
+        else:
+            self.logger.info("Annotation found %s" % annotation)
+
+
+        if not the_row['inchi']:
+            chebi_entity = ChebiEntity(chebi_split[1])
+            inchi = chebi_entity.get_inchi()
+        else:
+            inchi = the_row['inchi']
+
+        if not inchi:
+            inchi = 'Unknown'
+
+        compound = self.db_session.query(Compound).filter(Compound.inchi==inchi,Compound.name==cpd_name).first()
 
         if not compound:
 
             compound = Compound(name=cpd_name,
                                 inchi=inchi,
-                                chemical_formula=chemical_formula,
-                                smiles=smiles)
+                                chemical_formula=the_row['chemical_formula'],
+                                smiles=the_row['smiles'])
             compound.set_inchi_key_from_rdkit()
             compound.set_log_p_from_rdkit()
             self.db_session.add(compound)
             self.db_session.flush()
+            pubchem_cid = self.compoundtask.add_or_update_pubchem_from_api(compound)
+            chebi_id = self.compoundtask.add_or_update_chebi(compound)
+            refmet_name = self.compoundtask.update_name_to_refmet(compound)
+            kegg_id = self.compoundtask.add_or_update_kegg(compound, pubchem_cid=pubchem_cid)
+            hmdb_id = self.compoundtask.add_or_update_hmdb(compound)
+            lm_id = self.compoundtask.add_or_update_lipid_maps(compound)
+            chembl_id = self.compoundtask.add_or_update_chembl(compound)
+            self.compoundtask.add_or_update_classyfire(compound)
+            self.logger.info("Compound added %s" % compound)
+        else:
+            self.logger.info("Compound found %s" % compound)
 
-            from phenomedb.compounds import CompoundTask
-            compoundtask = CompoundTask()
-            pubchem_cid = compoundtask.add_or_update_pubchem_from_api(compound)
-            chebi_id = compoundtask.add_or_update_chebi(compound)
-            refmet_name = compoundtask.update_name_to_refmet(compound)
-            kegg_id = compoundtask.add_or_update_kegg(compound,pubchem_cid=pubchem_cid)
-            hmdb_id = compoundtask.add_or_update_hmdb(compound)
-            lm_id = compoundtask.add_or_update_lipid_maps(compound)
-            chembl_id = compoundtask.add_or_update_chembl(compound)
-            compoundtask.add_or_update_classyfire(compound)                            
+        annotation_compound = self.db_session.query(AnnotationCompound).filter(AnnotationCompound.harmonised_annotation_id==harmonised_annotation.id,
+                                                                               AnnotationCompound.compound_id==compound.id).first()
 
-        return annotation_compound
+        if not annotation_compound:
+            annotation_compound = AnnotationCompound(harmonised_annotation_id=harmonised_annotation.id,
+                                                    compound_id=compound.id)
+
+            self.db_session.add(annotation_compound)
+            self.db_session.flush()
+            self.logger.info("AnnotationCompound added %s" % annotation_compound)
+        else:
+            self.logger.info("AnnotationCompound found %s" % annotation_compound)
+
+        return annotation
 
 
     def parse_sample_information(self):
@@ -4539,6 +4653,9 @@ class ImportMetabolightsStudy(ImportTask):
                               project_id=self.project.id)
             self.db_session.add(subject)
             self.db_session.flush()
+            self.logger.info("Subject added %s" % subject)
+        else:
+            self.logger.info("Subject found %s" % subject)
 
         return subject
 
@@ -4582,6 +4699,9 @@ class ImportMetabolightsStudy(ImportTask):
                                            )
             self.db_session.add(sample)
             self.db_session.flush()
+            self.logger.info("Sample added %s" % sample)
+        else:
+            self.logger.info("Sample added %s" % sample)
 
         return sample
 
@@ -4615,6 +4735,10 @@ class ImportMetabolightsStudy(ImportTask):
                                            )
             self.db_session.add(metadata_value)
             self.db_session.flush()
+            self.logger.info("MetadataValue added %s" % metadata_value)
+
+        else:
+            self.logger.info("MetadataValue found %s" % metadata_value)
 
     def parse_study_description(self):
         """Parse the study description
@@ -4631,8 +4755,8 @@ class ImportMetabolightsStudy(ImportTask):
 
         self.get_or_add_data_repository('Metabolights',
                                         accession_number=self.study_description_dict['STUDY']['Study Identifier'],
-                                        submission_date=self.study_description_dict['STUDY']['Study Submission Date'],
-                                        public_release_date=self.study_description_dict['STUDY']['Study Public Release Date'])
+                                        submission_date=utils.get_date(self.study_description_dict['STUDY']['Study Submission Date']),
+                                        public_release_date=utils.get_date(self.study_description_dict['STUDY']['Study Public Release Date']))
 
         self.parse_protocols()
         self.parse_publications()
@@ -4686,10 +4810,13 @@ class ImportMetabolightsStudy(ImportTask):
             data_repository = DataRepository(name=name,
                                              accession_number=accession_number,
                                              submission_date=submission_date,
-                                             public_release_date=public_release_date,
+                                             public_release_date=utils.get_date(public_release_date),
                                              project_id=self.project.id)
             self.db_session.add(data_repository)
             self.db_session.flush()
+            self.logger.info("DataRepository added %s" % data_repository)
+        else:
+            self.logger.info("DataRepository found %s" % data_repository)
 
         return data_repository
 
@@ -4700,14 +4827,42 @@ class ImportMetabolightsStudy(ImportTask):
         i = 0
         while i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Name']):
 
-            self.get_or_add_protocol(name=self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Name'][i],
-                                     type=self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Type'][i],
-                                     description=self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Description'][i],
-                                     uri=self.study_description_dict['STUDY PROTOCOLS']['Study Protocol URI'][i],
-                                     version=self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Version'][i],
-                                     parameters=self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Parameters Name'][i].split(';'),
-                                     components=self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Components Name'][i].split(';')
+
+            name = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Name'][i]
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Type']):
+                type = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Type'][i]
+            else:
+                type = None
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Description']):
+                description = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Description'][i]
+            else:
+                description = None
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol URI']):
+                uri = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol URI'][i]
+            else:
+                uri = None
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Version']):
+                version = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Version'][i]
+            else:
+                version = None
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Parameters Name']):
+                parameters = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Parameters Name'][i].split(';')
+            else:
+                parameters = None
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Components Name']):
+                components = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Components Name'][i].split(';')
+            else:
+                components = None
+
+            self.get_or_add_protocol(name=name,
+                                     type=type,
+                                     description=description,
+                                     uri=uri,
+                                     version=version,
+                                     parameters=parameters,
+                                     components=components
                                      )
+
             i = i + 1
 
     def get_or_add_protocol(self,name=None,
@@ -4733,7 +4888,7 @@ class ImportMetabolightsStudy(ImportTask):
         :type parameters: dict, optional
         :param components: components of the protocol, defaults to None
         :type components: dict, optional
-        """        
+        """
 
         protocol = self.db_session.query(Protocol).filter(Protocol.name==name,
                                                          Protocol.type==type).first()
@@ -4748,16 +4903,23 @@ class ImportMetabolightsStudy(ImportTask):
             self.db_session.add(protocol)
             self.db_session.flush()
 
-        for parameter in parameters:
-            if parameter != '':
-                protocol_parameter = self.db_session.query(ProtocolParameter).filter(ProtocolParameter.name==parameter,
-                                                                                     ProtocolParameter.protocol_id==protocol.id).first()
-                if not protocol_parameter:
-                    protocol_parameter = ProtocolParameter(name=parameter,protocol_id=protocol.id)
-                    self.db_session.add(protocol_parameter)
-                    self.db_session.flush()
+            self.logger.info("Protocol added %s" % protocol)
+        else:
+            self.logger.info("Protocol found %s " % protocol)
 
+        if isinstance(parameters,list):
+            for parameter in parameters:
+                if parameter != '':
+                    protocol_parameter = self.db_session.query(ProtocolParameter).filter(ProtocolParameter.name==parameter,
+                                                                                         ProtocolParameter.protocol_id==protocol.id).first()
+                    if not protocol_parameter:
+                        protocol_parameter = ProtocolParameter(name=parameter,protocol_id=protocol.id)
+                        self.db_session.add(protocol_parameter)
+                        self.db_session.flush()
 
+                        self.logger.info("ProtocolParameter added %s" % protocol_parameter)
+                    else:
+                        self.logger.info("ProtocolParameter found %s " % protocol_parameter)
 
     def parse_publications(self):
         """Parse the publications
@@ -4766,11 +4928,33 @@ class ImportMetabolightsStudy(ImportTask):
         i = 0
         while i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Title']):
 
-            self.get_or_add_publication(pubmed_id=self.study_description_dict['STUDY PUBLICATIONS']['Study PubMed ID'][i],
-                                     doi=self.study_description_dict['STUDY PUBLICATIONS']['Study Publication DOI'][i],
-                                     author_list=self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Author List'][i],
-                                     title=self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Title'][i],
-                                     status=self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Status'][i],
+            if i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study PubMed ID']):
+                pubmed_id = self.study_description_dict['STUDY PUBLICATIONS']['Study PubMed ID'][i]
+            else:
+                pubmed_id = None
+            if i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study Publication DOI']):
+                doi = self.study_description_dict['STUDY PUBLICATIONS']['Study Publication DOI'][i]
+            else:
+                doi = None
+            if i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Author List']):
+                author_list = self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Author List'][i]
+            else:
+                author_list = None
+            if i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Title']):
+                title = self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Title'][i]
+            else:
+                title = None
+            if i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Status']):
+                status = self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Status'][i]
+            else:
+                status = None
+
+
+            self.get_or_add_publication(pubmed_id=pubmed_id,
+                                     doi=doi,
+                                     author_list=author_list,
+                                     title=title,
+                                     status=status,
                                      )
             i = i + 1
 
@@ -4802,6 +4986,9 @@ class ImportMetabolightsStudy(ImportTask):
                                       project_id=self.project.id)
             self.db_session.add(publication)
             self.db_session.flush()
+            self.logger.info("Publication added %s" % publication)
+        else:
+            self.logger.info("Publication found %s" % publication)
 
     def parse_assays(self):
         """Parse the assays
@@ -4814,7 +5001,7 @@ class ImportMetabolightsStudy(ImportTask):
 
             study_assay_file_name = self.study_description_dict['STUDY ASSAYS']['Study Assay File Name'][i]
 
-            annotated_feature_type=self.study_description_dict['STUDY ASSAYS']['Study Assay AnnotatedFeature Type'][i]
+            measurement_type=self.study_description_dict['STUDY ASSAYS']['Study Assay Measurement Type'][i]
             long_platform=self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Type'][i]
             long_name=self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Platform'][i]
 
@@ -4826,12 +5013,15 @@ class ImportMetabolightsStudy(ImportTask):
                 assay = Assay(name=long_name,
                                    long_platform=long_platform,
                                    long_name=long_name,
-                                   annotated_feature_type=annotated_feature_type
+                                   measurement_type=measurement_type
                                    )
                 assay.set_platform_from_long_platform(long_platform)
 
                 self.db_session.add(assay)
                 self.db_session.flush()
+                self.logger.info('Assay added %s' % assay)
+            else:
+                self.logger.info('Assay found %s' % assay)
 
             self.assays[study_assay_file_name] = assay
 
