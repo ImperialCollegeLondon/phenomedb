@@ -3,6 +3,8 @@ import random
 
 import pandas as pd
 
+
+
 import sys, os
 if os.environ['PHENOMEDB_PATH'] not in sys.path:
     sys.path.append( os.environ['PHENOMEDB_PATH'])
@@ -11,7 +13,7 @@ from phenomedb.models import *
 from phenomedb.database import *
 from phenomedb.query_factory import *
 from phenomedb.imports import *
-
+from phenomedb.imports import ImportMetabolightsStudy
 from phenomedb.config import config
 
 DB_ENV = "TEST"
@@ -167,10 +169,71 @@ class TestImports:
 
         from phenomedb.imports import ImportMetabolightsStudy
 
-        study_id = "MTBLS1073"
+        study_id = "MTBLS1045"
 
         study_folder_path = config["DATA"]['test_data'] + study_id
 
         task = ImportMetabolightsStudy(study_id=study_id,username=config['TEST']['USERNAME'])
 
         task.run()
+
+        query_factory = QueryFactory()
+        query_factory.add_filter(query_filter=QueryFilter(model='Project',property='name',operator='eq',value=study_id))
+        summary = query_factory.load_summary_statistics()
+        print(summary)
+
+    def test_download_import_all_metabolights(self):
+
+        from phenomedb.pipelines import ImportAllMetabolightsPipelineGenerator
+        task = ImportAllMetabolightsPipelineGenerator()
+        task.run()
+
+#        if not os.path.exists(config['DATA']['app_data'] + "metabolights"):
+#            os.makedirs(config['DATA']['app_data'] + "metabolights")
+#        success_file = open(config['DATA']['app_data'] + "metabolights/success.log", "w+")
+#        error_file = open(config['DATA']['app_data'] + "metabolights/error.log", "w+")
+#        from ftplib import FTP
+#        ebi_ftp = FTP('ftp.ebi.ac.uk')  # connect to host, default port
+#        ebi_ftp.login()
+#        ebi_ftp.cwd('pub/databases/metabolights/studies/public/')
+#        filenames = ebi_ftp.nlst()
+#        study_ids = []
+#        for filename in filenames:
+#            if re.search(r'^MTBL', filename):
+#                study_ids.append(filename)
+#        try:
+#            ebi_ftp.quit()
+#        except Exception as err:
+#            ebi_ftp.close()
+#        errors = {}
+#        success = {}
+#        i = 0
+#        for study_id in study_ids:
+#            i = i + 1
+#            print("Trying %s" % study_id)
+#            success_file.write("Trying %s" % study_id)
+#            success_file.flush()
+#            try:
+#                task = ImportMetabolightsStudy(study_id=study_id)
+#                task.run()
+#            except Exception as err:
+#                error_file.write("%s - %s" % (study_id,err))
+#                error_file.flush()
+#            else:
+#                query_factory = QueryFactory()
+#                query_factory.add_filter(query_filter=QueryFilter(model='Project', property='name', operator='eq', value=study_id))
+#                summary = query_factory.load_summary_statistics()
+#                if summary['number_samples'] == 0:
+#                    #errors[study_id] = 'No samples imported'
+#                    error_file.write("%s - No samples imported" % (study_id))
+#                else:
+#                    #success[study_id] = summary
+#                    success_file.write("%s - %s" % (study_id,summary))
+#                success_file.flush()
+#        success_file.close()
+#        error_file.close()
+#        #error_file.close()
+#        #for study_id,error in errors.items():
+#        #    print('%s %s' % (study_id,error))
+#        #for study_id,summary in success.items():
+#        #    print('%s %s' % (study_id,summary))

@@ -498,15 +498,15 @@ class Task(ABC):
 
     def clear_saved_query_cache(self):
 
-        saved_queries = self.db_session.query(SavedQuery).all()
+        #saved_queries = self.db_session.query(SavedQuery).all()
         #for saved_query in saved_queries:
 
         #    if self.cache.exists(saved_query.get_cache_dataframe_key()):
         #        self.cache.delete(saved_query.get_cache_dataframe_key())
         #    if self.cache.exists(saved_query.get_cache_summary_stats_key()):
         #        self.cache.delete(saved_query.get_cache_summary_stats_key())
-
-        self.logger.info("All SavedQueryDataframe and SavedQuerySummaryStats caches deleted")
+        pass
+        #self.logger.info("All SavedQueryDataframe and SavedQuerySummaryStats caches deleted")
 
     def simple_report(self):
 

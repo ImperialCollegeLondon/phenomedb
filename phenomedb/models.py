@@ -550,6 +550,8 @@ class Assay(Base):
             self.platform = AnalyticalPlatform.MS
         elif long_platform == "nuclear magnetic resonance":
             self.platform = AnalyticalPlatform.NMR
+        elif long_platform == 'NMR spectroscopy':
+            self.platform = AnalyticalPlatform.NMR
         else:
             raise Exception('long platform not recognised: %s' % long_platform)
 

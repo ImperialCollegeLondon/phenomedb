@@ -371,7 +371,7 @@ CREATE TABLE sample_assay (
                               excluded text,
                               exclusion_details text,
                               instrument text,
-                              sample_file_name text NOT NULL,
+                              sample_file_name text,
                               sample_base_name text,
                               position text,
                               expno text,

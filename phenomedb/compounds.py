@@ -483,14 +483,14 @@ class CompoundTask(Task):
             refmet_name = None
 
         # Updates the compound name to the refmet name
-        if refmet_name and compound.name != refmet_name:
-            try:
-                compound.name = refmet_name
-                self.db_session.flush()
-                self.row_warnings.append('Compound name updated to refmet name')
-            except Exception as err:
-                self.logger.exception(err)
-                self.logger.info("Refmet name update failed - perhaps there is a name clash %s %s" % (compound,refmet_name))
+       # if refmet_name and compound.name != refmet_name:
+       #     try:
+       #         compound.name = refmet_name
+       #         self.db_session.flush()
+       #         self.row_warnings.append('Compound name updated to refmet name')
+       #     except Exception as err:
+       #         self.logger.exception(err)
+       #         self.logger.info("Refmet name update failed - perhaps there is a name clash %s %s" % (compound,refmet_name))
 
         if refmet_name:
 

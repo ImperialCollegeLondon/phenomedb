@@ -80,7 +80,6 @@
     "sample_matrix": {"type":"dropdown","label": "Sample matrix","options": {"serum": "serum","plasma": "plasma","urine": "urine","faecal": "faecal","organic tissue": "organic tissue","cell culture": "cell culture","nasal swab": "nasal swab"},"required": true}
   },
   "imports.ImportMetabolightsStudy": {
-    "study_folder_path": {"type":"str","label": "Path to the Metabolights study folder","required": true},
     "study_id": {"type":"str","label": "Metabolights Study ID","required": false}
   },
   "imports.ImportMetadata": {
@@ -264,6 +263,7 @@
     "model_Y_max": {"type":"float","label": "Model Y max, excludes samples with Y above","required":false},
     "model_Y_ci": {"type":"float","label": "Model Y confidence interval, ie 0.9, excludes samples outside range","required":false}
   },
+  "pipelines.ImportAllMetabolightsPipelineGenerator": {},
   "task.ManualSQL": {},
   "cache.CreateTaskViewCache": {},
   "cache.RemoveUntransformedDataFromCache": {},

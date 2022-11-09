@@ -4115,7 +4115,7 @@ class ImportMetabolightsStudy(ImportTask):
     :type ImportTask: `phenomedb.imports.ImportTask`
     """    
 
-    def __init__(self,study_folder_path=None,study_id=None,task_run_id=None,username=None,db_env=None):
+    def __init__(self,study_folder_path=None,study_id=None,task_run_id=None,username=None,db_env=None,execution_date=None,db_session=None,pipeline_run_id=None):
         """Constructor. If only study_id set, will download the study as well
 
         :param username: Username of the user running the task, defaults to None
@@ -4129,7 +4129,7 @@ class ImportMetabolightsStudy(ImportTask):
         self.study_folder_path = study_folder_path
         self.study_id = study_id
 
-        super().__init__(username=username,task_run_id=task_run_id,db_env=db_env)
+        super().__init__(username=username,task_run_id=task_run_id,db_env=db_env,db_session=db_session,execution_date=execution_date,pipeline_run_id=None)
 
         self.args['study_folder_path'] = study_folder_path
         self.args['study_id'] = study_id
@@ -4155,13 +4155,13 @@ class ImportMetabolightsStudy(ImportTask):
 
         for study_file in study_files:
             filepath = self.study_folder_path + "/" + study_file
-            if re.search('^i_',study_file):
+            if re.search(r'^i_.*.txt$',study_file):
                 self.load_study_description_file(filepath)
-            elif re.search('^s_',study_file):
+            elif re.search(r'^s_.*.txt$',study_file):
                 self.sample_information_dataframe = self.load_tabular_file(filepath)
-            elif re.search('^a_',study_file):
+            elif re.search(r'^a_.*.txt$',study_file):
                 self.assay_information_dataframes[study_file] = self.load_tabular_file(filepath)
-            elif re.search('^m_',study_file):
+            elif re.search(r'^m_.*.tsv$',study_file):
                 self.metabolite_information_dataframes[study_file] = self.load_tabular_file(filepath)
 
     def download_files_from_metabolights(self):
@@ -4230,8 +4230,6 @@ class ImportMetabolightsStudy(ImportTask):
                     split_line = line.strip().split('\t')
                     split_line = [i.replace('"', '') for i in split_line]
                     key = split_line.pop(0)
-                    if key == 'Investigation Description':
-                        bp = True
 
                     # If its an array, or the current_section is a plural
                     if len(split_line) > 1 or re.search('S$',current_section):
@@ -4267,61 +4265,66 @@ class ImportMetabolightsStudy(ImportTask):
         :type data: `pandas.Dataframe`
         :raises NotImplementedError: [description]
         """        
-
-        assay = self.assays[assay_file]
-        metabolite_assignment_files = self.assay_information_dataframes[assay_file]['Metabolite Assignment File'].unique()
-        if len(metabolite_assignment_files) == 1:
-            self.add_annotation_compounds(assay, metabolite_assignment_files[0])
+        if assay_file not in self.assays.keys():
+            self.logger.error('Assay file not as expected %s %s' % (assay_file,self.assays))
         else:
-            raise NotImplementedError("Multiple maf files per assay %s" % metabolite_assignment_files)
-
-        assay_index = self.study_description_dict['STUDY ASSAYS']['Study Assay File Name'].index(assay_file)
-        measurement_type = self.study_description_dict['STUDY ASSAYS']['Study Assay Measurement Type'][assay_index]
-        if measurement_type == 'metabolite profiling':
-            unit = self.get_or_add_unit('noUnit',"no unit, for dimensionless variables (ie untargeted LC-MS)")
-        else:
-            self.logger.debug(self.study_description_dict['STUDY ASSAYS'])
-            raise NotImplementedError("Unknown measurement_type %s" % measurement_type)
-
-        for row in data.iterrows():
-            if assay.platform == AnalyticalPlatform.NMR:
-                sample_file_name = row[1]['Free Induction Decay Data File']
-            elif assay.platform == AnalyticalPlatform.MS:
-                sample_file_name = row[1]['Raw Spectral Data File']
+            assay = self.assays[assay_file]
+            metabolite_assignment_files = self.assay_information_dataframes[assay_file]['Metabolite Assignment File'].unique()
+            if len(metabolite_assignment_files) == 1:
+                self.add_annotation_compounds(assay, metabolite_assignment_files[0])
             else:
-                raise NotImplementedError('Assay platform not implemented: %s' % assay.platform)
+                raise NotImplementedError("Multiple maf files per assay %s" % metabolite_assignment_files)
 
-            assay_parameters = row[1].where(pd.notnull(row[1]), None).to_dict()
-
-            sample_name = row[1]['Sample Name']
-            extract_name = row[1]['Sample Name']
-
-            sample = self.db_session.query(Sample).join(Subject).filter(Sample.name==sample_name,
-                                                                                       Subject.project_id==self.project.id).first()
-
-            if sample:
-
-                sample_assay = self.db_session.query(SampleAssay).filter(SampleAssay.sample_id==sample.id,
-                                                                         SampleAssay.name==extract_name,
-                                                                                        SampleAssay.assay_id==assay.id).first()
-
-                if not sample_assay:
-                    sample_assay = SampleAssay(name=extract_name,
-                                               sample_id=sample.id,
-                                               assay_id=assay.id,
-                                               sample_file_name=sample_file_name,
-                                               assay_parameters=assay_parameters)
-                    self.db_session.add(sample_assay)
-                    self.db_session.flush()
-
-                metabolite_assignment_file = row[1]['Metabolite Assignment File']
-
-                self.add_annotated_features(assay,metabolite_assignment_file,sample_assay,unit)
-
+            assay_index = self.study_description_dict['STUDY ASSAYS']['Study Assay File Name'].index(assay_file)
+            measurement_type = self.study_description_dict['STUDY ASSAYS']['Study Assay Measurement Type'][assay_index]
+            if measurement_type == 'metabolite profiling':
+                unit = self.get_or_add_unit('noUnit',"no unit, for dimensionless variables (ie untargeted LC-MS)")
             else:
-                self.logger.info("No Sample found for %s" % sample_name)
+                self.logger.debug(self.study_description_dict['STUDY ASSAYS'])
+                raise NotImplementedError("Unknown measurement_type %s" % measurement_type)
 
-            self.annotation_assay_map[row[1]['Metabolite Assignment File']] = assay
+            for row in data.iterrows():
+
+                if row[1]['Metabolite Assignment File'] is not None:
+                    if assay.platform == AnalyticalPlatform.NMR:
+                        sample_file_name = row[1]['Free Induction Decay Data File']
+                    elif assay.platform == AnalyticalPlatform.MS:
+                        sample_file_name = row[1]['Raw Spectral Data File']
+                    else:
+                        raise NotImplementedError('Assay platform not implemented: %s' % assay.platform)
+
+                    assay_parameters = row[1].where(pd.notnull(row[1]), None).to_dict()
+
+                    sample_name = row[1]['Sample Name']
+                    extract_name = row[1]['Sample Name']
+
+                    sample = self.db_session.query(Sample).join(Subject).filter(Sample.name==sample_name,
+                                                                                               Subject.project_id==self.project.id).first()
+
+                    if sample:
+
+                        sample_assay = self.db_session.query(SampleAssay).filter(SampleAssay.sample_id==sample.id,
+                                                                                 SampleAssay.name==extract_name,
+                                                                                                SampleAssay.assay_id==assay.id).first()
+
+                        if not sample_assay:
+                            sample_assay = SampleAssay(name=extract_name,
+                                                       sample_id=sample.id,
+                                                       assay_id=assay.id,
+                                                       sample_file_name=sample_file_name,
+                                                       assay_parameters=assay_parameters)
+                            self.db_session.add(sample_assay)
+                            self.db_session.flush()
+
+                        metabolite_assignment_file = row[1]['Metabolite Assignment File']
+
+                        if metabolite_assignment_file is not None:
+                            self.add_annotated_features(assay,metabolite_assignment_file,sample_assay,unit)
+
+                    else:
+                        self.logger.info("No Sample found for %s" % sample_name)
+
+                    self.annotation_assay_map[row[1]['Metabolite Assignment File']] = assay
 
     def add_annotated_features(self,assay,metabolite_assignment_file,sample_assay,unit):
         """Add Annotations and AnnotatedFeatures
@@ -4337,69 +4340,66 @@ class ImportMetabolightsStudy(ImportTask):
         feature_dataset = self.feature_dataset_map[metabolite_assignment_file]
         
         annotated_features = []
+        if self.metabolite_information_dataframes[metabolite_assignment_file] is not None:
+            for row in self.metabolite_information_dataframes[metabolite_assignment_file].iterrows():
 
-        for row in self.metabolite_information_dataframes[metabolite_assignment_file].iterrows():
+                the_row = row[1].where(pd.notnull(row[1]), None)
 
-            the_row = row[1].where(pd.notnull(row[1]), None)
+                if sample_assay.name in the_row.keys():
 
-            if sample_assay.name in the_row.keys():
-
-                intensity = the_row[sample_assay.name]
-            else:
-                self.logger.info("%s not in columns for %s" % (sample_assay.sample.name,self.metabolite_information_dataframes[metabolite_assignment_file].columns))
-                intensity = None
-
-            if intensity is not None:
-
-                annotation = self.annotation_map[assay.id][the_row['database_identifier']]
-
-                mz = None
-                retention_time = None
-
-                if assay.platform == AnalyticalPlatform.MS:
-                    if 'mass_to_charge' in the_row:
-                        mz = the_row['mass_to_charge']
-                    elif 'mz' in the_row:
-                        mz = the_row['mz']
-
-                    if 'retention_time' in the_row:
-                        retention_time = the_row['retention_time']
-
-                feature_metadata = self.db_session.query(FeatureMetadata).filter(FeatureMetadata.feature_dataset_id==feature_dataset.id,
-                                                                                 FeatureMetadata.rt_average==retention_time,
-                                                                                 FeatureMetadata.mz_average==mz,
-                                                                                 FeatureMetadata.annotation_id==annotation.id).first()
-                
-                if not feature_metadata:
-                    feature_metadata = FeatureMetadata(feature_dataset_id=feature_dataset.id,
-                                                       rt_average=retention_time,
-                                                       mz_average=mz,
-                                                       annotation_id=annotation.id#,
-                                                       #feature_metadata=utils.convert_to_json_safe(
-                                                       #    self.clean_data_for_jsonb(the_row.to_dict()))
-                                                       )
-                    self.db_session.add(feature_metadata)
-                    self.db_session.flush()
-                    self.logger.info("FeatureMetadata added %s" % feature_metadata)
+                    intensity = the_row[sample_assay.name]
                 else:
-                    self.logger.info("FeatureMetadata found %s" % feature_metadata)
+                    self.logger.info("%s not in columns for %s" % (sample_assay.sample.name,self.metabolite_information_dataframes[metabolite_assignment_file].columns))
+                    intensity = None
 
-                annotated_feature = self.db_session.query(AnnotatedFeature).filter(AnnotatedFeature.sample_assay_id==sample_assay.id,
-                                                                                    AnnotatedFeature.feature_metadata_id==feature_metadata.id).first()
+                if intensity is not None and the_row['database_identifier'] in self.annotation_map[assay.id].keys():
 
-                if not annotated_feature:
+                    annotation = self.annotation_map[assay.id][the_row['database_identifier']]
 
-                    annotated_feature = AnnotatedFeature(feature_metadata_id=feature_metadata.id,
-                                                        sample_assay_id=sample_assay.id,
-                                                        intensity=intensity,
-                                                         unit_id=unit.id)
-                    annotated_features.append(annotated_feature)
+                    mz = None
+                    retention_time = None
 
-                    self.logger.info("AnnotatedFeature added %s" % annotated_feature)
-                else:
-                    self.logger.info("AnnotatedFeature found %s" % annotated_feature)
-        self.db_session.add_all(annotated_features)
-        self.db_session.flush()
+                    if assay.platform == AnalyticalPlatform.MS:
+                        if 'mass_to_charge' in the_row:
+                            mz = the_row['mass_to_charge']
+                        elif 'mz' in the_row:
+                            mz = the_row['mz']
+
+                        if 'retention_time' in the_row:
+                            retention_time = the_row['retention_time']
+
+                    feature_metadata = self.db_session.query(FeatureMetadata).filter(FeatureMetadata.feature_dataset_id==feature_dataset.id,
+                                                                                     FeatureMetadata.rt_average==retention_time,
+                                                                                     FeatureMetadata.mz_average==mz,
+                                                                                     FeatureMetadata.annotation_id==annotation.id).first()
+
+                    if not feature_metadata:
+                        feature_metadata = FeatureMetadata(feature_dataset_id=feature_dataset.id,
+                                                           rt_average=retention_time,
+                                                           mz_average=mz,
+                                                           annotation_id=annotation.id)
+                        self.db_session.add(feature_metadata)
+                        self.db_session.flush()
+                        self.logger.info("FeatureMetadata added %s" % feature_metadata)
+                    else:
+                        self.logger.info("FeatureMetadata found %s" % feature_metadata)
+
+                    annotated_feature = self.db_session.query(AnnotatedFeature).filter(AnnotatedFeature.sample_assay_id==sample_assay.id,
+                                                                                        AnnotatedFeature.feature_metadata_id==feature_metadata.id).first()
+
+                    if not annotated_feature:
+
+                        annotated_feature = AnnotatedFeature(feature_metadata_id=feature_metadata.id,
+                                                            sample_assay_id=sample_assay.id,
+                                                            intensity=intensity,
+                                                             unit_id=unit.id)
+                        #annotated_features.append(annotated_feature)
+                        self.db_session.add(annotated_feature)
+                        self.db_session.flush()
+
+                        self.logger.info("AnnotatedFeature added %s" % annotated_feature)
+                    else:
+                        self.logger.info("AnnotatedFeature found %s" % annotated_feature)
 
     def add_annotation_compounds(self,assay,annotation_file):
         """Add the AnnotationCompounds.
@@ -4450,14 +4450,16 @@ class ImportMetabolightsStudy(ImportTask):
         self.feature_dataset_map[annotation_file] = feature_dataset
         self.annotation_method_map[annotation_file] = annotation_method
 
-        for row in self.metabolite_information_dataframes[annotation_file].iterrows():
+        if annotation_file in self.metabolite_information_dataframes.keys():
+            for row in self.metabolite_information_dataframes[annotation_file].iterrows():
 
-            the_row = row[1].where(pd.notnull(row[1]), None)
+                the_row = row[1].where(pd.notnull(row[1]), None)
 
-            chebi_id = the_row['database_identifier']
+                chebi_id = the_row['database_identifier']
+                cpd_name = the_row['metabolite_identification']
 
-            if chebi_id not in self.annotation_map[assay.id].keys():
-                self.annotation_map[assay.id][chebi_id] = self.get_or_add_metabolights_compound(assay,annotation_method,the_row)
+                if chebi_id not in self.annotation_map[assay.id].keys() and cpd_name is not None:
+                    self.annotation_map[assay.id][chebi_id] = self.get_or_add_metabolights_compound(assay,annotation_method,the_row)
 
     def get_or_add_metabolights_compound(self,assay,annotation_method,the_row):
         """Get or add Metabolights Compound
@@ -4480,7 +4482,10 @@ class ImportMetabolightsStudy(ImportTask):
         :rtype: `phenomedb.models.AnnotationCompound`
         """
         chebi_id = the_row['database_identifier']
-        chebi_split = chebi_id.split(':')
+        if chebi_id is not None:
+            chebi_split = chebi_id.split(':')
+        else:
+            chebi_split = []
 
         cpd_name = the_row['metabolite_identification']
 
@@ -4519,7 +4524,7 @@ class ImportMetabolightsStudy(ImportTask):
             self.logger.info("Annotation found %s" % annotation)
 
 
-        if not the_row['inchi']:
+        if not the_row['inchi'] and chebi_id is not None and len(chebi_split) > 1:
             chebi_entity = ChebiEntity(chebi_split[1])
             inchi = chebi_entity.get_inchi()
         else:
@@ -4528,27 +4533,33 @@ class ImportMetabolightsStudy(ImportTask):
         if not inchi:
             inchi = 'Unknown'
 
+        if cpd_name == 'N,N-Dimethylglycine':
+            bp = True
+
         compound = self.db_session.query(Compound).filter(Compound.inchi==inchi,Compound.name==cpd_name).first()
 
         if not compound:
 
-            compound = Compound(name=cpd_name,
-                                inchi=inchi,
-                                chemical_formula=the_row['chemical_formula'],
-                                smiles=the_row['smiles'])
-            compound.set_inchi_key_from_rdkit()
-            compound.set_log_p_from_rdkit()
-            self.db_session.add(compound)
-            self.db_session.flush()
-            pubchem_cid = self.compoundtask.add_or_update_pubchem_from_api(compound)
-            chebi_id = self.compoundtask.add_or_update_chebi(compound)
-            refmet_name = self.compoundtask.update_name_to_refmet(compound)
-            kegg_id = self.compoundtask.add_or_update_kegg(compound, pubchem_cid=pubchem_cid)
-            hmdb_id = self.compoundtask.add_or_update_hmdb(compound)
-            lm_id = self.compoundtask.add_or_update_lipid_maps(compound)
-            chembl_id = self.compoundtask.add_or_update_chembl(compound)
-            self.compoundtask.add_or_update_classyfire(compound)
-            self.logger.info("Compound added %s" % compound)
+            try:
+                compound = Compound(name=cpd_name,
+                                    inchi=inchi,
+                                    chemical_formula=the_row['chemical_formula'],
+                                    smiles=the_row['smiles'])
+                compound.set_inchi_key_from_rdkit()
+                compound.set_log_p_from_rdkit()
+                self.db_session.add(compound)
+                self.db_session.flush()
+                pubchem_cid = self.compoundtask.add_or_update_pubchem_from_api(compound)
+                chebi_id = self.compoundtask.add_or_update_chebi(compound)
+                refmet_name = self.compoundtask.update_name_to_refmet(compound)
+                kegg_id = self.compoundtask.add_or_update_kegg(compound, pubchem_cid=pubchem_cid)
+                hmdb_id = self.compoundtask.add_or_update_hmdb(compound)
+                lm_id = self.compoundtask.add_or_update_lipid_maps(compound)
+                chembl_id = self.compoundtask.add_or_update_chembl(compound)
+                self.compoundtask.add_or_update_classyfire(compound)
+                self.logger.info("Compound added %s" % compound)
+            except Exception as err:
+                self.logger.exception("Compound import failed: %s" % err)
         else:
             self.logger.info("Compound found %s" % compound)
 
