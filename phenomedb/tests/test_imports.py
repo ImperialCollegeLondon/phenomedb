@@ -169,7 +169,7 @@ class TestImports:
 
         from phenomedb.imports import ImportMetabolightsStudy
 
-        study_id = "MTBLS1045"
+        study_id = "MTBLS1127"
 
         study_folder_path = config["DATA"]['test_data'] + study_id
 

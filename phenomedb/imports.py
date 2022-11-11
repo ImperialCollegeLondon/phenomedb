@@ -4277,11 +4277,7 @@ class ImportMetabolightsStudy(ImportTask):
 
             assay_index = self.study_description_dict['STUDY ASSAYS']['Study Assay File Name'].index(assay_file)
             measurement_type = self.study_description_dict['STUDY ASSAYS']['Study Assay Measurement Type'][assay_index]
-            if measurement_type == 'metabolite profiling':
-                unit = self.get_or_add_unit('noUnit',"no unit, for dimensionless variables (ie untargeted LC-MS)")
-            else:
-                self.logger.debug(self.study_description_dict['STUDY ASSAYS'])
-                raise NotImplementedError("Unknown measurement_type %s" % measurement_type)
+            default_unit = self.get_or_add_unit('noUnit',"no unit, for dimensionless variables (ie untargeted LC-MS)")
 
             for row in data.iterrows():
 
@@ -4319,14 +4315,14 @@ class ImportMetabolightsStudy(ImportTask):
                         metabolite_assignment_file = row[1]['Metabolite Assignment File']
 
                         if metabolite_assignment_file is not None:
-                            self.add_annotated_features(assay,metabolite_assignment_file,sample_assay,unit)
+                            self.add_annotated_features(assay,metabolite_assignment_file,sample_assay,default_unit)
 
                     else:
                         self.logger.info("No Sample found for %s" % sample_name)
 
                     self.annotation_assay_map[row[1]['Metabolite Assignment File']] = assay
 
-    def add_annotated_features(self,assay,metabolite_assignment_file,sample_assay,unit):
+    def add_annotated_features(self,assay,metabolite_assignment_file,sample_assay,default_unit):
         """Add Annotations and AnnotatedFeatures
 
         :param assay: The Assay
@@ -4351,6 +4347,17 @@ class ImportMetabolightsStudy(ImportTask):
                 else:
                     self.logger.info("%s not in columns for %s" % (sample_assay.sample.name,self.metabolite_information_dataframes[metabolite_assignment_file].columns))
                     intensity = None
+
+                if intensity:
+                    intensity = utils.parse_intensity_metabolights(intensity)
+               #     if unit_string is not None and unit_string not in self.units.keys():
+               #         self.units[unit_string] = self.get_or_add_unit(unit_string,unit_description=unit_string)
+
+               #     if unit_string is not None:
+               #         unit = self.units[unit_string]
+               #         unit_id = unit.id
+               #     else:
+               #         unit_id = None
 
                 if intensity is not None and the_row['database_identifier'] in self.annotation_map[assay.id].keys():
 
@@ -4392,7 +4399,7 @@ class ImportMetabolightsStudy(ImportTask):
                         annotated_feature = AnnotatedFeature(feature_metadata_id=feature_metadata.id,
                                                             sample_assay_id=sample_assay.id,
                                                             intensity=intensity,
-                                                             unit_id=unit.id)
+                                                             unit_id=default_unit.id)
                         #annotated_features.append(annotated_feature)
                         self.db_session.add(annotated_feature)
                         self.db_session.flush()
@@ -4523,18 +4530,19 @@ class ImportMetabolightsStudy(ImportTask):
         else:
             self.logger.info("Annotation found %s" % annotation)
 
-
+        inchi = None
         if not the_row['inchi'] and chebi_id is not None and len(chebi_split) > 1:
-            chebi_entity = ChebiEntity(chebi_split[1])
-            inchi = chebi_entity.get_inchi()
+            try:
+                chebi_entity = ChebiEntity(chebi_split[1])
+                inchi = chebi_entity.get_inchi()
+            except Exception as err:
+                self.logger.exception(err)
+
         else:
             inchi = the_row['inchi']
 
-        if not inchi:
+        if inchi is None:
             inchi = 'Unknown'
-
-        if cpd_name == 'N,N-Dimethylglycine':
-            bp = True
 
         compound = self.db_session.query(Compound).filter(Compound.inchi==inchi,Compound.name==cpd_name).first()
 
@@ -4619,8 +4627,7 @@ class ImportMetabolightsStudy(ImportTask):
 
                 else:
                     if col == 'Sample Name':
-                        sample_name = row[1]['Sample Name']
-                        what = 3
+                        sample_name = str(row[1]['Sample Name'])
 
                     i = i + 1
 
@@ -4786,10 +4793,14 @@ class ImportMetabolightsStudy(ImportTask):
         i = 0
         while i < len(self.study_description_dict['STUDY CONTACTS']['Study Person Email']):
             person_dict = {}
-            person_dict['first_name'] = self.study_description_dict['STUDY CONTACTS']['Study Person First Name'][i]
-            person_dict['last_name'] = self.study_description_dict['STUDY CONTACTS']['Study Person Last Name'][i]
-            person_dict['affiliation'] = self.study_description_dict['STUDY CONTACTS']['Study Person First Name'][i]
-            person_dict['role'] = self.study_description_dict['STUDY CONTACTS']['Study Person Roles'][i]
+            if len(self.study_description_dict['STUDY CONTACTS']['Study Person First Name']) > i:
+                person_dict['first_name'] = self.study_description_dict['STUDY CONTACTS']['Study Person First Name'][i]
+            if len(self.study_description_dict['STUDY CONTACTS']['Study Person Last Name']) > i:
+                person_dict['last_name'] = self.study_description_dict['STUDY CONTACTS']['Study Person Last Name'][i]
+            if len(self.study_description_dict['STUDY CONTACTS']['Study Person Affiliation']) > i:
+                person_dict['affiliation'] = self.study_description_dict['STUDY CONTACTS']['Study Person Affiliation'][i]
+            if len(self.study_description_dict['STUDY CONTACTS']['Study Person Roles']) > i:
+                person_dict['role'] = self.study_description_dict['STUDY CONTACTS']['Study Person Roles'][i]
             persons[self.study_description_dict['STUDY CONTACTS']['Study Person Email'][i]] = person_dict
             i = i + 1
 
@@ -5009,12 +5020,32 @@ class ImportMetabolightsStudy(ImportTask):
 
         i = 0
         while i < len(self.study_description_dict['STUDY ASSAYS']['Study Assay File Name']):
+            if len(self.study_description_dict['STUDY ASSAYS']['Study Assay File Name']) > i:
+                study_assay_file_name = self.study_description_dict['STUDY ASSAYS']['Study Assay File Name'][i]
+            else:
+                study_assay_file_name = None
+            if len(self.study_description_dict['STUDY ASSAYS']['Study Assay Measurement Type']) > i:
+                measurement_type = self.study_description_dict['STUDY ASSAYS']['Study Assay Measurement Type'][i]
+            else:
+                measurement_type = None
+            if len(self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Type']) > i:
+                long_platform = self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Type'][i]
+            else:
+                long_platform = None
+            if len(self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Platform']) > i:
+                long_name = self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Platform'][i]
+            else:
+                long_name = None
 
-            study_assay_file_name = self.study_description_dict['STUDY ASSAYS']['Study Assay File Name'][i]
-
-            measurement_type=self.study_description_dict['STUDY ASSAYS']['Study Assay Measurement Type'][i]
-            long_platform=self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Type'][i]
-            long_name=self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Platform'][i]
+            if 'targeted_metabolites' in self.study_description_dict['STUDY DESIGN DESCRIPTORS']['Study Design Type'] and\
+                'untargeted_metabolites' in self.study_description_dict['STUDY DESIGN DESCRIPTORS']['Study Design Type']:
+                raise Exception("Both targeted and untargeted assays exist, please specify which is which in the task parameters")
+            elif 'targeted_metabolites' in self.study_description_dict['STUDY DESIGN DESCRIPTORS']['Study Design Type']:
+                targeted = 'Y'
+            elif 'untargeted_metabolites' in self.study_description_dict['STUDY DESIGN DESCRIPTORS']['Study Design Type']:
+                targeted = 'N'
+            else:
+                targeted = None
 
             assay = self.db_session.query(Assay).filter(or_(Assay.name==long_name,
                                                                  Assay.long_name==long_name)).first()
@@ -5024,7 +5055,8 @@ class ImportMetabolightsStudy(ImportTask):
                 assay = Assay(name=long_name,
                                    long_platform=long_platform,
                                    long_name=long_name,
-                                   measurement_type=measurement_type
+                                   measurement_type=measurement_type,
+                              targeted=targeted
                                    )
                 assay.set_platform_from_long_platform(long_platform)
 

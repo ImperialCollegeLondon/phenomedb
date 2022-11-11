@@ -477,6 +477,22 @@ def read_numeric_batch(batch):
 def clean_task_id(task_id):
     return task_id.lower().replace("-","_").replace(" ","_").replace(".","_").replace(")","_").replace("(","_")
 
+def parse_intensity_metabolights(intensity):
+
+    try:
+        if re.search(r'^[0-9]+[^0-9]+$', str(intensity)):
+            value_match = re.match(r'^[0-9]+', intensity)
+            value = float(intensity[value_match.regs[0],value_match.regs[1]])
+        elif re.search(r',',str(intensity)):
+            if len(re.findall(r',', intensity)) == 1:
+                value = float(str(intensity).replace(',','.'))
+            else:
+                value = float(str(intensity).replace(',', ''))
+        else:
+            value = float(intensity)
+    except Exception as err:
+        value = None
+    return value
 def parse_intensity(intensity):
     # Try casting the value to a float, if it doesn't work, its <LLOQ or >ULOQ
 

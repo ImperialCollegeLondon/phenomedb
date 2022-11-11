@@ -55,3 +55,10 @@ class TestCache:
             rounded_float = utils.precision_round(number)
             rounded_str = utils.precision_round(number,type='str')
             print("%s %s %s" % (number,rounded_float, rounded_str))
+
+    def test_parse_intensity_metabolights(self):
+
+        assert utils.parse_intensity_metabolights(1) == 1.0
+        assert utils.parse_intensity_metabolights('1') == 1.0
+        assert utils.parse_intensity_metabolights('1,2') == 1.2
+        assert utils.parse_intensity_metabolights('111,111,111') == 111111111.0

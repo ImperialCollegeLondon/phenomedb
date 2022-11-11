@@ -30,7 +30,7 @@ RUN pip install --upgrade isatools
 RUN pip install --upgrade markupsafe
 RUN pip install --upgrade jinja2
 #RUN pip install sqlalchemy==1.3.0 markupsafe==2.0.1 wtforms==2.2
-RUN pip install --default-timeout=100 chemspipy xlrd redis pyarrow rdkit-pypi pytest azure-servicebus
+RUN pip install --default-timeout=100 chemspipy xlrd redis pyarrow rdkit-pypi pytest azure-servicebus "pymzml[full]" libchebipy
 RUN R -e "install.packages('jsonlite',dependencies=TRUE, repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('remotes',dependencies=TRUE, repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('BiocManager',dependencies=TRUE, repos='http://cran.rstudio.com/')"
