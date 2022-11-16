@@ -40,6 +40,7 @@ services:
             - ../appdata/tmp:/tmp
             - ../appdata/cache:/opt/phenomedb_cache
             - ../appdata/system:/opt/system
+            - ./utils/parse_IPC_project_folder.R:/opt/
         ports:
             - "25:25"
 

@@ -1,0 +1,58 @@
+{
+  "BA": {
+    "centwave_prefilter": [4,1000],
+    "centwave_peakwidth": [1,2],
+    "centwave_mzdiff": 0.001,
+    "centwave_snthresh": 5,
+    "centwave_ppm": 25,
+    "centwave_noise": 100,
+    "centwave_mzCenterFun": "wMean",
+    "centwave_integrate": 2,
+    "peakdensity_minFraction": 0.4,
+    "peakdensity_minSamples": 10,
+    "peakdensity_bw": 2,
+    "peakdensity_binSize": 0.007
+  },
+  "R": {
+    "centwave_prefilter": [4,1000],
+    "centwave_peakwidth": [1.5,5],
+    "centwave_mzdiff": 0.001,
+    "centwave_snthresh": 5,
+    "centwave_ppm": 25,
+    "centwave_noise": 100,
+    "centwave_mzCenterFun": "wMean",
+    "centwave_integrate": 2,
+    "peakdensity_minFraction": 0.4,
+    "peakdensity_minSamples": 10,
+    "peakdensity_bw": 2,
+    "peakdensity_binSize": 0.007
+  },
+  "L": {
+    "centwave_prefilter": [4,1000],
+    "centwave_peakwidth": [3,12],
+    "centwave_mzdiff": 0.001,
+    "centwave_snthresh": 5,
+    "centwave_ppm": 25,
+    "centwave_noise": 100,
+    "centwave_mzCenterFun": "wMean",
+    "centwave_integrate": 2,
+    "peakdensity_minFraction": 0.4,
+    "peakdensity_minSamples": 10,
+    "peakdensity_bw": 2,
+    "peakdensity_binSize": 0.007
+  },
+  "H": {
+    "centwave_prefilter": [4,1000],
+    "centwave_peakwidth": [1.4,14],
+    "centwave_mzdiff": 0.001,
+    "centwave_snthresh": 5,
+    "centwave_ppm": 25,
+    "centwave_noise": 100,
+    "centwave_mzCenterFun": "wMean",
+    "centwave_integrate": 2,
+    "peakdensity_minFraction": 0.4,
+    "peakdensity_minSamples": 10,
+    "peakdensity_bw": 2,
+    "peakdensity_binSize": 0.007
+  }
+}

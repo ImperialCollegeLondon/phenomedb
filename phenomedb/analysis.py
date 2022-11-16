@@ -700,6 +700,161 @@ class RAnalysisTask(AnalysisTask):
             return 'No R output file: %s' % r_out_path
 
 
+class RunXCMS(RAnalysisTask):
+
+    r_template = 'xcms.r'
+
+    def __init__(self, username=None, task_run_id=None,db_env=None, db_session=None, execution_date=None,upstream_task_run_id=None,pipeline_run_id=None,
+                 chromatography=None,input_dir=None,sample_matrix=None,centwave_prefilter=None,centwave_peakwidth=None,
+                centwave_mzdiff = None,centwave_snthresh = None,centwave_ppm = None,centwave_noise = None,centwave_mzCenterFun = None,
+                 centwave_integrate = None, peakdensity_minFraction = None,peakdensity_minSamples = None,peakdensity_bw = None,peakdensity_binSize = None):
+
+        super().__init__(username=username,
+                         task_run_id=task_run_id,
+                         db_env=db_env, db_session=db_session,
+                         execution_date=execution_date,
+                         upstream_task_run_id=upstream_task_run_id,
+                         pipeline_run_id=pipeline_run_id)
+
+        self.default_params = json.loads(config['DATA']['config'] + "xcms_defaults.json")
+
+        if chromatography is None:
+            raise Exception("assay_name cannot be None")
+
+        if chromatography.strip().upper() in ['H','HILIC',"HPOS","HNEG"]:
+            self.chromatography = 'H'
+        elif chromatography.strip().upper() in ['L','LIPID',"LPOS","LNEG"]:
+            self.chromatography = 'L'
+        elif chromatography.strip().upper() in ['R','REVERSED PHASE',"RPOS","RNEG","REVERSED"]:
+            self.chromatography = 'R'
+        elif chromatography.strip().upper() in ['BA','BANEG',"BAPOS"]:
+            self.chromatography = 'BA'
+        else:
+            raise Exception("Unrecognised chromatography %s must be one of H, R, L, or BA" % chromatography)
+
+        if sample_matrix is None:
+            raise Exception("sample_matrix cannot be None")
+
+        if sample_matrix.strip().upper() in ['S','SERUM']:
+            self.sample_matrix = 'S'
+        elif sample_matrix.strip().upper() in ['P','PLASMA']:
+            self.sample_matrix = 'P'
+        elif sample_matrix.strip().upper() in ['U',"URINE"]:
+            self.sample_matrix = 'U'
+        else:
+            raise Exception("Unrecognised sample_matrix %s must be one of S, P, or U" % sample_matrix)
+
+        if isinstance(centwave_prefilter,list):
+            self.centwave_prefilter = centwave_prefilter
+        elif centwave_prefilter is None:
+            self.centwave_prefilter = self.default_params[self.chromatography]['centwave_prefilter']
+
+        if isinstance(centwave_peakwidth,list):
+            self.centwave_peakwidth = centwave_peakwidth
+        elif centwave_peakwidth is None:
+            self.centwave_peakwidth = self.default_params[self.chromatography]['centwave_peakwidth']
+
+        if centwave_mzdiff is None:
+            self.centwave_mzdiff = self.default_params[self.chromatography]['centwave_mzdiff']
+        else:
+            self.centwave_mzdiff = centwave_mzdiff
+
+        if centwave_snthresh is None:
+            self.centwave_snthresh = self.default_params[self.chromatography]['centwave_snthresh']
+        else:
+            self.centwave_snthresh = centwave_snthresh
+
+        if centwave_ppm is None:
+            self.centwave_ppm = self.default_params[self.chromatography]['centwave_ppm']
+        else:
+            self.centwave_ppm = centwave_ppm
+
+        if centwave_noise is None:
+            self.centwave_noise = self.default_params[self.chromatography]['centwave_noise']
+        else:
+            self.centwave_noise = centwave_noise
+
+        if centwave_mzCenterFun is None:
+            self.centwave_mzCenterFun = self.default_params[self.chromatography]['centwave_mzCenterFun']
+        else:
+            self.centwave_mzCenterFun = centwave_mzCenterFun
+
+        if centwave_integrate is None:
+            self.centwave_integrate = self.default_params[self.chromatography]['centwave_integrate']
+        else:
+            self.centwave_integrate = centwave_integrate
+
+        if peakdensity_minFraction is None:
+            self.peakdensity_minFraction = self.default_params[self.chromatography]['peakdensity_minFraction']
+        else:
+            self.peakdensity_minFraction = peakdensity_minFraction
+
+        if peakdensity_minSamples is None:
+            self.peakdensity_minSamples = self.default_params[self.chromatography]['peakdensity_minSamples']
+        else:
+            self.peakdensity_minSamples = peakdensity_minSamples
+
+        if peakdensity_bw is None:
+            self.peakdensity_bw = self.default_params[self.chromatography]['peakdensity_bw']
+        else:
+            self.peakdensity_bw = peakdensity_bw
+
+        if peakdensity_binSize is None:
+            self.peakdensity_binSize = self.default_params[self.chromatography]['peakdensity_binSize']
+        else:
+            self.peakdensity_binSize = peakdensity_binSize
+
+        self.args['sample_matrix'] = sample_matrix
+        self.args['input_dir'] = input_dir
+        self.args["centwave_prefilter"] = centwave_prefilter
+        self.args["centwave_peakwidth"] = centwave_peakwidth
+        self.args["centwave_mzdiff"] = centwave_mzdiff
+        self.args["centwave_snthresh"] = centwave_snthresh
+        self.args["centwave_ppm"] = centwave_ppm
+        self.args["centwave_noise"] = centwave_noise
+        self.args["centwave_mzCenterFun"] = centwave_mzCenterFun
+        self.args["centwave_mzCenterFun"] = centwave_mzCenterFun
+        self.args["peakdensity_minFraction"] = peakdensity_minFraction
+        self.args["peakdensity_minSamples"] = peakdensity_minSamples
+        self.args["peakdensity_bw"] = peakdensity_bw
+        self.args["peakdensity_binSize"] = peakdensity_binSize
+
+        self.get_class_name(self)
+
+    def load_data(self):
+        pass
+
+    def method_specific_steps(self):
+
+        # 1. Write out data to /tmp/phenomedb/R_jobs/<self.job_name>/input/
+
+        # 2. Load vars into template_data
+
+        template_data = {'parse_IPC_project_folder_path' : config['R']['parse_IPC_project_folder_path']}
+
+        template_data['sample_matrix'] = self.sample_matrix
+        template_data['input_dir'] = self.input_dir
+        template_data["centwave_prefilter"] = self.centwave_prefilter
+        template_data["centwave_peakwidth"] = self.centwave_peakwidth
+        template_data["centwave_mzdiff"] = self.centwave_mzdiff
+        template_data["centwave_snthresh"] = self.centwave_snthresh
+        template_data["centwave_ppm"] = self.centwave_ppm
+        template_data["centwave_noise"] = self.centwave_noise
+        template_data["centwave_mzCenterFun"] = self.centwave_mzCenterFun
+        template_data["centwave_mzCenterFun"] = self.centwave_mzCenterFun
+        template_data["peakdensity_minFraction"] = self.peakdensity_minFraction
+        template_data["peakdensity_minSamples"] = self.peakdensity_minSamples
+        template_data["peakdensity_bw"] = self.peakdensity_bw
+        template_data["peakdensity_binSize"] = self.peakdensity_binSize
+        template_data['output_path'] = self.output_folder + "xcms_output.csv"
+
+        return template_data
+
+    def load_results(self):
+
+        super().load_results()
+        shutil.copy(self.output_folder + "xcms_output.csv",config['DATA']['app_data'] + "output/%s_xcms_output.csv" % self.task_run.id)
+
 class RunPCPR2(RAnalysisTask):
 
     columns_to_include = ['Unique Batch']
@@ -757,7 +912,6 @@ class RunPCPR2(RAnalysisTask):
         self.args['scaling'] = scaling
 
         self.get_class_name(self)
-
 
     def method_specific_steps(self):
 

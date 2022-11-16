@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 rm -rf /opt/system/scheduler_ready
-pip install libchebipy "pymzml[full]"
+#pip install libchebipy "pymzml[full]"
 python /opt/wait-for-redis.py
 airflow db init
 airflow db upgrade

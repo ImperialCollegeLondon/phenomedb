@@ -10,18 +10,49 @@ if (!require("BiocManager", quietly = TRUE))
 #BiocManager::install("xcms")
 #BiocManager::install("sva")
 library('xcms')
+source('{{ parse_IPC_project_folder_path }}')
 
+# Paths to project
+dataDirectory <- "{{ mzml_path }}"
 
-#intensity_chardata <- read.csv('{{ mzml_path }}')
-#intensity_data <- data.matrix(intensity_chardata)
-#sample_metadata <- read.csv('{{ sample_metadata_file_path }}',stringsAsFactors=T)
-#{% if model_Y_variable and model_X_variables | length > 0 %}
-#X_matrix = sample_metadata[,c("{{ '","'.join(model_X_variables) | replace('::','..')}}")]
-#mod = model.matrix(~as.factor({{ model_Y_variable | replace('::','..') }}), data=X_matrix)
-#{% else %}
-#mod = NULL
-#{% endif %}
+savePath <- "{{ save_path }}"
 
-#output = t(ComBat(dat=t(intensity_data), batch=sample_metadata${{ batch_variable }}, mod=mod, par.prior=TRUE, prior.plots=FALSE))
+matrix <- '{{ matrix }}' # 'S'
+study_files <- parse_IPC_MS_project_names("{{ mzml_path }}", "{{ sample_matrix }}")
+
+raw_data <- readMSData(files=study_files$files,
+                       mode="onDisk")
+
+## Detect peaks
+cwp <- CentWaveParam(prefilter= c("{{ '","'.join(centwave_prefilter) | replace(' ','.')}}"),
+                     peakwidth=c("{{ '","'.join(centwave_prefix) | replace(' ','.')}}"),
+                     mzdiff={{ centwave_mzdiff }},
+                     snthresh = {{ centwave_snthresh }},
+                     ppm={{ centwave_ppm }},
+                     noise={{ centwave_noise }},
+                     mzCenterFun={{ centwave_wMean }},
+                     integrate={{ centwave_integrate }})
+xdata <- findChromPeaks(raw_data,
+                        param=cwp)
+
+# Sample groupings
+# In this case the grouping is performed assuming 2 groups: one group with all study
+# referencs and another with everything else
+sample_group  <- study_files$metadata$sampleType
+sample_group[sample_group != 'SR'] <- 'Samples'
+
+## Perform peak grouping
+pdp <- PeakDensityParam(sampleGroups=sample_group, #rep(1, length(fileNames(xdata))),
+                        minFraction={{ peakdensity_minFraction }},#0,
+                        minSamples={{ peakdensity_minSamples},
+                        bw={{ peakdensity_bw }}
+                        binSize={{peakdensity_binSize }})
+xdata_gr <- groupChromPeaks(xdata,
+                         param=pdp)
+
+## Filling missing peaks
+xdata <- fillChromPeaks(xdata_gr)
+# Write final processed dataset
+write.csv(peakTable(as(xdata_gr, 'xcmsSet')), file=savePath)
 
 {% endblock %}
