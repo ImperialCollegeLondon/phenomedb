@@ -423,7 +423,6 @@ class ImportTask(Task):
 
         return value
 
-
 class ImportSampleManifest(ImportTask):
     """Constructor method. Once initialised as task, run using task.run()
 
@@ -4107,6 +4106,37 @@ class ImportLCMSUntargeted(ImportNPYC):
         self.npyc_dataset = nPYc.MSDataset(self.dataset_path,fileType=self.file_type,sop=self.sop)
         self.npyc_dataset.addSampleInfo(descriptionFormat=self.sample_metadata_format, filePath=self.sample_metadata_path)
 
+class DownloadMetabolightsStudy(Task):
+    """Import Metabolights Study Task
+
+    :param ImportTask: Base ImportTask
+    :type ImportTask: `phenomedb.imports.ImportTask`
+    """
+
+    def __init__(self, study_folder_path=None, study_id=None, task_run_id=None, username=None, db_env=None,
+                 execution_date=None, db_session=None, pipeline_run_id=None):
+        """Constructor. If only study_id set, will download the study as well
+
+        :param username: Username of the user running the task, defaults to None
+        :type username: str, optional
+        :param study_folder_path: Path to the study folder, defaults to None
+        :type study_folder_path: str, optional
+        :param study_id: ID of the Study, defaults to None
+        :type study_id: int, optional
+        """
+
+        self.study_folder_path = study_folder_path
+        self.study_id = study_id
+
+        super().__init__(username=username, task_run_id=task_run_id, db_env=db_env, db_session=db_session,
+                         execution_date=execution_date, pipeline_run_id=pipeline_run_id)
+
+        self.args['study_id'] = study_id
+        self.get_class_name(self)
+
+    def process(self):
+        if self.study_id and not os.path.exists(config['DATA']['app_data'] + "metabolights/" + self.study_id):
+            self.download_files_from_metabolights(self.study_id,prefixes=['a', 'i', 's', 'm'], suffixes='mzml')
 
 class ImportMetabolightsStudy(ImportTask):
     """Import Metabolights Study Task
@@ -4115,7 +4145,7 @@ class ImportMetabolightsStudy(ImportTask):
     :type ImportTask: `phenomedb.imports.ImportTask`
     """    
 
-    def __init__(self,study_folder_path=None,study_id=None,task_run_id=None,username=None,db_env=None,execution_date=None,db_session=None,pipeline_run_id=None):
+    def __init__(self,study_id=None,task_run_id=None,username=None,db_env=None,execution_date=None,db_session=None,pipeline_run_id=None):
         """Constructor. If only study_id set, will download the study as well
 
         :param username: Username of the user running the task, defaults to None
@@ -4126,12 +4156,10 @@ class ImportMetabolightsStudy(ImportTask):
         :type study_id: int, optional
         """        
 
-        self.study_folder_path = study_folder_path
         self.study_id = study_id
 
-        super().__init__(username=username,task_run_id=task_run_id,db_env=db_env,db_session=db_session,execution_date=execution_date,pipeline_run_id=None)
+        super().__init__(username=username,task_run_id=task_run_id,db_env=db_env,db_session=db_session,execution_date=execution_date,pipeline_run_id=pipeline_run_id)
 
-        self.args['study_folder_path'] = study_folder_path
         self.args['study_id'] = study_id
         self.get_class_name(self)
 
@@ -4143,13 +4171,14 @@ class ImportMetabolightsStudy(ImportTask):
         self.annotation_method_map = {}
         self.annotation_map = {}
 
+        self.study_folder_path = config['DATA']['app_data'] + "metabolights/" + self.study_id
+
     def load_dataset(self):
         """Loads the dataset
-        """        
-
-        if self.study_id and not self.study_folder_path:
+        """
+        if self.study_id and not os.path.exists(self.study_folder_path):
             #raise NotImplementedError('API download not yet implemented')
-            self.download_files_from_metabolights()
+            self.download_files_from_metabolights(prefixes=['a','i','s','m'],suffixes=['mzml'])
 
         study_files = os.listdir(self.study_folder_path)
 
@@ -4164,39 +4193,6 @@ class ImportMetabolightsStudy(ImportTask):
             elif re.search(r'^m_.*.tsv$',study_file):
                 self.metabolite_information_dataframes[study_file] = self.load_tabular_file(filepath)
 
-    def download_files_from_metabolights(self):
-        """Download files from Metabolights (not working yet)
-        """        
-
-        self.study_folder_path = config['DATA']['app_data'] + "metabolights/" + self.study_id
-        from ftplib import FTP
-        self.ebi_ftp = FTP('ftp.ebi.ac.uk')  # connect to host, default port
-        self.ebi_ftp.login()
-        self.ebi_ftp.cwd('pub/databases/metabolights/studies/public/%s' % (self.study_id))
-        self.download_from_api(['i','s','m','a'])
-        try:
-            self.ebi_ftp.quit()
-        except Exception as err:
-            self.logger.exception(err)
-            self.ebi_ftp.close()
-
-    def download_from_api(self,prefixes):
-        """Download the study via the API (not yet implemented)
-
-        :param type: file type to download ('investigation','sample','assays','metabolites')
-        :type type: str
-        """
-        if not isinstance(prefixes,list) and isinstance(prefixes,str):
-            prefixes = [prefixes]
-
-        filenames = self.ebi_ftp.nlst()
-        for filename in filenames:
-            for prefix in prefixes:
-                if re.search(r'^' + re.escape(prefix) + r"_",filename):
-                    if not os.path.exists(self.study_folder_path):
-                        os.makedirs(self.study_folder_path)
-                    with open(self.study_folder_path + '/' + filename, 'wb') as local_file:
-                        self.ebi_ftp.retrbinary('RETR ' + filename, local_file.write)
 
 
     def load_study_description_file(self,filepath):

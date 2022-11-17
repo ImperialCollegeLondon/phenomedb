@@ -705,7 +705,7 @@ class RunXCMS(RAnalysisTask):
     r_template = 'xcms.r'
 
     def __init__(self, username=None, task_run_id=None,db_env=None, db_session=None, execution_date=None,upstream_task_run_id=None,pipeline_run_id=None,
-                 chromatography=None,input_dir=None,sample_matrix=None,centwave_prefilter=None,centwave_peakwidth=None,
+                 chromatography=None,metabolights_study_id=None,lab=None,input_dir=None,sample_matrix=None,centwave_prefilter=None,centwave_peakwidth=None,
                 centwave_mzdiff = None,centwave_snthresh = None,centwave_ppm = None,centwave_noise = None,centwave_mzCenterFun = None,
                  centwave_integrate = None, peakdensity_minFraction = None,peakdensity_minSamples = None,peakdensity_bw = None,peakdensity_binSize = None):
 
@@ -715,11 +715,17 @@ class RunXCMS(RAnalysisTask):
                          execution_date=execution_date,
                          upstream_task_run_id=upstream_task_run_id,
                          pipeline_run_id=pipeline_run_id)
-
-        self.default_params = json.loads(config['DATA']['config'] + "xcms_defaults.json")
+        
+        if not metabolights_study_id and not input_dir:
+            raise Exception("Either metabolights_study_id or input_dir must be specified")
+        else:
+            self.metabolights_study_id = metabolights_study_id
+            self.input_dir = input_dir
+        with open(config['DATA']['config'] + "xcms_defaults.json", "r") as read_file:
+            self.default_params = json.load(read_file)
 
         if chromatography is None:
-            raise Exception("assay_name cannot be None")
+            raise Exception("chromatography cannot be None")
 
         if chromatography.strip().upper() in ['H','HILIC',"HPOS","HNEG"]:
             self.chromatography = 'H'
@@ -804,8 +810,11 @@ class RunXCMS(RAnalysisTask):
         else:
             self.peakdensity_binSize = peakdensity_binSize
 
+        self.lab = lab
+        self.args['lab'] = lab
         self.args['sample_matrix'] = sample_matrix
         self.args['input_dir'] = input_dir
+        self.args['metabolights_study_id'] = metabolights_study_id
         self.args["centwave_prefilter"] = centwave_prefilter
         self.args["centwave_peakwidth"] = centwave_peakwidth
         self.args["centwave_mzdiff"] = centwave_mzdiff
@@ -822,7 +831,11 @@ class RunXCMS(RAnalysisTask):
         self.get_class_name(self)
 
     def load_data(self):
-        pass
+        if self.metabolights_study_id and not self.input_dir:
+            self.input_dir = config['DATA']['app_data'] + "metabolights/%s" % self.metabolights_study_id
+        if not os.path.exists(self.input_dir):
+            self.download_files_from_metabolights(self.metabolights_study_id,prefixes=['i','m','a','s'],suffixes=['mzml'])
+
 
     def method_specific_steps(self):
 
@@ -847,6 +860,7 @@ class RunXCMS(RAnalysisTask):
         template_data["peakdensity_bw"] = self.peakdensity_bw
         template_data["peakdensity_binSize"] = self.peakdensity_binSize
         template_data['output_path'] = self.output_folder + "xcms_output.csv"
+        template_data['lab'] = self.lab
 
         return template_data
 

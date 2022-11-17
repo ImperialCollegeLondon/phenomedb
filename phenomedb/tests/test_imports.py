@@ -15,6 +15,7 @@ from phenomedb.query_factory import *
 from phenomedb.imports import *
 from phenomedb.imports import ImportMetabolightsStudy
 from phenomedb.config import config
+from phenomedb.analysis import RunXCMS
 
 DB_ENV = "TEST"
 PROJECT_NAME = "PipelineTesting"
@@ -181,6 +182,20 @@ class TestImports:
         query_factory.add_filter(query_filter=QueryFilter(model='Project',property='name',operator='eq',value=study_id))
         summary = query_factory.load_summary_statistics()
         print(summary)
+
+    def test_download_and_run_xcms(self):
+        from phenomedb.imports import ImportMetabolightsStudy
+
+        study_id = "MTBLS694"
+        task = DownloadMetabolightsStudy(study_id=study_id, username=config['TEST']['USERNAME'])
+
+        task.run()
+
+        task = RunXCMS(metabolights_study_id=study_id,lab='imperial',chromatography='RPOS',sample_matrix='urine')
+        task.run()
+
+        pass
+
 
     def test_download_import_all_metabolights(self):
 

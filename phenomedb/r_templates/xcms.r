@@ -13,19 +13,21 @@ library('xcms')
 source('{{ parse_IPC_project_folder_path }}')
 
 # Paths to project
-dataDirectory <- "{{ mzml_path }}"
+dataDirectory <- "{{ input_dir }}"
 
-savePath <- "{{ save_path }}"
+savePath <- "{{ output_path }}"
 
-matrix <- '{{ matrix }}' # 'S'
-study_files <- parse_IPC_MS_project_names("{{ mzml_path }}", "{{ sample_matrix }}")
-
-raw_data <- readMSData(files=study_files$files,
-                       mode="onDisk")
+{% if lab == 'imperial' %}
+study_files <- parse_IPC_MS_project_names("{{ input_dir }}", "{{ sample_matrix }}")
+files = study_files$files
+{% else %}
+files = list.files("{{ input_dir }}", full.names=TRUE, pattern='.mzML')
+{% endif %}
+raw_data <- readMSData(files=files,mode="onDisk")
 
 ## Detect peaks
-cwp <- CentWaveParam(prefilter= c("{{ '","'.join(centwave_prefilter) | replace(' ','.')}}"),
-                     peakwidth=c("{{ '","'.join(centwave_prefix) | replace(' ','.')}}"),
+cwp <- CentWaveParam(prefilter=c({{ centwave_prefilter[0] }},{{ centwave_prefilter[1] }}),
+                     peakwidth=c({{ centwave_peakwidth[0] }},{{ centwave_peakwidth[1] }}),
                      mzdiff={{ centwave_mzdiff }},
                      snthresh = {{ centwave_snthresh }},
                      ppm={{ centwave_ppm }},
@@ -44,9 +46,9 @@ sample_group[sample_group != 'SR'] <- 'Samples'
 ## Perform peak grouping
 pdp <- PeakDensityParam(sampleGroups=sample_group, #rep(1, length(fileNames(xdata))),
                         minFraction={{ peakdensity_minFraction }},#0,
-                        minSamples={{ peakdensity_minSamples},
-                        bw={{ peakdensity_bw }}
-                        binSize={{peakdensity_binSize }})
+                        minSamples={{ peakdensity_minSamples }},
+                        bw={{ peakdensity_bw }},
+                        binSize={{ peakdensity_binSize }})
 xdata_gr <- groupChromPeaks(xdata,
                          param=pdp)
 

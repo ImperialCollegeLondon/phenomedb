@@ -82,6 +82,9 @@
   "imports.ImportMetabolightsStudy": {
     "study_id": {"type":"str","label": "Metabolights Study ID","required": false}
   },
+  "imports.DownloadMetabolightsStudy": {
+    "study_id": {"type":"str","label": "Metabolights Study ID","required": true}
+  },
   "imports.ImportMetadata": {
     "project_name": {"type":"project","label": "Project","required":true},
     "filepath": {"type":"file_upload","label": "File path","remote_folder_path": "uploads","required": true,"project_folder": false},
