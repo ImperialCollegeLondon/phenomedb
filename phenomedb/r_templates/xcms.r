@@ -56,5 +56,6 @@ xdata_gr <- groupChromPeaks(xdata,
 xdata <- fillChromPeaks(xdata_gr)
 # Write final processed dataset
 write.csv(peakTable(as(xdata_gr, 'xcmsSet')), file=savePath)
+output = savePath
 
 {% endblock %}
