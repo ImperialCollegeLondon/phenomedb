@@ -85,6 +85,24 @@
   "imports.DownloadMetabolightsStudy": {
     "study_id": {"type":"str","label": "Metabolights Study ID","required": true}
   },
+  "analysis.RunXCMS": {
+    "metabolights_study_id": {"type":"str","label": "Metabolights Study ID","required": false},
+    "input_dir": {"type":"str","label": "Input directory (if not metabolights)","required": false},
+    "chromatography": {"type":"str","label": "Chromatography (H,R,L,BA)","required": true},
+    "lab": {"type":"str","label": "Lab, e.g. imperial - used for NPC specific naming conventions","required": false},
+    "sample_matrix": {"type":"str","label": "Sample matrix (S,P,U)","required": false},
+    "centwave_prefilter": {"type":"list","label": "Centwave prefilter","required": false},
+    "centwave_mzdiff": {"type":"float","label": "Centwave mzdiff","required": false},
+    "centwave_snthresh": {"type":"float","label": "Centwave snthresh","required": false},
+    "centwave_ppm": {"type":"float","label": "Centwave ppm","required": false},
+    "centwave_noise": {"type":"float","label": "Centwave noise","required": false},
+    "centwave_mzCenterFun": {"type":"str","label": "Centwave mzCenterFun","required": false},
+    "centwave_integrate": {"type":"float","label": "Centwave integrate","required": false},
+    "centwave_minFraction": {"type":"float","label": "Centwave minFraction","required": false},
+    "centwave_minSamples": {"type":"float","label": "Centwave minSamples","required": false},
+    "centwave_bw": {"type":"float","label": "Centwave bw","required": false},
+    "centwave_binSize": {"type":"float","label": "Centwave binSize","required": false}
+  },
   "imports.ImportMetadata": {
     "project_name": {"type":"project","label": "Project","required":true},
     "filepath": {"type":"file_upload","label": "File path","remote_folder_path": "uploads","required": true,"project_folder": false},

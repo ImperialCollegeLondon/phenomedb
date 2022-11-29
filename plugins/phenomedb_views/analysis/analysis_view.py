@@ -104,10 +104,10 @@ class AnalysisView(PhenomeDBBaseView):
 
                         df.loc[index, 'id'] = '<a href="' + url_for(".analysisresult", id=df.loc[index,'id']) + '"/>' + df.loc[index,'id'] + '</a>'
 
-                        if df.loc[index,'saved_query_id'] != None and str(df.loc[index,'saved_query_id']) != '':
-                            if df.loc[index,'saved_query_id'] == 'new' :
+                        if df.loc[index,'saved_query_id'] is not None and str(df.loc[index,'saved_query_id']) != '':
+                            if df.loc[index,'saved_query_id'] == 'new':
                                 df.loc[index,'saved_query_id'] = '<a href="' + url_for("QueryFactoryView.advanced_saved_query_editor") + '?id=new">' + str(int(float(df.loc[index,'saved_query_id']))) + '</a>'
-                            else:
+                            elif df.loc[index,'saved_query_id'] is not None and str(df.loc[index,'saved_query_id']) != 'None':
                                 df.loc[index,'saved_query_id'] = '<a href="' + url_for("QueryFactoryView.advanced_saved_query_editor") + '?id=' + str(int(float(df.loc[index,'saved_query_id']))) + '">' + str(int(float(df.loc[index,'saved_query_id']))) + '</a>'
 
                         if status == 'success':

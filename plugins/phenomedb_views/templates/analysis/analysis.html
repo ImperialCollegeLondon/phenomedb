@@ -142,11 +142,17 @@
 
                 console.log(argList);
 
+                var saved_query_id_exists = false;
+
                 $.each( argList, function(index, argName) {
 
                     var paramData = params[argName];
 
-                    if (paramData == undefined || argName == 'saved_query_id') {
+                    if (paramData == undefined){
+                        return
+                    }
+                    if (argName == 'saved_query_id') {
+                        saved_query_id_exists = true
                         return;
                     }
                    // console.log(argName);
@@ -207,7 +213,7 @@
                     taskFields.append(taskRow);
                     $("#task_form").validate();
 
-                    if ($("#task_form").valid()){
+                    if ($("#task_form").valid() || saved_query_id_exists === false){
                         $('#run_task').removeClass('disabled');
                     } else{
                         $('#run_task').addClass('disabled');

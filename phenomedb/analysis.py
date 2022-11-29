@@ -16,16 +16,9 @@ from pyChemometrics.ChemometricsScaler import ChemometricsScaler
 import subprocess
 import nPYc
 
+
 class AnalysisTask(Task):
-    """AnalysisTask object. The Base task for running an analysis. To implement, 
-    override the __init__() and run_analysis() methods. Data is loaded from a QueryFactory 
-    or SavedQuery object, and stored in self.output. Once completed the results will be stored in 
-    AnalysisResult table.
-
-    :param Task: The Task base object
-    :type Task: phenomedb.Task.Task
-    """
-
+    
     for_npyc = True
     columns_to_include = ['Project','Unique Batch','Unique Correction Batch','Run Order','Acquired Time']
     sample_types = None
@@ -38,34 +31,82 @@ class AnalysisTask(Task):
                  harmonise_annotations=False,upstream_task_run_id=None,exclude_samples_with_na_feature_values=False,include_metadata=False,
                 exclude_features_with_na_feature_values=False,include_default_columns=True,include_harmonised_metadata=True,drop_sample_column=False,
                  exclude_features_not_in_all_projects=False,sample_types=None,assay_roles=None,pipeline_run_id=None):
+        """The base AnalysisTask Task. Extend this Task to create your own methods.
 
-        """Init method
-
-        :param query_factory: The query factory, defaults to None
-        :type query_factory: `phenomedb.query_factory.QueryFactory`, optional
-        :param saved_query_id: The ID of the SavedQuery, defaults to None
+        :param query_factory: QueryFactory, a handle to the :class:`phenomedb.query_factory.QueryFactory`
+        object that defined the cohort, defaults to None
+        :type query_factory: :class:`phenomedb.query_factory.QueryFactory`, optional
+        :param saved_query_model: The output model of the query, defaults to 'AnnotatedFeature'
+        :type saved_query_model: str, optional
+        :param saved_query_id: SavedQuery.id of the query, (typical usage), defaults to None
         :type saved_query_id: int, optional
+        :param task_run_id: The TaskRun.id, defaults to None
+        :type task_run_id: int, optional
         :param username: The username of the user running the task, defaults to None
         :type username: str, optional
-        :param exclude_na_metadata_samples: When set, samples with na metadata columns are removed, defaults to False
+        :param correction_type: The CorrectionType to pass to the Query (e.g. SR, LTR), defaults to None
+        :type correction_type: str, optional
+        :param exclude_na_metadata_samples: Whether to exclude samples that have na values for their metadata columns, defaults to False
         :type exclude_na_metadata_samples: bool, optional
-        :param exclude_na_metadata_columns: When set, columns with na values are removed, defaults to False
+        :param exclude_na_metadata_columns: Whether to exclude metadata columns that have na values, defaults to False
         :type exclude_na_metadata_columns: bool, optional
-        :param columns_to_exclude: Exclude specific columns, defaults to []
+        :param output_dir: Output directory for function, defaults to None
+        :type output_dir: str, optional
+        :param db_env: Database environment, 'PROD','BETA','TEST', defaults to None
+        :type db_env: str, optional
+        :param db_session: Database session, defaults to None
+        :type db_session: object, optional
+        :param execution_date: Datetime of execution, defaults to None
+        :type execution_date: :class:`DateTime.DateTime`, optional
+        :param columns_to_exclude: Which columns to exclude, defaults to None
         :type columns_to_exclude: list, optional
-        :param exclude_one_factor_columns: Exlude columns with only one factor, defaults to False
+        :param exclude_one_factor_columns: Exclude columns with only one factor, defaults to False
         :type exclude_one_factor_columns: bool, optional
-        :param include_project: Include the project column (will be excluded if exclude_one_factor_columns is set and only 1 project), defaults to True
-        :type include_project: bool, optional
-        :param only_harmonised_metadata: Only include harmonised metadata columns, defaults to False
+        :param columns_to_include: Which columns to include, defaults to None
+        :type columns_to_include: list, optional
+        :param class_level: Query Aggregration class level (for Compounds), defaults to None
+        :type class_level: str, optional
+        :param class_type: Query Aggregration class type, defaults to None
+        :type class_type: str, optional
+        :param only_harmonised_metadata: Only include harmonised metadata fields, defaults to False
         :type only_harmonised_metadata: bool, optional
-        :param only_metadata: Only include metadata columns, defaults to False
+        :param only_metadata: Only include metadata fields, defaults to False
         :type only_metadata: bool, optional
-        :param scaling: Scale the abundances, 'mc', 'uv', 'pqn', defaults to None
-        :type reload_cache: str, optional
-        :param reload_cache: Reload the dataset cache from the database, defaults to False
+        :param scaling: Which scaling to use, 'pa', 'uv', 'med', defaults to None
+        :type scaling: str, optional
+        :param transform: Which transformation to use, 'log', 'sqrt', defaults to None
+        :type transform: str, optional
+        :param reload_cache: Whether to reload the cache for the Query, defaults to False
         :type reload_cache: bool, optional
-        """
+        :param validate: Whether to validate the Task by running the validate() method, defaults to True
+        :type validate: bool, optional
+        :param aggregate_function: Which Query aggregration function to use (mean, median, sum, avg), defaults to None
+        :type aggregate_function: str, optional
+        :param harmonise_annotations: Whether to use harmonised annotations, defaults to False
+        :type harmonise_annotations: bool, optional
+        :param upstream_task_run_id: The upstream TaskRun.id, defaults to None
+        :type upstream_task_run_id: int, optional
+        :param exclude_samples_with_na_feature_values: Exclude samples with na feature values, defaults to False
+        :type exclude_samples_with_na_feature_values: bool, optional
+        :param include_metadata: Whether to include metadata or not, defaults to False
+        :type include_metadata: bool, optional
+        :param exclude_features_with_na_feature_values: Exclude features with na feature values, defaults to False
+        :type exclude_features_with_na_feature_values: bool, optional
+        :param include_default_columns: Whether to include default columns, defaults to True
+        :type include_default_columns: bool, optional
+        :param include_harmonised_metadata: Whether to include harmonised metadata, defaults to True
+        :type include_harmonised_metadata: bool, optional
+        :param drop_sample_column: Drop the sample column, defaults to False
+        :type drop_sample_column: bool, optional
+        :param exclude_features_not_in_all_projects: Exclude features not in all projects, defaults to False
+        :type exclude_features_not_in_all_projects: bool, optional
+        :param sample_types: SampleTypes to include (StudySample, StudyReference, ExternalReference), defaults to None
+        :type sample_types: list, optional
+        :param assay_roles: AssayRoles to include (Assay, LinearityReference, PrecisionReference), defaults to None
+        :type assay_roles: list, optional
+        :param pipeline_run_id: The TaskRun.pipeline_run_id, defaults to None
+        :type pipeline_run_id: int, optional
+        """    
 
         if not sample_types and self.sample_types is None:
             self.sample_types = [SampleType.StudySample,SampleType.StudyPool,SampleType.ExternalReference]
@@ -833,7 +874,6 @@ class RunXCMS(RAnalysisTask):
     def load_data(self):
         if self.metabolights_study_id and not self.input_dir:
             self.input_dir = config['DATA']['app_data'] + "metabolights/%s" % self.metabolights_study_id
-        if not os.path.exists(self.input_dir):
             self.download_files_from_metabolights(self.metabolights_study_id,prefixes=['i','m','a','s'],suffixes=['mzml'])
 
 
