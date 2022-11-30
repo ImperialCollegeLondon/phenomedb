@@ -19,6 +19,7 @@ from werkzeug.utils import secure_filename
 VIEW_NAME = "pipeline_factory"
 
 from phenomedb.base_view import *
+import urllib.parse
 
 class PipelineFactoryView(PhenomeDBBaseView):
 
@@ -259,6 +260,23 @@ class PipelineFactoryView(PhenomeDBBaseView):
         data = {'task_run':task_run}
         self.db_session.close()
         return self.render_template("pipeline_factory/task_run.html", data=data)
+
+    @expose('/pipelinerun/', methods=["GET"])
+    @has_access
+    def viewpipelinerun(self):
+        self.set_db_session(request)
+        id = urllib.parse.unquote(request.args.get("id"))
+        self.logger.info("Pipeline Run ID %s " % id)
+
+        task_runs = self.db_session.query(TaskRun).filter(TaskRun.pipeline_run_id == id).all()
+        for task_run in task_runs:
+            task_run.log_url = task_run.get_log_url()
+        pipeline_id = task_runs[0].pipeline_id
+        pipeline = self.db_session.query(Pipeline).filter(Pipeline.id == task_runs[0].pipeline_id).first()
+        data = {'task_runs':task_runs,
+                'pipeline':pipeline}
+        self.db_session.close()
+        return self.render_template("pipeline_factory/pipeline_run.html", data=data)
 
     @expose('/run_pipeline', methods=["POST"])
     @has_access
