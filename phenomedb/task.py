@@ -14,7 +14,7 @@ import datetime
 import redis
 from phenomedb.config import config
 from phenomedb.exceptions import *
-import time
+import re
 
 class Task(ABC):
     """Base Task class.
@@ -77,6 +77,60 @@ class Task(ABC):
         self.rerun_task = False     # overwritten in start_task_run if output exists and task_run_id is set
         self.task_run_output = None
 
+
+    def download_files_from_metabolights(self,study_id,prefixes=None,suffixes=None):
+        """Download files from Metabolights (not working yet)
+        """
+
+        if prefixes is None:
+            prefixes = ['i', 's', 'm', 'a']
+        if suffixes is None:
+            suffixes = ['.mzml']
+
+        self.study_folder_path = config['DATA']['app_data'] + "metabolights/" + study_id
+        from ftplib import FTP
+        self.ebi_ftp = FTP('ftp.ebi.ac.uk')  # connect to host, default port
+        self.ebi_ftp.login()
+        self.ebi_ftp.cwd('pub/databases/metabolights/studies/public/%s' % (study_id))
+        self.download_from_metabolights_api(prefixes=prefixes,suffixes=suffixes)
+        try:
+            self.ebi_ftp.quit()
+        except Exception as err:
+            self.logger.exception(err)
+            self.ebi_ftp.close()
+
+    def download_from_metabolights_api(self, prefixes=None,suffixes=None):
+        """Download the study via the API (not yet implemented)
+
+        :param type: file type to download ('investigation','sample','assays','metabolites')
+        :type type: str
+        """
+
+        if not isinstance(prefixes, list) and isinstance(prefixes, str):
+            prefixes = [prefixes]
+        if not isinstance(suffixes, list) and isinstance(suffixes, str):
+            suffixes = [suffixes]
+
+        filenames = self.ebi_ftp.nlst()
+        for filename in filenames:
+            download = False
+            if prefixes is None and suffixes is None:
+                download = True
+            if prefixes is not None and download is False:
+                for prefix in prefixes:
+                    if re.search(r'^' + re.escape(prefix) + r"_", filename):
+                        download = True
+            if suffixes is not None and download is False:
+                for suffix in suffixes:
+                    if re.search(re.escape(suffix) + "$", filename.lower()):
+                        download = True
+            if download:
+                if not os.path.exists(self.study_folder_path):
+                    os.makedirs(self.study_folder_path)
+                with open(self.study_folder_path + '/' + filename, 'wb') as local_file:
+                    self.ebi_ftp.retrbinary('RETR ' + filename, local_file.write)
+
+
     def get_class_name(self,instance):
         """Get the name of the class from the instance.
 
@@ -119,7 +173,7 @@ class Task(ABC):
         return project_name.lower().replace("-","_")
 
 
-    def load_tabular_file(self,file,sheet_name=0,dtype=None,header='infer',na_values=None,replace_na_with_none=True):
+    def load_tabular_file(self,file,sheet_name=0,dtype=None,header='infer',na_values=None,replace_na_with_none=True,strip_whitespace=True):
         """Load a tabular file into a pandas dataframe. Works with xlsx, xls, csv, tsv, and txt files.
 
         :param file: The file (and path) to open.
@@ -162,6 +216,9 @@ class Task(ABC):
 
         if replace_na_with_none:
             dataframe = dataframe.where(pd.notnull(dataframe),None)
+
+        if strip_whitespace:
+            dataframe.rename(columns=lambda x: x.strip() if isinstance(x, str) else x, inplace=True)
 
         self.logger.info("Dataset loaded: %s \n Shape: %s \n Head: %s \n Columns: %s" % (filename,dataframe.head(),dataframe.shape,dataframe.columns))
 
@@ -495,15 +552,15 @@ class Task(ABC):
 
     def clear_saved_query_cache(self):
 
-        saved_queries = self.db_session.query(SavedQuery).all()
+        #saved_queries = self.db_session.query(SavedQuery).all()
         #for saved_query in saved_queries:
 
         #    if self.cache.exists(saved_query.get_cache_dataframe_key()):
         #        self.cache.delete(saved_query.get_cache_dataframe_key())
         #    if self.cache.exists(saved_query.get_cache_summary_stats_key()):
         #        self.cache.delete(saved_query.get_cache_summary_stats_key())
-
-        self.logger.info("All SavedQueryDataframe and SavedQuerySummaryStats caches deleted")
+        pass
+        #self.logger.info("All SavedQueryDataframe and SavedQuerySummaryStats caches deleted")
 
     def simple_report(self):
 

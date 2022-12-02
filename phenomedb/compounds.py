@@ -48,6 +48,40 @@ class CompoundTask(Task):
         self.chebi_file = str((Path(config['DATA']['compounds']) / 'chebi.csv').absolute())
         #self.ivdr_lipoprotein_file = str((Path(config['DATA']['compounds']) / 'ivdr_lipoproteins.csv').absolute())
 
+        if self.db_session:
+            self.pubchem_external_db_id = self.db_session.query(ExternalDB.id).filter(
+                ExternalDB.name == 'PubChem CID').first()
+            self.pubchem_external_db_id = self.pubchem_external_db_id[0]
+            self.kegg_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name == 'KEGG').first()
+            self.kegg_external_db_id = self.kegg_external_db_id[0]
+            self.lipid_maps_external_db_id = self.db_session.query(ExternalDB.id).filter(
+                ExternalDB.name == 'LipidMAPS').first()
+            self.lipid_maps_external_db_id = self.lipid_maps_external_db_id[0]
+            self.chebi_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name == 'ChEBI').first()
+            self.chebi_external_db_id = self.chebi_external_db_id[0]
+            self.hmdb_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name == 'HMDB').first()
+            self.hmdb_external_db_id = self.hmdb_external_db_id[0]
+            self.chembl_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name == 'ChEMBL').first()
+            self.chembl_external_db_id = self.chembl_external_db_id[0]
+            self.cas_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name == 'CAS').first()
+            self.cas_external_db_id = self.cas_external_db_id[0]
+            self.refmet_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name == 'Refmet').first()
+            self.refmet_external_db_id = self.refmet_external_db_id[0]
+            self.chemspider_external_db_id = self.db_session.query(ExternalDB.id).filter(
+                ExternalDB.name == 'ChemSpider').first()
+            self.chemspider_external_db_id = self.chemspider_external_db_id[0]
+            self.lipid_maps = self.load_tabular_file(self.lipid_maps_file, dtype=str)
+            self.kegg = self.load_tabular_file(self.kegg_file, dtype=str)
+            self.hmdb = self.load_tabular_file(self.hmdb_file, dtype=str)
+            self.refmet = self.load_tabular_file(self.refmet_file,
+                                                 dtype={'refmet_name': str, 'super_class': str, 'main_class': str,
+                                                        'sub_class': str, 'formula': str, 'exactmass': float,
+                                                        'inchi_key': str, 'smiles': str, 'pubchem_cid': str})
+            self.chebi = self.load_tabular_file(self.chebi_file, dtype=str)
+            self.compound_ids_set = True
+        else:
+            self.compound_ids_set = False
+
         self.update_names = False
 
         self.annotation_compound_counts = {}
@@ -63,21 +97,38 @@ class CompoundTask(Task):
         """Load the databases + the ExternalDB.ids
         """        
 
-        self.lipid_maps = self.load_tabular_file(self.lipid_maps_file,dtype=str)
-        self.kegg = self.load_tabular_file(self.kegg_file,dtype=str)
-        self.hmdb = self.load_tabular_file(self.hmdb_file,dtype=str)
-        self.refmet = self.load_tabular_file(self.refmet_file,dtype={'refmet_name':str,'super_class':str,'main_class':str,'sub_class':str,'formula':str,'exactmass':float,'inchi_key':str,'smiles':str,'pubchem_cid':str})
-        self.chebi = self.load_tabular_file(self.chebi_file,dtype=str)
-
-        self.pubchem_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name=='PubChem CID').first()
-        self.kegg_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name=='KEGG').first()
-        self.lipid_maps_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name=='LipidMAPS').first()
-        self.chebi_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name=='ChEBI').first()
-        self.hmdb_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name=='HMDB').first()
-        self.chembl_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name=='ChEMBL').first()
-        self.cas_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name=='CAS').first()
-        self.refmet_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name=='refmet').first()
-        self.chemspider_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name == 'ChemSpider').first()
+        if not self.compound_ids_set:
+            self.lipid_maps = self.load_tabular_file(self.lipid_maps_file, dtype=str)
+            self.kegg = self.load_tabular_file(self.kegg_file, dtype=str)
+            self.hmdb = self.load_tabular_file(self.hmdb_file, dtype=str)
+            self.refmet = self.load_tabular_file(self.refmet_file,
+                                                 dtype={'refmet_name': str, 'super_class': str, 'main_class': str,
+                                                        'sub_class': str, 'formula': str, 'exactmass': float,
+                                                        'inchi_key': str, 'smiles': str, 'pubchem_cid': str})
+            self.chebi = self.load_tabular_file(self.chebi_file, dtype=str)
+            self.pubchem_external_db_id = self.db_session.query(ExternalDB.id).filter(
+                ExternalDB.name == 'PubChem CID').first()
+            self.pubchem_external_db_id = self.pubchem_external_db_id[0]
+            self.kegg_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name == 'KEGG').first()
+            self.kegg_external_db_id = self.kegg_external_db_id[0]
+            self.lipid_maps_external_db_id = self.db_session.query(ExternalDB.id).filter(
+                ExternalDB.name == 'LipidMAPS').first()
+            self.lipid_maps_external_db_id = self.lipid_maps_external_db_id[0]
+            self.chebi_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name == 'ChEBI').first()
+            self.chebi_external_db_id = self.chebi_external_db_id[0]
+            self.hmdb_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name == 'HMDB').first()
+            self.hmdb_external_db_id = self.hmdb_external_db_id[0]
+            self.chembl_external_db_id = self.db_session.query(ExternalDB.id).filter(
+                ExternalDB.name == 'ChEMBL').first()
+            self.chembl_external_db_id = self.chembl_external_db_id[0]
+            self.cas_external_db_id = self.db_session.query(ExternalDB.id).filter(ExternalDB.name == 'CAS').first()
+            self.cas_external_db_id = self.cas_external_db_id[0]
+            self.refmet_external_db_id = self.db_session.query(ExternalDB.id).filter(
+                ExternalDB.name == 'Refmet').first()
+            self.refmet_external_db_id = self.refmet_external_db_id[0]
+            self.chemspider_external_db_id = self.db_session.query(ExternalDB.id).filter(
+                ExternalDB.name == 'ChemSpider').first()
+            self.chemspider_external_db_id = self.chemspider_external_db_id[0]
 
     def find_chebi(self,inchi):
         """Find a ChEBI based on inchi. If there are multiple InChIs in the row, 
@@ -432,14 +483,14 @@ class CompoundTask(Task):
             refmet_name = None
 
         # Updates the compound name to the refmet name
-        if refmet_name and compound.name != refmet_name:
-            try:
-                compound.name = refmet_name
-                self.db_session.flush()
-                self.row_warnings.append('Compound name updated to refmet name')
-            except Exception as err:
-                self.logger.exception(err)
-                self.logger.info("Refmet name update failed - perhaps there is a name clash %s %s" % (compound,refmet_name))
+       # if refmet_name and compound.name != refmet_name:
+       #     try:
+       #         compound.name = refmet_name
+       #         self.db_session.flush()
+       #         self.row_warnings.append('Compound name updated to refmet name')
+       #     except Exception as err:
+       #         self.logger.exception(err)
+       #         self.logger.info("Refmet name update failed - perhaps there is a name clash %s %s" % (compound,refmet_name))
 
         if refmet_name:
 

@@ -567,3 +567,37 @@ class RunMWASMulti(Task):
 
         for task_run_id,task_run in pipeline_factory.pipeline_manager.task_runs.items():
             self.logger.info('SavedQuery: %s TaskRun: %s' % (task_run.saved_query_id,task_run_id))
+
+class ImportAllMetabolightsPipelineGenerator(Task):
+
+    def __init__(self,task_run_id=None,username=None,upstream_task_run_id=None,execution_date=None,db_session=None,
+                 db_env=None,debug=False,pipeline_run_id=None):
+
+        super().__init__(task_run_id=task_run_id, username=username, debug=debug, pipeline_run_id=pipeline_run_id,
+                         execution_date=execution_date, upstream_task_run_id=upstream_task_run_id, db_env=db_env,
+                         db_session=db_session)
+
+        self.get_class_name(self)
+
+    def process(self):
+
+        self.pipeline_factory = PipelineFactory(pipeline_name="ImportAllMetabolights",hard_code_data=True)
+
+        from ftplib import FTP
+        self.ebi_ftp = FTP('ftp.ebi.ac.uk')  # connect to host, default port
+        self.ebi_ftp.login()
+        self.ebi_ftp.cwd('pub/databases/metabolights/studies/public/')
+        filenames = self.ebi_ftp.nlst()
+        study_ids = []
+        for filename in filenames:
+            if re.search(r'^MTBL', filename):
+                study_ids.append(filename)
+        try:
+            self.ebi_ftp.quit()
+        except Exception as err:
+            self.ebi_ftp.close()
+        for study_id in study_ids:
+            self.pipeline_factory.add_task('phenomedb.imports','ImportMetabolightsStudy',task_id=study_id,run_config={'study_id':study_id})
+            self.logger.info("%s added to import pipeline" % study_id)
+
+        self.pipeline_factory.commit_definition()

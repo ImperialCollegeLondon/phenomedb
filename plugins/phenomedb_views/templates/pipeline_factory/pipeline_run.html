@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block plugin_content %}
+<div class="container-fluid">
+	<div class="row">
+	    <h3 class="page-heading">Pipeline Run</h3>
+	</div>
+	<div class="row">
+	    <div class="col-md-6">
+			{{ data.pipeline }}
+			<br />
+			{% for task_run in data.task_runs %}
+				{{ task_run.module_name }}.{{ task_run.class_name }} - {{ task_run.task_id }}
+				<ul>
+    				<li>Params: {{ task_run.args }}</li>
+					<li>Status: {{ task_run.status }}</li>
+					<li>Result: <a href="{{ url_for('AnalysisView.analysisresult',id=task_run.id) }}">Click</a></li>
+					<li>Log: <a href="{{ task_run.log_url }}">Log</a></li>
+				</ul>
+				<br />
+			{% endfor %}
+        </div>
+	</div>
+</div>
+{% endblock %}
+{% block tail %}
+{{ super() }}
+<script>
+$(function() {
+});
+</script>
+{% endblock %}
