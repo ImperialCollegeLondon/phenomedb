@@ -907,7 +907,12 @@ class RunXCMS(RAnalysisTask):
     def load_results(self):
 
         super().load_results()
-        shutil.copy(self.output_folder + "xcms_output.csv",config['DATA']['app_data'] + "output/%s_xcms_output.csv" % self.task_run.id)
+        xcms_file = config['DATA']['app_data'] + "/output/%s_xcms_output.csv" % self.task_run.id
+        if not os.path.exists(config['DATA']['app_data'] + "/output"):
+            os.makedirs(config['DATA']['app_data'] + "/output")
+        shutil.copy(self.output_folder + "xcms_output.csv",xcms_file)
+        self.results = {'raw_output':self.results,
+                        'xcms_file':xcms_file}
 
 class RunPCPR2(RAnalysisTask):
 

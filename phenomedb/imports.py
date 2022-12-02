@@ -4138,6 +4138,1003 @@ class DownloadMetabolightsStudy(Task):
         if self.study_id and not os.path.exists(config['DATA']['app_data'] + "metabolights/" + self.study_id):
             self.download_files_from_metabolights(self.study_id,prefixes=['a', 'i', 's', 'm'], suffixes='mzml')
 
+class ImportMetabolightsXCMSAnnotations(ImportTask):
+
+    def __init__(self,study_id=None,xcms_file=None,assay_name=None,assay_name_order=None,sample_matrix=None,task_run_id=None,username=None,db_env=None,execution_date=None,db_session=None,pipeline_run_id=None):
+        """Constructor. If only study_id set, will download the study as well
+
+        :param username: Username of the user running the task, defaults to None
+        :type username: str, optional
+        :param study_folder_path: Path to the study folder, defaults to None
+        :type study_folder_path: str, optional
+        :param study_id: ID of the Study, defaults to None
+        :type study_id: int, optional
+        """
+
+        self.study_id = study_id
+        self.xcms_file = xcms_file
+        self.assay_name = assay_name
+        self.sample_matrix = sample_matrix
+        self.assay_name_order = assay_name_order
+
+        super().__init__(username=username,task_run_id=task_run_id,db_env=db_env,db_session=db_session,execution_date=execution_date,pipeline_run_id=pipeline_run_id)
+
+        self.args['study_id'] = study_id
+        self.args['xcms_file'] = xcms_file
+        self.args['assay_name'] = assay_name
+        self.args['sample_matrix'] = sample_matrix
+        self.args['assay_name_order'] = assay_name_order
+
+        self.get_class_name(self)
+
+        self.assay_information_dataframes = {}
+        self.metabolite_information_dataframes = {}
+        self.study_description_dict = {}
+        self.annotation_assay_map = {}
+        self.feature_dataset_map = {}
+        self.annotation_method_map = {}
+        self.annotation_map = {}
+
+        self.study_folder_path = config['DATA']['app_data'] + "metabolights/" + self.study_id
+
+    def load_dataset(self):
+        """Loads the dataset
+        """
+        if self.study_id and not os.path.exists(self.study_folder_path):
+            # raise NotImplementedError('API download not yet implemented')
+            self.download_files_from_metabolights(prefixes=['a', 'i', 's', 'm'], suffixes=['mzml'])
+
+        study_files = os.listdir(self.study_folder_path)
+
+        for study_file in study_files:
+            filepath = self.study_folder_path + "/" + study_file
+            if re.search(r'^i_.*.txt$', study_file):
+                self.load_study_description_file(filepath)
+            elif re.search(r'^s_.*.txt$', study_file):
+                self.sample_information_dataframe = self.load_tabular_file(filepath)
+            elif re.search(r'^a_.*.txt$', study_file):
+                self.assay_information_dataframes[study_file] = self.load_tabular_file(filepath)
+            elif re.search(r'^m_.*.tsv$', study_file):
+                self.metabolite_information_dataframes[study_file] = self.load_tabular_file(filepath)
+
+        self.xcms_data = self.load_tabular_file(self.xcms_file)
+
+    def load_study_description_file(self, filepath):
+        """Takes study description file and builds a 2D dictionary of sections, and key -> values
+            Lists
+
+        ONTOLOGY SOURCE REFERENCE
+        Term Source Name	"OBI"	"NCBITAXON"	"CHMO"	"CL"	"EFO"	"MS"	"NCIT"
+        INVESTIGATION
+        Investigation Identifier	"MTBLS1073"
+
+        study_description_dict['ONTOLOGY SOURCE REFERENCE']['Term Source Name'] = ["OBI","NCBITAXON","CHMO","CL","EFO","MS","NCIT"]
+        study_description_dict['INVESTIGATION']['Investigation Identifier'] = "MTBLS1073"
+
+        :param filepath: The path to the study description file
+        :type filepath: str
+        """
+
+        file = open(filepath, 'r')
+        lines = file.readlines()
+        file.close()
+
+        current_section = ''
+        for line in lines:
+            try:
+                line = line.rstrip()
+                if line.strip().isupper():
+                    current_section = line.strip()
+                    self.study_description_dict[current_section] = {}
+                else:
+                    split_line = line.strip().split('\t')
+                    split_line = [i.replace('"', '') for i in split_line]
+                    key = split_line.pop(0)
+
+                    # If its an array, or the current_section is a plural
+                    if len(split_line) > 1 or re.search('S$', current_section):
+                        self.study_description_dict[current_section][key] = split_line
+                    elif len(split_line) == 1:
+                        self.study_description_dict[current_section][key] = split_line.pop(0)
+                    else:
+                        self.study_description_dict[current_section][key] = None
+            except Exception as err:
+                self.logger.error('load_study_description_file error' + line)
+                raise Exception(err)
+
+    def map_and_add_dataset_data(self):
+        """Map and add dataset data
+        """
+
+        self.parse_study_description()
+        self.parse_sample_information()
+
+        from phenomedb.compounds import CompoundTask
+        self.compoundtask = CompoundTask(db_session=self.db_session)
+
+        for assay_file, data in self.assay_information_dataframes.items():
+            if assay_file in self.assays.keys() and self.assays[assay_file].name == self.assay_name:
+                self.parse_assay_file(assay_file, data)
+
+    def parse_assay_file(self, assay_file, data):
+        """Parse an assay file
+
+        :param assay_file: The name of the assay file
+        :type assay_file: str
+        :param data: The assay data
+        :type data: `pandas.Dataframe`
+        :raises NotImplementedError: [description]
+        """
+        if assay_file not in self.assays.keys():
+            self.logger.error('Assay file not as expected %s %s' % (assay_file, self.assays))
+        else:
+            assay = self.assays[assay_file]
+            metabolite_assignment_files = self.assay_information_dataframes[assay_file][
+                'Metabolite Assignment File'].unique()
+            if len(metabolite_assignment_files) == 1:
+                self.add_annotation_compounds(assay, metabolite_assignment_files[0],assay_file)
+            else:
+                raise NotImplementedError("Multiple maf files per assay %s" % metabolite_assignment_files)
+
+            assay_index = self.study_description_dict['STUDY ASSAYS']['Study Assay File Name'].index(assay_file)
+            measurement_type = self.study_description_dict['STUDY ASSAYS']['Study Assay Measurement Type'][assay_index]
+            default_unit = self.get_or_add_unit('noUnit', "no unit, for dimensionless variables (ie untargeted LC-MS)")
+
+            feature_metadatas = self.add_feature_metadata(assay,assay_file)
+
+            for row in data.iterrows():
+
+                if assay.platform == AnalyticalPlatform.NMR:
+                    sample_file_name = row[1]['Free Induction Decay Data File']
+                elif assay.platform == AnalyticalPlatform.MS:
+                    sample_file_name = row[1]['Raw Spectral Data File']
+                else:
+                    raise NotImplementedError('Assay platform not implemented: %s' % assay.platform)
+
+                assay_parameters = row[1].where(pd.notnull(row[1]), None).to_dict()
+
+                sample_name = row[1]['Sample Name']
+                extract_name = row[1]['Sample Name']
+
+                sample = self.db_session.query(Sample).join(Subject).filter(Sample.name == sample_name,
+                                                                            Subject.project_id == self.project.id).first()
+
+                if sample:
+
+                    sample_assay = self.db_session.query(SampleAssay).filter(SampleAssay.sample_id == sample.id,
+                                                                             SampleAssay.name == extract_name,
+                                                                             SampleAssay.assay_id == assay.id).first()
+
+                    if not sample_assay:
+                        sample_assay = SampleAssay(name=extract_name,
+                                                   sample_id=sample.id,
+                                                   assay_id=assay.id,
+                                                   sample_file_name=sample_file_name,
+                                                   assay_parameters=assay_parameters)
+                        self.db_session.add(sample_assay)
+                        self.db_session.flush()
+
+                    self.generate_feature_jsonb(sample_assay,feature_metadatas)
+
+                    metabolite_assignment_file = row[1]['Metabolite Assignment File']
+
+                    if metabolite_assignment_file is not None:
+                        self.add_annotated_features(assay, metabolite_assignment_file, sample_assay, default_unit)
+
+                else:
+                    self.logger.info("No Sample found for %s" % sample_name)
+
+                self.annotation_assay_map[row[1]['Metabolite Assignment File']] = assay
+
+    def generate_feature_jsonb(self,sample_assay,feature_metadatas):
+
+        if sample_assay.assay_parameters['Derived Spectral Data File'] in self.xcms_data.columns:
+            sample_assay_features = []
+            features = self.xcms_data[sample_assay.assay_parameters['Derived Spectral Data File']].tolist()
+            feature_map = {}
+            i = 0
+            while i < len(features):
+                if features[i] is not None:
+                    feature_map["fm_%s" % feature_metadatas[i].id] = features[i]
+                i = i + 1
+            sample_assay_features = SampleAssayFeatures(sample_assay_id=sample_assay.id,
+                                                             features=feature_map)
+            self.db_session.add(sample_assay_features)
+            self.db_session.flush()
+
+    def add_feature_metadata(self,assay,assay_file):
+        if assay_file in self.feature_dataset_map.keys():
+            feature_dataset = self.feature_dataset_map[assay_file]
+        else:
+            feature_dataset = FeatureDataset(filetype='Metabolights',
+                                             assay_id=assay.id,
+                                             sample_matrix=self.sample_matrix)
+            self.db_session.add(feature_dataset)
+            self.db_session.flush()
+        feature_metadatas = []
+        i = 0
+        while i < self.xcms_data.shape[0]:
+
+            feature_metadatas.append(FeatureMetadata(feature_dataset_id=feature_dataset.id,
+                                               mz_average=self.xcms_data.loc[i,'mz'],
+                                               mz_min=self.xcms_data.loc[i,'mzmin'],
+                                               mz_max=self.xcms_data.loc[i,'mzmax'],
+                                               rt_average=self.xcms_data.loc[i,'rt'],
+                                               rt_min=self.xcms_data.loc[i,'rtmin'],
+                                               rt_max=self.xcms_data.loc[i,'rtmax']))
+            i = i + 1
+        self.db_session.add_all(feature_metadatas)
+        self.db_session.flush()
+        return feature_metadatas
+
+    def add_annotated_features(self, assay, metabolite_assignment_file, sample_assay, default_unit):
+        """Add Annotations and AnnotatedFeatures
+
+        :param assay: The Assay
+        :type assay: `phenomedb.models.Assay`
+        :param metabolite_assignment_file: The maf file
+        :type metabolite_assignment_file: str
+        :param sample_assay: The SampleAssay
+        :type sample_assay: `phenomedb.models.SampleAssay`
+        """
+
+        feature_dataset = self.feature_dataset_map[metabolite_assignment_file]
+
+        annotated_features = []
+        if self.metabolite_information_dataframes[metabolite_assignment_file] is not None:
+            for row in self.metabolite_information_dataframes[metabolite_assignment_file].iterrows():
+
+                the_row = row[1].where(pd.notnull(row[1]), None)
+
+                if sample_assay.name in the_row.keys():
+
+                    intensity = the_row[sample_assay.name]
+                else:
+                    self.logger.info("%s not in columns for %s" % (sample_assay.sample.name,
+                                                                   self.metabolite_information_dataframes[
+                                                                       metabolite_assignment_file].columns))
+                    intensity = None
+
+                if intensity:
+                    intensity = utils.parse_intensity_metabolights(intensity)
+                #     if unit_string is not None and unit_string not in self.units.keys():
+                #         self.units[unit_string] = self.get_or_add_unit(unit_string,unit_description=unit_string)
+
+                #     if unit_string is not None:
+                #         unit = self.units[unit_string]
+                #         unit_id = unit.id
+                #     else:
+                #         unit_id = None
+
+                if intensity is not None and the_row['database_identifier'] in self.annotation_map[assay.id].keys():
+
+                    annotation = self.annotation_map[assay.id][the_row['database_identifier']]
+
+                    mz = None
+                    retention_time = None
+
+                    if assay.platform == AnalyticalPlatform.MS:
+                        if 'mass_to_charge' in the_row:
+                            mz = the_row['mass_to_charge']
+                        elif 'mz' in the_row:
+                            mz = the_row['mz']
+
+                        if 'retention_time' in the_row:
+                            retention_time = the_row['retention_time']
+
+                    feature_metadata = self.db_session.query(FeatureMetadata).filter(
+                        FeatureMetadata.feature_dataset_id == feature_dataset.id,
+                        FeatureMetadata.rt_average == retention_time,
+                        FeatureMetadata.mz_average == mz,
+                        FeatureMetadata.annotation_id == annotation.id).first()
+
+                    if not feature_metadata:
+                        feature_metadata = FeatureMetadata(feature_dataset_id=feature_dataset.id,
+                                                           rt_average=retention_time,
+                                                           mz_average=mz,
+                                                           annotation_id=annotation.id)
+                        self.db_session.add(feature_metadata)
+                        self.db_session.flush()
+                        self.logger.info("FeatureMetadata added %s" % feature_metadata)
+                    else:
+                        self.logger.info("FeatureMetadata found %s" % feature_metadata)
+
+                    annotated_feature = self.db_session.query(AnnotatedFeature).filter(
+                        AnnotatedFeature.sample_assay_id == sample_assay.id,
+                        AnnotatedFeature.feature_metadata_id == feature_metadata.id).first()
+
+                    if not annotated_feature:
+
+                        annotated_feature = AnnotatedFeature(feature_metadata_id=feature_metadata.id,
+                                                             sample_assay_id=sample_assay.id,
+                                                             intensity=intensity,
+                                                             unit_id=default_unit.id)
+                        # annotated_features.append(annotated_feature)
+                        self.db_session.add(annotated_feature)
+                        self.db_session.flush()
+
+                        self.logger.info("AnnotatedFeature added %s" % annotated_feature)
+                    else:
+                        self.logger.info("AnnotatedFeature found %s" % annotated_feature)
+
+    def add_annotation_compounds(self, assay, annotation_file, assay_file):
+        """Add the AnnotationCompounds.
+
+        1. Add the Compound
+        3. Add the HarmonisedAnnotation
+        4. Add the AnnotationCompound
+
+        :param assay: the Assay
+        :type assay: `phenomedb.models.Assay`
+        :param annotation_file: The annotation file
+        :type annotation_file: str
+        """
+
+        if assay.id not in self.annotation_map.keys():
+            self.annotation_map[assay.id] = {}
+
+        # 1. What is the annotation_method? Is this findable in the Metabolights data?
+        annotation_method = self.db_session.query(AnnotationMethod).filter(AnnotationMethod.name == 'Unknown').first()
+
+        if not annotation_method:
+            annotation_method = AnnotationMethod(name='Unknown',
+                                                 description='Unknown')
+            self.db_session.add(annotation_method)
+            self.db_session.flush()
+
+        sample_matrices = self.sample_information_dataframe['Characteristics[Organism part]'].unique()
+        if len(sample_matrices) == 1:
+            sample_matrix = sample_matrices[0]
+        else:
+            sample_matrix = ",".join(sample_matrices)
+
+        feature_dataset = self.db_session.query(FeatureDataset).filter(
+            FeatureDataset.filetype == FeatureDataset.Type.metabolights,
+            FeatureDataset.assay_id == assay.id,
+            FeatureDataset.sample_matrix == sample_matrix).first()
+
+        if not feature_dataset:
+            feature_dataset = FeatureDataset(filetype=FeatureDataset.Type.metabolights,
+                                             assay_id=assay.id,
+                                             sample_matrix=sample_matrix)
+            self.db_session.add(feature_dataset)
+            self.db_session.flush()
+            self.logger.info("FeatureDataset added %s" % feature_dataset)
+        else:
+            self.logger.info("FeatureDataset found %s" % feature_dataset)
+
+        self.feature_dataset_map[assay_file] = feature_dataset
+        self.annotation_method_map[annotation_file] = annotation_method
+
+        if annotation_file in self.metabolite_information_dataframes.keys():
+            for row in self.metabolite_information_dataframes[annotation_file].iterrows():
+
+                the_row = row[1].where(pd.notnull(row[1]), None)
+
+                chebi_id = the_row['database_identifier']
+                cpd_name = the_row['metabolite_identification']
+
+                if chebi_id not in self.annotation_map[assay.id].keys() and cpd_name is not None:
+                    self.annotation_map[assay.id][chebi_id] = self.get_or_add_metabolights_compound(assay,
+                                                                                                    annotation_method,
+                                                                                                    the_row)
+
+    def get_or_add_metabolights_compound(self, assay, annotation_method, the_row):
+        """Get or add Metabolights Compound
+
+        :param assay: Assay
+        :type assay: `phenomedb.models.Assay`
+        :param annotation_method: AnnotationMethod
+        :type annotation_method: `phenomedb.models.AnnotationMethod`
+        :param chebi_id: ChEBI ID
+        :type chebi_id: str
+        :param chemical_formula: Chemical formula
+        :type chemical_formula: str
+        :param smiles: SMILES
+        :type smiles: str
+        :param inchi: InChI
+        :type inchi: str
+        :param cpd_name: cpd_name
+        :type cpd_name: str
+        :return: AnnotationCompound
+        :rtype: `phenomedb.models.AnnotationCompound`
+        """
+        chebi_id = the_row['database_identifier']
+        if chebi_id is not None:
+            chebi_split = chebi_id.split(':')
+        else:
+            chebi_split = []
+
+        cpd_name = the_row['metabolite_identification']
+
+        harmonised_annotation = self.db_session.query(HarmonisedAnnotation).filter(
+            HarmonisedAnnotation.cpd_name == cpd_name,
+            HarmonisedAnnotation.annotation_method_id == annotation_method.id,
+            HarmonisedAnnotation.assay_id == assay.id).first()
+
+        if not harmonised_annotation:
+            harmonised_annotation = HarmonisedAnnotation(cpd_name=cpd_name,
+                                                         annotation_method_id=annotation_method.id,
+                                                         assay_id=assay.id)
+
+            self.db_session.add(harmonised_annotation)
+            self.db_session.flush()
+            self.logger.info("HarmonisedAnnotation added %s" % harmonised_annotation)
+        else:
+            self.logger.info("HarmonisedAnnotation found %s" % harmonised_annotation)
+
+        annotation = self.db_session.query(Annotation).filter(Annotation.cpd_name == cpd_name,
+                                                              Annotation.annotation_method_id == annotation_method.id,
+                                                              Annotation.assay_id == assay.id,
+                                                              Annotation.harmonised_annotation_id == harmonised_annotation.id).first()
+
+        if not annotation:
+            annotation = Annotation(cpd_name=cpd_name,
+                                    annotation_method_id=annotation_method.id,
+                                    assay_id=assay.id,
+                                    harmonised_annotation_id=harmonised_annotation.id,
+                                    config=utils.convert_to_json_safe(
+                                        self.clean_data_for_jsonb(the_row.to_dict())))
+
+            self.db_session.add(annotation)
+            self.db_session.flush()
+            self.logger.info("Annotation added %s" % annotation)
+        else:
+            self.logger.info("Annotation found %s" % annotation)
+
+        inchi = None
+        if not the_row['inchi'] and chebi_id is not None and len(chebi_split) > 1:
+            try:
+                chebi_entity = ChebiEntity(chebi_split[1])
+                inchi = chebi_entity.get_inchi()
+            except Exception as err:
+                self.logger.exception(err)
+
+        else:
+            inchi = the_row['inchi']
+
+        if inchi is None:
+            inchi = 'Unknown'
+
+        compound = self.db_session.query(Compound).filter(Compound.inchi == inchi, Compound.name == cpd_name).first()
+
+        if not compound:
+
+            try:
+                compound = Compound(name=cpd_name,
+                                    inchi=inchi,
+                                    chemical_formula=the_row['chemical_formula'],
+                                    smiles=the_row['smiles'])
+                compound.set_inchi_key_from_rdkit()
+                compound.set_log_p_from_rdkit()
+                self.db_session.add(compound)
+                self.db_session.flush()
+                pubchem_cid = self.compoundtask.add_or_update_pubchem_from_api(compound)
+                chebi_id = self.compoundtask.add_or_update_chebi(compound)
+                refmet_name = self.compoundtask.update_name_to_refmet(compound)
+                kegg_id = self.compoundtask.add_or_update_kegg(compound, pubchem_cid=pubchem_cid)
+                hmdb_id = self.compoundtask.add_or_update_hmdb(compound)
+                lm_id = self.compoundtask.add_or_update_lipid_maps(compound)
+                chembl_id = self.compoundtask.add_or_update_chembl(compound)
+                self.compoundtask.add_or_update_classyfire(compound)
+                self.logger.info("Compound added %s" % compound)
+            except Exception as err:
+                self.logger.exception("Compound import failed: %s" % err)
+        else:
+            self.logger.info("Compound found %s" % compound)
+
+        annotation_compound = self.db_session.query(AnnotationCompound).filter(
+            AnnotationCompound.harmonised_annotation_id == harmonised_annotation.id,
+            AnnotationCompound.compound_id == compound.id).first()
+
+        if not annotation_compound:
+            annotation_compound = AnnotationCompound(harmonised_annotation_id=harmonised_annotation.id,
+                                                     compound_id=compound.id)
+
+            self.db_session.add(annotation_compound)
+            self.db_session.flush()
+            self.logger.info("AnnotationCompound added %s" % annotation_compound)
+        else:
+            self.logger.info("AnnotationCompound found %s" % annotation_compound)
+
+        return annotation
+
+    def parse_sample_information(self):
+        """Parse sample information
+        """
+        # 1. Loop over rows and add Subjects & Samples & MetadataFields and MetadataValues
+
+        # 'Source Name	Characteristics[Organism]	Term Source REF	Term Accession Number	Characteristics[Variant]	Term Source REF	Term Accession Number	Characteristics[Organism part]	Term Source REF	Term Accession Number	Protocol REF	Sample Name	Factor Value[Virus]	Term Source REF	Term Accession Number	Factor Value[Replicate]	Term Source REF	Term Accession Number'
+
+        for row in self.sample_information_dataframe.iterrows():
+
+            i = 0
+
+            sample_name = None
+            sample_type = 'experimental sample'
+            sample_matrix = None
+            ontology_refs = {}
+            metadata_fields = {}
+
+            while i < len(self.sample_information_dataframe.columns):
+
+                col = self.sample_information_dataframe.columns[i]
+
+                if re.search('Characteristics', col) or re.search('Factor Value', col):
+                    splitted = col.split('[')
+                    field_name = splitted[1].replace(']', '')
+
+                    ontology_refs[field_name] = {}
+                    ontology_refs[field_name]['ref'] = row[1][self.sample_information_dataframe.columns[(i + 1)]]
+                    ontology_refs[field_name]['accession'] = row[1][self.sample_information_dataframe.columns[(i + 2)]]
+
+                    if field_name == 'Sample type':
+                        sample_type = row[1][col]
+                    elif field_name == 'Organism part':
+                        sample_matrix = row[1][col]
+                    else:
+                        metadata_fields[field_name] = row[1][col]
+
+                    i = i + 3
+
+                else:
+                    if col == 'Sample Name':
+                        sample_name = str(row[1]['Sample Name'])
+
+                    i = i + 1
+
+            # 1. Get the correct sample_type enum value
+
+            try:
+                sample_type_enum = utils.get_npyc_enum_from_value(sample_type)
+            except NotImplementedError:
+                sample_type_enum = SampleType.StudySample
+
+            # 2. Get or add the Subject (if QC sample, use that as name, otherwise use sample_name as Subject.name)
+            subject = self.get_or_add_subject(sample_name, sample_type_enum)
+
+            # 3. Get or add the Sample
+            sample = self.get_or_add_sample(subject, sample_name, sample_type_enum, sample_matrix)
+
+            for field_name, field_value in metadata_fields.items():
+                self.get_or_add_metadata_field(field_name, field_value, sample)
+
+    def get_or_add_subject(self, sample_name, sample_type_enum):
+        """Get or add subject
+
+        :param sample_name: Sample name
+        :type sample_name: str
+        :param sample_type_enum: Sample Type
+        :type sample_type_enum: str
+        :return: Subject
+        :rtype: `phenomedb.models.Subject`
+        """
+
+        if sample_type_enum == SampleType.StudySample:
+            subject_name = sample_name
+        else:
+            subject_name = sample_type_enum.value
+
+        subject = self.db_session.query(Subject).filter(Subject.name == subject_name,
+                                                        Subject.project_id == self.project.id).first()
+
+        if not subject:
+            subject = Subject(name=subject_name,
+                              project_id=self.project.id)
+            self.db_session.add(subject)
+            self.db_session.flush()
+            self.logger.info("Subject added %s" % subject)
+        else:
+            self.logger.info("Subject found %s" % subject)
+
+        return subject
+
+    def get_or_add_sample(self, subject, sample_name, sample_type_enum, sample_matrix):
+        """Get or add Sample
+
+        :param subject: Subject
+        :type subject: `phenomedb.models.Subject`
+        :param sample_name: Sample name
+        :type sample_name: str
+        :param sample_type_enum: SampleType enum
+        :type sample_type_enum: `SampleType`
+        :param sample_matrix: Sample matrix
+        :type sample_matrix: sample matrix
+        :return: Sample
+        :rtype: `phenomedb.models.Sample`
+        """
+        # Need to check what the sample_names, plus types of QC samples, and what their assay roles are
+
+        sample = self.db_session.query(Sample).filter(Sample.subject_id == subject.id,
+                                                      Sample.name == sample_name).first()
+
+        if not sample:
+            if sample_type_enum == SampleType.StudySample:
+                assay_role = AssayRole.Assay
+            else:
+                assay_role = None
+
+            try:
+                biological_tissue = Sample.get_biological_tissue(sample_matrix)
+            except NotImplementedError as err:
+                self.logger.exception(err)
+                biological_tissue = None
+
+            sample = Sample(name=sample_name,
+                            sample_type=sample_type_enum,
+                            assay_role=assay_role,
+                            sample_matrix=sample_matrix,
+                            biological_tissue=biological_tissue,
+                            subject_id=subject.id
+                            )
+            self.db_session.add(sample)
+            self.db_session.flush()
+            self.logger.info("Sample added %s" % sample)
+        else:
+            self.logger.info("Sample added %s" % sample)
+
+        return sample
+
+    def get_or_add_metadata_field(self, field_name, field_value, sample):
+        """Get or add metadata field
+
+        :param field_name: The name of the metadata field
+        :type field_name: str
+        :param field_value: The value of the metadata field
+        :type field_value: str
+        :param sample: Sample
+        :type sample: `phenomedb.models.Sample`
+        """
+
+        metadata_field = self.db_session.query(MetadataField).filter(MetadataField.project_id == self.project.id,
+                                                                     MetadataField.name == field_name).first()
+
+        if not metadata_field:
+            metadata_field = MetadataField(name=field_name,
+                                           project_id=self.project.id)
+            self.db_session.add(metadata_field)
+            self.db_session.flush()
+
+        metadata_value = self.db_session.query(MetadataValue).filter(
+            MetadataValue.metadata_field_id == metadata_field.id,
+            MetadataValue.sample_id == sample.id).first()
+
+        if not metadata_value:
+            metadata_value = MetadataValue(metadata_field_id=metadata_field.id,
+                                           sample_id=sample.id,
+                                           raw_value=str(field_value)
+                                           )
+            self.db_session.add(metadata_value)
+            self.db_session.flush()
+            self.logger.info("MetadataValue added %s" % metadata_value)
+
+        else:
+            self.logger.info("MetadataValue found %s" % metadata_value)
+
+    def parse_study_description(self):
+        """Parse the study description
+        """
+
+        persons = self.parse_persons()
+
+        self.get_or_add_project(self.study_description_dict['STUDY']['Study Identifier'],
+                                project_description=self.study_description_dict['STUDY']['Study Description'],
+                                project_folder_name=None,
+                                lims_id=None,
+                                short_description=self.study_description_dict['STUDY']['Study Title'],
+                                persons=persons)
+
+        self.get_or_add_data_repository('Metabolights',
+                                        accession_number=self.study_description_dict['STUDY']['Study Identifier'],
+                                        submission_date=utils.get_date(
+                                            self.study_description_dict['STUDY']['Study Submission Date']),
+                                        public_release_date=utils.get_date(
+                                            self.study_description_dict['STUDY']['Study Public Release Date']))
+
+        self.parse_protocols()
+        self.parse_publications()
+        self.parse_assays()
+
+    def parse_persons(self):
+        """Parse the persons
+
+        :return: person dict
+        :rtype: dict
+        """
+
+        persons = {}
+
+        i = 0
+        while i < len(self.study_description_dict['STUDY CONTACTS']['Study Person Email']):
+            person_dict = {}
+            if len(self.study_description_dict['STUDY CONTACTS']['Study Person First Name']) > i:
+                person_dict['first_name'] = self.study_description_dict['STUDY CONTACTS']['Study Person First Name'][i]
+            if len(self.study_description_dict['STUDY CONTACTS']['Study Person Last Name']) > i:
+                person_dict['last_name'] = self.study_description_dict['STUDY CONTACTS']['Study Person Last Name'][i]
+            if len(self.study_description_dict['STUDY CONTACTS']['Study Person Affiliation']) > i:
+                person_dict['affiliation'] = self.study_description_dict['STUDY CONTACTS']['Study Person Affiliation'][
+                    i]
+            if len(self.study_description_dict['STUDY CONTACTS']['Study Person Roles']) > i:
+                person_dict['role'] = self.study_description_dict['STUDY CONTACTS']['Study Person Roles'][i]
+            persons[self.study_description_dict['STUDY CONTACTS']['Study Person Email'][i]] = person_dict
+            i = i + 1
+
+        return persons
+
+    def get_or_add_data_repository(self, name,
+                                   accession_number=None,
+                                   submission_date=None,
+                                   public_release_date=None):
+        """Get or add repository
+
+        :param name: Name of the repo
+        :type name: str
+        :param accession_number: accession number of repo, defaults to None
+        :type accession_number: str, optional
+        :param submission_date: Date of submission, defaults to None
+        :type submission_date: `datetime.datetime`, optional
+        :param public_release_date: Date of release, defaults to None
+        :type public_release_date: `datetime.datetime`, optional
+        :return: DataRepository
+        :rtype: `phenomedb.models.DataRepository`
+        """
+
+        data_repository = self.db_session.query(DataRepository).filter(DataRepository.name == name,
+                                                                       DataRepository.accession_number == accession_number).first()
+
+        if not data_repository:
+
+            data_repository = DataRepository(name=name,
+                                             accession_number=accession_number,
+                                             submission_date=submission_date,
+                                             public_release_date=utils.get_date(public_release_date),
+                                             project_id=self.project.id)
+            self.db_session.add(data_repository)
+            self.db_session.flush()
+            self.logger.info("DataRepository added %s" % data_repository)
+        else:
+            self.logger.info("DataRepository found %s" % data_repository)
+
+        return data_repository
+
+    def parse_protocols(self):
+        """Parse the protocols
+        """
+
+        i = 0
+        while i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Name']):
+
+            name = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Name'][i]
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Type']):
+                type = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Type'][i]
+            else:
+                type = None
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Description']):
+                description = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Description'][i]
+            else:
+                description = None
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol URI']):
+                uri = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol URI'][i]
+            else:
+                uri = None
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Version']):
+                version = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Version'][i]
+            else:
+                version = None
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Parameters Name']):
+                parameters = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Parameters Name'][i].split(
+                    ';')
+            else:
+                parameters = None
+            if i < len(self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Components Name']):
+                components = self.study_description_dict['STUDY PROTOCOLS']['Study Protocol Components Name'][i].split(
+                    ';')
+            else:
+                components = None
+
+            self.get_or_add_protocol(name=name,
+                                     type=type,
+                                     description=description,
+                                     uri=uri,
+                                     version=version,
+                                     parameters=parameters,
+                                     components=components
+                                     )
+
+            i = i + 1
+
+    def get_or_add_protocol(self, name=None,
+                            type=None,
+                            description=None,
+                            uri=None,
+                            version=None,
+                            parameters=None,
+                            components=None):
+        """Get or add the protocol
+
+        :param name: protocol name, defaults to None
+        :type name: str, optional
+        :param type: protocol type, defaults to None
+        :type type: str, optional
+        :param description: description, defaults to None
+        :type description: str, optional
+        :param uri: URI of the protocol, defaults to None
+        :type uri: str, optional
+        :param version: version of the protocol, defaults to None
+        :type version: str, optional
+        :param parameters: parameters of the protocol, defaults to None
+        :type parameters: dict, optional
+        :param components: components of the protocol, defaults to None
+        :type components: dict, optional
+        """
+
+        protocol = self.db_session.query(Protocol).filter(Protocol.name == name,
+                                                          Protocol.type == type).first()
+
+        if not protocol:
+            protocol = Protocol(name=name,
+                                type=type,
+                                description=description,
+                                uri=uri,
+                                version=version,
+                                )
+            self.db_session.add(protocol)
+            self.db_session.flush()
+
+            self.logger.info("Protocol added %s" % protocol)
+        else:
+            self.logger.info("Protocol found %s " % protocol)
+
+        if isinstance(parameters, list):
+            for parameter in parameters:
+                if parameter != '':
+                    protocol_parameter = self.db_session.query(ProtocolParameter).filter(
+                        ProtocolParameter.name == parameter,
+                        ProtocolParameter.protocol_id == protocol.id).first()
+                    if not protocol_parameter:
+                        protocol_parameter = ProtocolParameter(name=parameter, protocol_id=protocol.id)
+                        self.db_session.add(protocol_parameter)
+                        self.db_session.flush()
+
+                        self.logger.info("ProtocolParameter added %s" % protocol_parameter)
+                    else:
+                        self.logger.info("ProtocolParameter found %s " % protocol_parameter)
+
+    def parse_publications(self):
+        """Parse the publications
+        """
+
+        i = 0
+        while i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Title']):
+
+            if i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study PubMed ID']):
+                pubmed_id = self.study_description_dict['STUDY PUBLICATIONS']['Study PubMed ID'][i]
+            else:
+                pubmed_id = None
+            if i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study Publication DOI']):
+                doi = self.study_description_dict['STUDY PUBLICATIONS']['Study Publication DOI'][i]
+            else:
+                doi = None
+            if i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Author List']):
+                author_list = self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Author List'][i]
+            else:
+                author_list = None
+            if i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Title']):
+                title = self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Title'][i]
+            else:
+                title = None
+            if i < len(self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Status']):
+                status = self.study_description_dict['STUDY PUBLICATIONS']['Study Publication Status'][i]
+            else:
+                status = None
+
+            self.get_or_add_publication(pubmed_id=pubmed_id,
+                                        doi=doi,
+                                        author_list=author_list,
+                                        title=title,
+                                        status=status,
+                                        )
+            i = i + 1
+
+    def get_or_add_publication(self, pubmed_id=None, doi=None, author_list=None, title=None, status=None):
+        """Get or add publication
+
+        :param pubmed_id: pubmed id, defaults to None
+        :type pubmed_id: int, optional
+        :param doi: DOI, defaults to None
+        :type doi: str, optional
+        :param author_list: List of authors, defaults to None
+        :type author_list: list, optional
+        :param title: publication title, defaults to None
+        :type title: str, optional
+        :param status: Publication status, defaults to None
+        :type status: str, optional
+        """
+
+        publication = self.db_session.query(Publication).filter(Publication.title == title,
+                                                                Publication.doi == doi,
+                                                                Publication.project_id == self.project.id).first()
+
+        if not publication:
+            publication = Publication(pubmed_id=pubmed_id,
+                                      doi=doi,
+                                      author_list=author_list,
+                                      title=title,
+                                      status=status,
+                                      project_id=self.project.id)
+            self.db_session.add(publication)
+            self.db_session.flush()
+            self.logger.info("Publication added %s" % publication)
+        else:
+            self.logger.info("Publication found %s" % publication)
+
+    def parse_assays(self):
+        """Parse the assays
+        """
+
+        self.assays = {}
+
+        i = 0
+        while i < len(self.study_description_dict['STUDY ASSAYS']['Study Assay File Name']):
+            if len(self.study_description_dict['STUDY ASSAYS']['Study Assay File Name']) > i:
+                study_assay_file_name = self.study_description_dict['STUDY ASSAYS']['Study Assay File Name'][i]
+            else:
+                study_assay_file_name = None
+            if len(self.study_description_dict['STUDY ASSAYS']['Study Assay Measurement Type']) > i:
+                measurement_type = self.study_description_dict['STUDY ASSAYS']['Study Assay Measurement Type'][i]
+            else:
+                measurement_type = None
+            if len(self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Type']) > i:
+                long_platform = self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Type'][i]
+            else:
+                long_platform = None
+            if len(self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Platform']) > i:
+                long_name = self.study_description_dict['STUDY ASSAYS']['Study Assay Technology Platform'][i]
+            else:
+                long_name = None
+
+            if 'targeted_metabolites' in self.study_description_dict['STUDY DESIGN DESCRIPTORS'][
+                'Study Design Type'] and \
+                    'untargeted_metabolites' in self.study_description_dict['STUDY DESIGN DESCRIPTORS'][
+                'Study Design Type']:
+                raise Exception(
+                    "Both targeted and untargeted assays exist, please specify which is which in the task parameters")
+            elif 'targeted_metabolites' in self.study_description_dict['STUDY DESIGN DESCRIPTORS']['Study Design Type']:
+                targeted = 'Y'
+            elif 'untargeted_metabolites' in self.study_description_dict['STUDY DESIGN DESCRIPTORS'][
+                'Study Design Type']:
+                targeted = 'N'
+            else:
+                targeted = None
+
+            if isinstance(self.assay_name_order,list) and i < len(self.assay_name_order):
+                assay_name = self.assay_name_order[i]
+            else:
+                assay_name = long_name
+
+            assay = self.db_session.query(Assay).filter(or_(Assay.name == assay_name,
+                                                            Assay.long_name == long_name)).first()
+
+            if not assay:
+
+                assay = Assay(name=assay_name,
+                              long_platform=long_platform,
+                              long_name=long_name,
+                              measurement_type=measurement_type,
+                              targeted=targeted
+                              )
+                assay.set_platform_from_long_platform(long_platform)
+
+                self.db_session.add(assay)
+                self.db_session.flush()
+                self.logger.info('Assay added %s' % assay)
+            else:
+                self.logger.info('Assay found %s' % assay)
+
+            self.assays[study_assay_file_name] = assay
+
+            i = i + 1
+
 class ImportMetabolightsStudy(ImportTask):
     """Import Metabolights Study Task
 

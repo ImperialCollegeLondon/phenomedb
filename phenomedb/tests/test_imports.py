@@ -188,14 +188,27 @@ class TestImports:
 
         study_id = "MTBLS694"
         task = DownloadMetabolightsStudy(study_id=study_id, username=config['TEST']['USERNAME'])
-
         task.run()
 
         task = RunXCMS(metabolights_study_id=study_id,lab='imperial',chromatography='RPOS',sample_matrix='urine')
         task.run()
 
-        pass
+        task = ImportMetabolightsXCMSAnnotations(study_id=study_id,
+                                                 xcms_file=task.results['xcms_file'],
+                                                 assay_name='RPOS',
+                                                 sample_matrix='urine')
+        task.run()
 
+    def test_import_metabolights_xcms(self):
+        study_id = "MTBLS694"
+        xcms_file = config['DATA']['app_data'] + "/output/1331_xcms_output.csv"
+        assay_name_order = ['NOESY','RPOS']
+        task = ImportMetabolightsXCMSAnnotations(study_id=study_id,
+                                                 xcms_file=xcms_file,
+                                                 assay_name='RPOS',
+                                                 sample_matrix='urine',
+                                                 assay_name_order=assay_name_order)
+        task.run()
 
     def test_download_import_all_metabolights(self):
 

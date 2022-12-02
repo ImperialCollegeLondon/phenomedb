@@ -387,6 +387,15 @@ CREATE TABLE sample_assay (
                               CONSTRAINT unq_sample_assay UNIQUE ( sample_id, assay_id, sample_file_name, sample_base_name )
 );
 
+DROP TABLE if exists sample_assay_features CASCADE;
+CREATE TABLE sample_assay_features (
+                              id serial PRIMARY KEY,
+                              sample_assay_id integer REFERENCES sample_assay on delete cascade,
+                              features JSONB,
+                              harmonised_features JSONB,
+                              CONSTRAINT unq_sample_assay_features UNIQUE ( sample_assay_id )
+);
+
 --------------------------------------
 -- TABLE feature_dataset
 --------------------------------------

@@ -767,6 +767,24 @@ class SampleAssay(Base):
             document = document + annotated_feature.build_search_index()
         return document
 
+class SampleAssayFeatures(Base):
+    """Sampling Event Assay
+    """
+
+    __tablename__ = 'sample_assay_features'
+
+    __searchfields__ = '_all'
+
+    id = Column(Integer, primary_key=True)
+    sample_assay_id = Column(Integer, ForeignKey('sample_assay.id'))
+    features = Column(JSONB)
+    harmonised_features = Column(JSONB)
+
+    def __repr__(self):
+        if isinstance(self.features,dict):
+            return "<SampleAssayFeatures(id=%s, sample_assay_id=%s, n_features=%s)>" %(self.sample_assay_id, len(self.sample_assay_features.keys()))
+        else:
+            return "<SampleAssayFeatures(id=%s, sample_assay_id=%s, n_features=0)>" % (self.sample_assay_id)
 
 
 class AnnotatedFeature(Base):
