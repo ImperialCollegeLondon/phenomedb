@@ -40,7 +40,7 @@ class QueryFactoryView(PhenomeDBBaseView):
 
     def __init__(self):
         super().__init__()
-        self.configure_logging(identifier=VIEW_NAME)
+        self.configure_logging()
 
     # holder for external dbs with cts; wait to initialize
     g_cts_lookups = None
@@ -182,10 +182,9 @@ class QueryFactoryView(PhenomeDBBaseView):
         """
 
         field_options = {}
+        for model in SavedQuery.registry._class_registry.values():
 
-        for model in Base._decl_class_registry.values():
-
-            if hasattr(model, '__tablename__'):# and model.__name__ in SavedQueryFactory.join_routes.keys():
+            if hasattr(model, '__tablename__'):
                 field_options[model.__name__] = {}
                 mapper = inspect(model)
                 for column in model.__table__.columns:
