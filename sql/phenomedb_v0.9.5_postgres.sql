@@ -13,7 +13,7 @@
 -- ALTER TABLE mspeaklist ALTER validated TYPE bool USING CASE WHEN validated=0 THEN FALSE ELSE TRUE END;
 -- ALTER TABLE mspeaklist ALTER COLUMN validated SET DEFAULT FALSE;
 
-\c phenomedb;
+--\c phenomedb;
 
 
 --------------------------------------
@@ -78,7 +78,6 @@ create table pipeline (
                           username_created text,
                           max_active_runs numeric,
                           concurrency numeric,
- --                         role_id integer references role,
                           deleted boolean default False,
                           constraint unq_pipeline_name unique(name)
 );

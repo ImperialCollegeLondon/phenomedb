@@ -376,19 +376,7 @@ class QueryFactory:
         'HarmonisedAnnotation-Assay': ['HarmonisedAnnotation.assay_id', 'Assay.id'],
         'HarmonisedAnnotation-AnnotationMethod': ['HarmonisedAnnotation.annotation_method_id', 'AnnotationMethod.id'],
         'HarmonisedAnnotation-AnnotationCompound': ['HarmonisedAnnotation.annotation_compound_id', 'AnnotationCompound.id'],
-        'AnnotationCompound-Compound': ['AnnotationCompound.compound_id', 'Compound.id'],
-     #   'Sample-SampleAssay': ['SampleAssay.sample_id', 'Sample.id'],
-     #   'Subject-Sample': ['Sample.subject_id', 'Subject.id'],
-     #   'Project-Subject': ['Subject.project_id', 'Project.id'],
-     #   'SampleAssay-AnnotatedFeature': ['AnnotatedFeature.sample_assay_id', 'SampleAssay.id'],
-     #   'AnnotatedFeature-FeatureMetadata': ['AnnotatedFeature.feature_metadata_id', 'FeatureMetadata.id'],
-     #   'FeatureMetadata-Annotation': ['FeatureMetadata.annotation_id', 'Annotation.id'],
-     #   'Annotation-HarmonisedAnnotation': ['Annotation.harmonised_annotation_id', 'HarmonisedAnnotation.id'],
-     #   'HarmonisedAnnotation-Assay': ['HarmonisedAnnotation.assay_id', 'Assay.id'],
-     #   'HarmonisedAnnotation-AnnotationMethod': ['HarmonisedAnnotation.annotation_method_id', 'Assay.id'],
-     #   'HarmonisedAnnotation-AnnotationCompound': ['HarmonisedAnnotation.annotation_compound_id',
-    #                                                'AnnotationCompound.id'],
-    #    'AnnotationCompound-Compound': ['AnnotationCompound.compound_id', 'Compound.id']
+        'AnnotationCompound-Compound': ['AnnotationCompound.compound_id', 'Compound.id']
     }
 
     join_routes = {'AnnotatedFeature':
@@ -499,7 +487,10 @@ class QueryFactory:
 
         self.query_name = query_name
         self.query_description = query_description
-        self.project_short_label = project_short_label
+        if project_short_label is not None:
+            self.project_short_label = project_short_label
+        else:
+            self.project_short_label = query_name
         self.query = None
         self.__code_string = None
         self.query_results = None
@@ -618,12 +609,6 @@ class QueryFactory:
             elif isinstance(correction_type,str):
                 key = key + ":%s" % correction_type
 
-        #if type == 'intensity_data' and transform is not None:
-        #    key = key + ":t:%s" % transform
-
-        #if type == 'intensity_data' and scaling is not None:
-        #    key = key + ":s:%s" % utils.get_scaling_text(scaling)
-
         if harmonise_annotations is True:
             key = key + ":HA"
 
@@ -632,18 +617,6 @@ class QueryFactory:
 
         if type in ['metaboanalyst_data','metaboanalyst_metadata'] and sample_label is not None:
             key = key + ":%s" % sample_label
-
-       # if feature_orientation is not None:
-       #     key = key + ":fo:%s" % feature_orientation
-
-       # if sample_label is not None:
-       #     key = key + ":sl:%s" % sample_label
-
-       # if sample_orientation is not None:
-       #     key = key + ":so:%s" % sample_orientation
-
-       # if metadata_bin_definition is not None:
-       #     key = key + ":mbin:%s" % json.dumps(metadata_bin_definition)
 
         if convert_units and master_unit:
             key = key + ":%s" % master_unit
@@ -1096,8 +1069,8 @@ class QueryFactory:
                                                                                compile_kwargs={"literal_binds": True})),
                                           json=self.query_dict,
                                           type=type,
-                                          created_by=self.username,
-                                          role_id=self.role_id)
+                                          created_by=self.username)
+#                                          role_id=self.role_id)
             self.db_session.add(self.saved_query)
             self.db_session.flush()
 

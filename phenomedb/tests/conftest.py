@@ -356,64 +356,6 @@ def import_devset_datalocations_nmr():
 
     return task.run()
 
-def import_devset_project_datalocations_nmr(project_name):
-
-    from phenomedb.imports import ImportDataLocations
-
-    task = ImportDataLocations(project_name=project_name,
-                               data_locations_path=config['DATA']['test_data'] + 'DEVSET_datalocations_NMR.csv',
-                               sample_matrix="plasma",
-                               assay_platform="NMR",
-                               assay_name="NOESY",
-                               username=USERNAME,
-                               db_env=DB_ENV)
-
-    return task.run()
-
-@pytest.fixture(scope="module")
-def import_devset_datalocations_ms():
-
-    from phenomedb.imports import ImportDataLocations
-
-    task = ImportDataLocations(project_name=PROJECT_NAME,
-                               data_locations_path=config['DATA']['test_data'] + 'DEVSET_LPOS_data_locations.csv',
-                               sample_matrix="plasma",
-                               assay_name="LPOS",
-                               assay_platform='MS',
-                               username=USERNAME,
-                               db_env=DB_ENV)
-
-    return task.run()
-
-def import_devset_project_datalocations_ms(project_name):
-
-    from phenomedb.imports import ImportDataLocations
-
-    task = ImportDataLocations(project_name=project_name,
-                               data_locations_path=config['DATA']['test_data'] + 'DEVSET_LPOS_data_locations.csv',
-                               sample_matrix="plasma",
-                               assay_name="LPOS",
-                               assay_platform='MS',
-                               username=USERNAME,
-                               db_env=DB_ENV)
-
-    return task.run()
-
-@pytest.fixture(scope="module")
-def import_devset_datalocations_ba_plasma():
-
-    from phenomedb.imports import ImportDataLocations
-
-    task = ImportDataLocations(project_name=PROJECT_NAME,
-                               data_locations_path= config['DATA']['test_data'] + 'DEVSET_plasma_BA_dataset_locations.csv',
-                               sample_matrix="Plasma",
-                               assay_name="LC-QqQ Bile Acids",
-                               assay_platform='MS',
-                               username=USERNAME,
-                               db_env=DB_ENV)
-
-    return task.run()
-
 def import_devset_project_datalocations_ba_plasma(project_name):
 
     from phenomedb.imports import ImportDataLocations
