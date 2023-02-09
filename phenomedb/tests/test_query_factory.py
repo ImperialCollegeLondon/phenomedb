@@ -1170,26 +1170,6 @@ class TestQueryFactory():
         query_factory = QueryFactory(query_dict=input_query_dict,db_env='TEST')
         query_factory.load_summary_statistics()
 
-        #expected_stats = {
-        #                    'assays': ['NOESY', 'LPOS', 'LC-QqQ Bile Acids'],
-        #                    'number_of_compounds': 297,
-        #                    'number_of_annotations': 22925,
-        #                    'number_of_sample_assays': 232,
-        #                    'number_samples': 81,
-        #                    'number_subjects': 9,
-        #                    'projects': ['PipelineTesting']
-        #                }
-
-        expected_stats = {'assay_counts': {'NOESY': 94, 'LPOS': 153, 'LC-QqQ Bile Acids': 68},
-                          'number_of_annotations': 383,
-                          'number_of_annotated_features': 31557,
-                          'number_of_sample_assays': 315,
-                          'number_samples': 169,
-                          'number_subjects': 9,
-                          'project_counts': {'PipelineTesting': 315},
-                          'sample_matrix_counts': {'plasma': 315},
-                          'sample_type_counts': {SampleType.ProceduralBlank: 3, SampleType.StudySample: 223, SampleType.StudyPool: 75, SampleType.ExternalReference: 14} }
-
         expected_stats = {'assay_counts': {'LC-QqQ Bile Acids': 70, 'LPOS': 64, 'NOESY': 115},
                          'metadata_counts_harmonised_datetime': {},
                          'metadata_counts_harmonised_datetime_by_project': {},
@@ -1252,10 +1232,6 @@ class TestQueryFactory():
         count = db_session.query(SampleAssay).join(Sample, MetadataValue, MetadataField, HarmonisedMetadataField)\
             .filter(SampleAssay.id.in_(subquery)).count()
 
-       #count = db_session.query(SampleAssay).join(Sample, MetadataValue, MetadataField,
-       #                                            HarmonisedMetadataField).filter(
-       #     and_(HarmonisedMetadataField.name == "Sex", MetadataValue.harmonised_text_value == 'Male')).filter(
-       #     SampleAssay.id.in_(subquery)).order_by(SampleAssay.id).count()
 
         pass
     
