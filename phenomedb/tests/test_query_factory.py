@@ -1216,24 +1216,6 @@ class TestQueryFactory():
         results = query_factory.generate_and_execute_query(limit=25,offset=0)
         assert results != None
 
-
-    def test_multiple_harmonised_metadata_fields(self):
-
-        db_session = db.get_db_session()
-
-        subquery = db_session.query(SampleAssay.id).join(Sample, Subject, Project, Assay, AnnotatedFeature,
-                                                         FeatureMetadata, Annotation, HarmonisedAnnotation,
-                                                         AnnotationMethod, MetadataValue, MetadataField,
-                                                         HarmonisedMetadataField).filter(
-            Project.name == "FINGER").filter(Assay.name == "LNEG").filter(AnnotationMethod.name.in_(["PPR"])).filter(
-            Sample.sample_matrix.in_(["plasma", "serum"])).filter(
-            and_(HarmonisedMetadataField.name == "Timepoint", MetadataValue.harmonised_numeric_value == 1)).group_by(SampleAssay).subquery()
-
-        count = db_session.query(SampleAssay).join(Sample, MetadataValue, MetadataField, HarmonisedMetadataField)\
-            .filter(SampleAssay.id.in_(subquery)).count()
-
-
-        pass
     
 #    def test_faster_build(self):
 #
