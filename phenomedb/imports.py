@@ -1342,18 +1342,17 @@ class AnnotationImportTask(ImportTask):
         return self.get_or_add_annotation(cpd_name)
 
     def get_or_add_annotation(self,cpd_name,cpd_id=None):
-        """ Get or add annotation
-            1. Try and find an existing Annotation with following matches:
-                Annotation.cpd_name, Annotation.cpd_id, Annotation.version
-                HarmonisedAnnotation.assay_id, HarmonisedAnnotation.annotation_method_id.
+        #Get or add annotation
+        #    1. Try and find an existing Annotation with following matches:
+        #        Annotation.cpd_name, Annotation.cpd_id, Annotation.version
+        #        HarmonisedAnnotation.assay_id, HarmonisedAnnotation.annotation_method_id.
 
-            2. If that doesn't exist, try again with the "_1" syntax.
+        #    2. If that doesn't exist, try again with the "_1" syntax.
 
-            3. If that exists, use that annotation/harmonised_annotation.
+        #    3. If that exists, use that annotation/harmonised_annotation.
 
-            4. If that doesn't exist, create the Annotation + HarmonisedAnnotation using the cpd_name.
+        #    4. If that doesn't exist, create the Annotation + HarmonisedAnnotation using the cpd_name.
 
-        """
 
         annotation = self.db_session.query(Annotation) \
             .filter(func.lower(func.replace(Annotation.cpd_name," ","")) == func.lower(func.replace(cpd_name," ",""))) \
@@ -3888,32 +3887,6 @@ class ImportNPYC(ImportTask):
             self.get_or_add_metadata(sample,index)
             sample_assay = self.get_or_add_sample_assay(sample,index)
             self.get_or_add_annotated_features(sample_assay,index)
-
-    def get_or_add_annotation(self,feature_metadata_row):
-
-        # AnnotationConfig is unique by annotation_compound_id (null), type (measured), ion_id (Feature Name), and version.
-        # So make the version a string with the following info project_name_sample_matrix_assay_xcms
-
-        version = "%s_%s_%s_%s" % (self.project.name,self.sample_matrix,self.assay_name,self.file_type)
-        feature_name = feature_metadata_row['Feature Name'].strip()
-
-        annotation_config = self.db_session.query(AnnotationConfig).filter(AnnotationConfig.ion_id==feature_name,
-                                                                AnnotationConfig.version==version,
-                                                                AnnotationConfig.type==AnnotationConfig.Type.measured.value).first()
-
-        if not annotation_config:
-            annotation_config = AnnotationConfig(ion_id=feature_name,
-                                                 version=version,
-                                                 type=AnnotationConfig.Type.measured.value,
-                                                 config=utils.convert_to_json_safe(self.clean_data_for_jsonb(feature_metadata_row)))
-
-            self.db_session.add(annotation_config)
-            self.db_session.flush()
-
-        annotation = self.db_session.query(Annotation).filter(Annotation.annotation_config_id==annotation_config.id).first()
-
-        if not annotation:
-            annotation = Annotation
 
     def get_or_add_subject(self,sample_row_index):
         """Get or add a new subject
