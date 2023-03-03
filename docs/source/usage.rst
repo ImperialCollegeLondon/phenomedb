@@ -30,7 +30,45 @@ To access Apache-Airflow, once the system is running, open your web browser and 
 
 From here, pipelines for individual tasks can be parameterised, executed, and monitored, and the various PhenomeDB views can be accessed.
 
+Apache-Airflow is structured around the concepts of pipelines and pipeline runs (executions). You parameterise a pipeline run and then Airflow manages the execution. Output logs for each task in the pipeline can be inspected via the interface.
+
+For more information regarding the usage of Apache-Airflow, please see the Apache-Airflow documentation.
+
 Importing data
 --------------
 
-Two main data import sources are supported - Metabolights, and the NPYC format, consisting of  
+Two main data import sources are supported - Metabolights format, and the NPYC format, consisting of 3 separate sources of information:
+
+A. Sample manifests: CSV files containing sample metadata subject as clinical factors, outcomes-of-interest, or covariates.
+B. PeakPantheR ROI files: CSV files containing feature metadata such as annotated compound information.
+C. Study data files: CSV files containing analytical features (measurements) relating to the samples and features/annotated compounds
+
+Importing Metabolights data
+
+Importing nPYc format data
+
+Harmonising sample metadata
+---------------------------
+
+In order to compare, integrate, and stratify data across multiple cohorts, the sample metadata must be harmonised. To do this, it is recommended to use the curate_metadata task.
+
+Harmonising annotation metadata
+-------------------------------
+
+In order to integrate annotations across projects, the annotations must be harmonised. PhenomeDB will attempt to do this automatically where possible, however in some cases it is necessary to manually harmonise annotations. To do this use the 'Harmonise Annotations' view.
+
+Creating queries
+----------------
+
+Creating queries can be done either via the Query Factory view or the QueryFactory() class.
+
+Running analyses
+----------------
+
+Implemented analysis functions include:
+
+A. PCA via the RunPCA task
+B. PCPR2 via the RunPCPR2 task
+C. MWAS via the RunMWAS task
+
+

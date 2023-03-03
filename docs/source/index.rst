@@ -13,6 +13,7 @@ Welcome to PhenomeDB's documentation
    analysis
    batch_correction
    cache
+   compounds
    imports
    metadata
    models
