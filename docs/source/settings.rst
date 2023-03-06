@@ -14,13 +14,9 @@ PhenomeDB settings can be set in the same format:
 
 PHENOMEDB__GROUP__SETTING=example
 
+The .env-example file contains the recommended Airflow and ChemSpider settings, but they can be adjusted as required.
+
 The config.ini file contains the following groups and settings:
-
-HPC
----
-user = user # The username used for accessing the HPC and API
-
-password = password # The password used for accessing the HPC and API
 
 TEST
 ----
