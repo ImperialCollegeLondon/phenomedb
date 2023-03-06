@@ -17,8 +17,8 @@ class TestDAGS(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
 
-        data = {"username":config['HPC']['user'],
-                "password":config['HPC']['password'],
+        data = {"username":config['PIPELINES']['pipeline_manager_user'],
+                "password":config['PIPELINES']['pipeline_manager_password'],
                 "provider": 'db'}
 
         cls.session = requests.session()
@@ -41,7 +41,7 @@ class TestDAGS(unittest.TestCase):
         '''
 
         r = self.session.get('http://localhost:8080/api/v1/dags',
-                             auth = HTTPBasicAuth(config['HPC']['user'], config['HPC']['password']),
+                             auth = HTTPBasicAuth(config['PIPELINES']['pipeline_manager_user'],config['PIPELINES']['pipeline_manager_password']),
                             headers={'Content-Type':'application/json'})
 
         body = json.loads(r.content)
@@ -62,7 +62,6 @@ class TestDAGS(unittest.TestCase):
                   "columns_to_ignore":[],
                   "username": "test",
                   "db_env":"TEST",
-                  #"username":config['HPC']['user']
                   }
 
         data = {
@@ -72,7 +71,7 @@ class TestDAGS(unittest.TestCase):
 
         r = self.session.post('http://localhost:8080/api/v1/dags/'+str(dag_id)+"/dagRuns",
                               json=data,
-                              auth = HTTPBasicAuth(config['HPC']['user'], config['HPC']['password']),
+                              auth = HTTPBasicAuth(config['PIPELINES']['pipeline_manager_user'],config['PIPELINES']['pipeline_manager_password']),
                               headers={'Content-Type':'application/json'})
 
         print(json.loads(r.content))
@@ -86,7 +85,7 @@ class TestDAGS(unittest.TestCase):
         '''
 
         r = self.session.get('http://localhost:8080/api/v1/dags',
-                             auth = HTTPBasicAuth(config['HPC']['user'], config['HPC']['password']),
+                             auth = HTTPBasicAuth(config['PIPELINES']['pipeline_manager_user'],config['PIPELINES']['pipeline_manager_password']),
                              headers={'Content-Type':'application/json'})
 
         body = json.loads(r.content)
@@ -106,7 +105,6 @@ class TestDAGS(unittest.TestCase):
                 "sample_matrix": "urine",
                 "username": "test",
                 "db_env":"TEST",
-                #"username":config['HPC']['user']
                 }
 
 
@@ -117,7 +115,7 @@ class TestDAGS(unittest.TestCase):
 
         r = self.session.post('http://localhost:8080/api/v1/dags/'+str(dag_id)+"/dagRuns",
                               json={'conf':params},
-                              auth = HTTPBasicAuth(config['HPC']['user'], config['HPC']['password']),
+                              auth = HTTPBasicAuth(config['PIPELINES']['pipeline_manager_user'],config['PIPELINES']['pipeline_manager_password']),
                               headers={'Content-Type':'application/json'})
 
         print(json.loads(r.content))
@@ -131,7 +129,7 @@ class TestDAGS(unittest.TestCase):
         '''
 
         r = self.session.get('http://localhost:8080/api/v1/dags',
-                             auth = HTTPBasicAuth(config['HPC']['user'], config['HPC']['password']),
+                             auth = HTTPBasicAuth(config['PIPELINES']['pipeline_manager_user'],config['PIPELINES']['pipeline_manager_password']),
                              headers={'Content-Type':'application/json'})
 
         body = json.loads(r.content)
@@ -160,7 +158,7 @@ class TestDAGS(unittest.TestCase):
 
         r = self.session.post('http://localhost:8080/api/v1/dags/'+str(dag_id)+"/dagRuns",
                               json={'conf':params},
-                              auth = HTTPBasicAuth(config['HPC']['user'], config['HPC']['password']),
+                              auth = HTTPBasicAuth(config['PIPELINES']['pipeline_manager_user'],config['PIPELINES']['pipeline_manager_password']),
                               headers={'Content-Type':'application/json'})
 
         print(json.loads(r.content))
@@ -174,7 +172,7 @@ class TestDAGS(unittest.TestCase):
         '''
 
         r = self.session.get('http://localhost:8080/api/v1/dags',
-                             auth = HTTPBasicAuth(config['HPC']['user'], config['HPC']['password']),
+                             auth = HTTPBasicAuth(config['PIPELINES']['pipeline_manager_user'],config['PIPELINES']['pipeline_manager_password']),
                              headers={'Content-Type':'application/json'})
 
         body = json.loads(r.content)
@@ -202,7 +200,7 @@ class TestDAGS(unittest.TestCase):
 
         r = self.session.post('http://localhost:8080/api/v1/dags/'+str(dag_id)+"/dagRuns",
                               json={'conf':params},
-                              auth = HTTPBasicAuth(config['HPC']['user'], config['HPC']['password']),
+                              auth = HTTPBasicAuth(config['PIPELINES']['pipeline_manager_user'],config['PIPELINES']['pipeline_manager_password']),
                               headers={'Content-Type':'application/json'})
 
         print(json.loads(r.content))
@@ -216,7 +214,7 @@ class TestDAGS(unittest.TestCase):
         '''
 
         r = self.session.get('http://localhost:8080/api/v1/dags',
-                             auth = HTTPBasicAuth(config['HPC']['user'], config['HPC']['password']),
+                             auth = HTTPBasicAuth(config['PIPELINES']['pipeline_manager_user'],config['PIPELINES']['pipeline_manager_password']),
                              headers={'Content-Type':'application/json'})
 
         body = json.loads(r.content)
@@ -248,7 +246,7 @@ class TestDAGS(unittest.TestCase):
 
         r = self.session.post('http://localhost:8080/api/v1/dags/'+str(dag_id)+"/dagRuns",
                               json={'conf':params},
-                              auth = HTTPBasicAuth(config['HPC']['user'], config['HPC']['password']),
+                              auth = HTTPBasicAuth(config['PIPELINES']['pipeline_manager_user'],config['PIPELINES']['pipeline_manager_password']),
                               headers={'Content-Type':'application/json'})
 
         print(json.loads(r.content))

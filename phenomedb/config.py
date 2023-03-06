@@ -153,12 +153,6 @@ if 'PHENOMEDB__PIPELINES__PIPELINE_MANAGER_PASSWORD' in os.environ:
 if 'PHENOMEDB__PIPELINES__DOCKER' in os.environ:
      config['PIPELINES']['docker'] = os.environ['PHENOMEDB__PIPELINES__DOCKER']
 
-if 'PHENOMEDB__HPC__USER' in os.environ:
-     config['HPC']['user'] = os.environ['PHENOMEDB__HPC__USER']
-
-if 'PHENOMEDB__HPC__PASSWORD' in os.environ:
-     config['HPC']['password'] = os.environ['PHENOMEDB__HPC__PASSWORD']
-
 if 'PHENOMEDB__API_KEYS__METABOLIGHTS' in os.environ:
      config['API_KEYS']['metabolights'] = os.environ['PHENOMEDB__API_KEYS__METABOLIGHTS']
 

@@ -199,7 +199,7 @@ class TestCache:
                 content_array = re.split("csrfToken",content)
                 csrf_split = re.split('\'\;',content_array[1])
                 csrf_token = csrf_split[0].replace(" = '","")
-        login_data = dict(username=config['HPC']['username'], password=config['HPC']['password'],csrf_token=csrf_token)
+        login_data = dict(username=config['PIPELINES']['pipeline_manager_user'], password=config['PIPELINES']['pipeline_manager_password'],csrf_token=csrf_token)
         response = session.post(login_url, data=login_data)
 
         task_runs = db_session.query(TaskRun).filter(TaskRun.id.in_([8693,3300,3381,3462,3543])).all()
@@ -224,7 +224,7 @@ class TestCache:
                                         content_array = re.split("csrfToken", content)
                                         csrf_split = re.split('\'\;', content_array[1])
                                         csrf_token = csrf_split[0].replace(" = '", "")
-                                login_data = dict(username=config['username'],password=config['HPC']['password'], csrf_token=csrf_token)
+                                login_data = dict(username=config['PIPELINES']['pipeline_manager_user'], password=config['PIPELINES']['pipeline_manager_password'], csrf_token=csrf_token)
                                 response = session.post(login_url, data=login_data)
 
     def test_clear_nginx_cache(self):

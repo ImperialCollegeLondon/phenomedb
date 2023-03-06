@@ -154,7 +154,7 @@ class CreateTaskViewCache(Task):
             task_run = self.db_session.query(TaskRun).filter(TaskRun.id==int(float(self.caching_task_run_id))).first()
 
             login_url = config['WEBSERVER']['url'] + "login"
-            login_data = dict(username=config['HPC']['user'], password=config['HPC']['password'])
+            login_data = dict(username=config['PIPELINES']['pipeline_manager_user'], password=config['PIPELINES']['pipeline_manager_password'])
             session = requests.session()
             response = session.post(login_url, data=login_data)
 

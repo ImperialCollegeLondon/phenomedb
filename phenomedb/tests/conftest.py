@@ -515,7 +515,7 @@ def import_devset_project_bile_acid_targeted_annotations(project_name):
 
 @pytest.fixture(scope="session")
 def get_api_access_token():
-    data = {"username": config['HPC']['user'],"password": config['HPC']['password'],"provider": 'ldap'}
+    data = {"username": config['PIPELINES']['pipeline_manager_user'],"password":config['PIPELINES']['pipeline_manager_password'],"provider": 'ldap'}
 
     session = requests.session()
     r = session.post('http://localhost:5000/custom/api/v1/security/login', json=data)

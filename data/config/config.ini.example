@@ -2,11 +2,6 @@
 user = user
 password = password
 
-[RDS_ACCOUNT]
-username = user
-password = password
-
-
 [TEST]
 username = admin
 

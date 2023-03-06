@@ -14,14 +14,38 @@ These subsystems can be installed separately, however to simplify the usage of t
 Installation
 ------------
 
-To use PhenomeDB locally, install docker, download the repo, copy the .env-example file to a file called .env, edit the parameters as required, and then run
+To use PhenomeDB locally:
+
+1. Install docker
+2. Download the repo
+3. cd into the repo directory
+4. Copy the ./data/config/config.ini.example to ./data/config/config.ini
+5. Copy the .env-example file to a file called .env, and edit the parameters as required (see settings)
+6. cd into the directory and run docker-compose up
 
 .. code-block:: console
 
    $ git clone git@github.com:ghaggart/phenomedb.git
    $ cd phenomedb
+   $ cp ./data/config/config.ini.example ./data/config/config.ini
    $ cp .env-example .env
    $ docker compose up
+
+The minimum settings that need configuring are:
+
+
+PHENOMEDB__REDIS__PASSWORD
+PHENOMEDB__PIPELINES__PIPELINE_MANAGER_USER
+PHENOMEDB__PIPELINES__PIPELINE_MANAGER_PASSWORD
+PHENOMEDB__API_KEYS__CHEMSPIDER
+POSTGRES_USER
+POSTGRES_PASSWORD
+AIRFLOW_ADMIN_USER
+AIRFLOW_ADMIN_PASSWORD
+AIRFLOW_ADMIN_EMAIL
+AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+AIRFLOW__CORE__FERNET_KEY
+
 
 The Apache-Airflow interface
 ----------------------------
