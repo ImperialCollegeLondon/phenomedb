@@ -224,12 +224,22 @@ SavedQueries can be created and explored using the QueryFactory user interface. 
 
   The QueryFactory summary stats output.
 
+.. figure:: ./_images/query-ui-generate-cache-buttons.png
+  :width: 650
+  :alt: PhenomeDB generate cache
 
+  Buttons to trigger a CreateSavedQueryDataframe task via the QueryFactory UI
 
+.. figure:: ./_images/query-ui-download-dataframe.png
+  :width: 500
+  :alt: PhenomeDB QueryFactory download options
 
+  QueryFactory options for downloading a dataframe. Options include the ability to bin harmonised metadata fields, include or exclude specific columns, and specify the output format.
 
+Scaling, normalisation, and batch correction
+--------------------------------------------
 
-
+In order to compare metabolite levels across different batches, projects, or assays, scaling/normalisation, transformation, and batch correction must be undertaken. The aim of these methods is to minimise inter-batch technical variation while maintaining inter-sample biological variation.
 
 Running analyses
 ----------------
@@ -239,6 +249,53 @@ Implemented analysis functions include:
 A. PCA via the RunPCA task
 B. PCPR2 via the RunPCPR2 task
 C. MWAS via the RunMWAS task
+D. nPYc reports via the RunNPYCReport task
+
+Individual analyses can be run via the AnalysisView page, where task runs can be parameterised and scheduled, and the results can be explored.
+
+.. figure:: ./_images/analysis-view-list.png
+  :width: 600
+  :alt: PhenomeDB AnalysisView list
+
+  Analyses can be executed against queries (and upstream task runs) using the AnalysisView. Parameters for the task run can be specified using the html form, including scaling and transformation steps and task-specific options. Previous task runs can be explored via a table.
+
+The results of each analysis can be explored via a dedicated UI, with panels common to all analysis tasks with options to rerun the task, and options to download the input and output datasets.
+
+.. figure:: ./_images/analysis-view-common.png
+  :width: 600
+  :alt: PhenomeDB AnalysisView common
+
+  Each task run output view has the ability to re-run the task with new parameters, and explore and download the input and output datasets.
+
+Each AnalysisTask also has specific charts and figures available to explore the results.
+
+.. figure:: ./_images/pca-view.png
+  :width: 650
+  :alt: PhenomeDB RunPCA visualisation
+
+  Interactive visualisation of PCA outputs, including A: Scree plot, B: control panel to control the chart options, C: 2D scores plots, D, E, F: loadings plots.
+
+.. figure:: ./_images/pcpr2-view-1.png
+  :width: 500
+  :alt: PhenomeDB RunPCPr2 visualisation
+
+  Visualisation of PCPR2 results
+
+
+.. figure:: ./_images/MWAS-view-example.png
+  :width: 650
+  :alt: PhenomeDB RunMWAS visualisation
+
+  Interactive visualisation of 1D MWAS outputs
+
+.. figure:: ./_images/example-lneg-mwas-sex-comparison-consistent.png
+  :width: 650
+  :alt: PhenomeDB RunMWAS compare visualisation
+
+  Interactive visualisation of MWAS comparison heatmaps, where the results of two MWAS analyses can be compared, in this case comparing the age-associated metabolites of males and females
+
+
+
 
 Tasks and Pipelines
 -------------------
