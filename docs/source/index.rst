@@ -9,6 +9,7 @@ Welcome to PhenomeDB's documentation
 **PhenomeDB** (/fee-nome-dee-bee/) is a platform for harmonising and integrating metabolomics data.
 
 .. toctree::
+   installation
    usage
    analysis
    batch_correction
@@ -22,8 +23,6 @@ Welcome to PhenomeDB's documentation
    query_factory
    task
    utilities
-   views
-   base_view
    :maxdepth: 2
    :caption: Contents:
 
