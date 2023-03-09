@@ -13,7 +13,8 @@
 -- ALTER TABLE mspeaklist ALTER validated TYPE bool USING CASE WHEN validated=0 THEN FALSE ELSE TRUE END;
 -- ALTER TABLE mspeaklist ALTER COLUMN validated SET DEFAULT FALSE;
 
---\c phenomedb;
+-- comment this out when running unit tests
+\c phenomedb;
 
 
 --------------------------------------
