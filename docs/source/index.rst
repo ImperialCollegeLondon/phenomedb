@@ -6,7 +6,14 @@
 Welcome to PhenomeDB's documentation
 ====================================
 
-**PhenomeDB** (/fee-nome-dee-bee/) is a platform for harmonising and integrating metabolomics data.
+**PhenomeDB** (/fee-nome-dee-bee/) is a platform for harmonising and integrating metabolomics data across multiple projects.
+
+Getting started
+---------------
+
+A. :ref:`installation`
+B. :ref:`usage`
+
 
 .. toctree::
    installation

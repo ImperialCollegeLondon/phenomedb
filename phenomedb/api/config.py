@@ -16,7 +16,7 @@ else:
 
 #SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 
-SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:root@postgres:5432/phenomedb'
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://' + os.environ['POSTGRES_USER'] + ':' + os.environ['POSTGRES_PASSWORD'] + '@postgres:5432/phenomedb'
 
 FAB_API_SWAGGER_UI=True
 

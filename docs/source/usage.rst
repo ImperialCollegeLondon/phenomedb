@@ -1,3 +1,5 @@
+.. _usage:
+
 Usage
 =====
 
@@ -25,13 +27,6 @@ E. Flask plugins for exploring the data, building queries, running analyses, and
 
   PhenomeDB core architectural components (note that important components Redis and the file-system are not shown here)
 
-Core data model and mappings
-----------------------------
-.. figure:: ./_images/source-to-model.png
-  :width: 600
-  :alt: Mappings between 3-file format at PhenomeDB
-
-  Mappings between a 3-file format metabolomics dataset and the PhenomeDB core data model
 
 The Apache-Airflow interface
 ----------------------------
@@ -48,7 +43,7 @@ For more information regarding the usage of Apache-Airflow, please see the Apach
   :width: 600
   :alt: Airflow UI home
 
-  Airflow home page showing registered pipelines
+  Airflow home page showing registered pipelines (DAGs)
 
 .. figure:: ./_images/airflow-ui-2.png
   :width: 600
@@ -72,15 +67,24 @@ For more information regarding the usage of Apache-Airflow, please see the Apach
 Importing analytical data and sample metadata
 ---------------------------------------------
 
-Two main analytical data import sources are supported - Metabolights format, and the NPYC format, consisting of 3 separate sources of information:
+Two main analytical data import sources are supported - Metabolights format, and the nPYc-toolbox 3-file format, consisting of 3 separate sources of information:
 
 A. Sample manifests: CSV files containing sample metadata subject as clinical factors, outcomes-of-interest, or covariates.
-B. PeakPantheR ROI files: CSV files containing feature metadata such as annotated compound information.
-C. Study data files: CSV files containing analytical features (measurements) relating to the samples and features/annotated compounds
+B. Feature metadata: CSV files containing feature metadata such as RT, m/z, and other feature-specific analytical metadata.
+C. Study data files: CSV files containing analytical features (measurements) relating to the samples and features/annotated compounds.
 
-Importing Metabolights data
+.. figure:: ./_images/source-to-model.png
+  :width: 600
+  :alt: Mappings between 3-file format at PhenomeDB
 
-Importing nPYc format data
+  Mappings between a 3-file format metabolomics dataset and the PhenomeDB core data model
+
+Import Tasks:
+
+A. ImportMetadata - import sample metadata from a CSV where rows are samples and columns are metadata fields
+B. ImportBrukerIVDrAnnotations - import annotated metabolite measurements/abundances from a Bruker IVDr NMR dataset.
+C. ImportPeakPantheRAnnotation - import annotated metabolite measurements/abundances from a PeakPantheR LC-MS dataset.
+D. ImportMetabolights - import metabolite features and annotations from Metabolights format
 
 
 Harmonising sample metadata
