@@ -1,6 +1,6 @@
 from sqlalchemy import *
 from sqlalchemy.orm import *
-#from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base
 import phenomedb.database as db
 import phenomedb.utilities as utils
 import enum
@@ -14,7 +14,7 @@ import urllib.parse
 from rdkit import Chem
 from rdkit.Chem import Crippen
 
-#Base = declarative_base(bind=db.prod_engine)
+Base = declarative_base(bind=db.prod_engine)
 
 # Some enums are direct imports from nPYc
 from nPYc.enumerations import *
@@ -27,8 +27,8 @@ COMPOUND_DB_HEADINGS = ['CAS','ChEBI','ChEMBL','ChemSpider','HMDB','LipidBank',
 COMPOUND_ASSAY_HEADINGS = ['RPOS','LPOS','LNEG','RNEG','HPOS','LC-QqQ Bile Acids','LC-QqQ Amino Acids','LC-QqQ Tryptophan','LC-QqQ Oxylipins','Bruker IVDR']
 
 
-class Base(DeclarativeBase):
-    pass
+#class Base(DeclarativeBase):
+#    pass
 
 #class Role(Base):
 #    """User Roles - to be sychronized with the airflow database

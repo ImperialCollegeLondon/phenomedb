@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to PhenomeDB's documentation
-=====================================
+====================================
 
 **PhenomeDB** (/fee-nome-dee-bee/) is a platform for harmonising and integrating metabolomics data.
 
@@ -13,6 +13,7 @@ Welcome to PhenomeDB's documentation
    usage
    analysis
    batch_correction
+   base_view
    cache
    compounds
    imports
@@ -23,6 +24,7 @@ Welcome to PhenomeDB's documentation
    query_factory
    task
    utilities
+   views
    :maxdepth: 2
    :caption: Contents:
 

@@ -1,5 +1,5 @@
 phenomedb.imports
-=====================
+=================
 
 
 .. figure:: ./_images/import-task-overview.png

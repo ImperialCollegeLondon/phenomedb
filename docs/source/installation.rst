@@ -4,7 +4,7 @@ Installation
 The various PhenomeDB components can be installed separately, however to simplify the usage of these interacting components, they have been docker-ised.
 
 Local/desktop installation
-------------------
+--------------------------
 
 1. Install docker
 2. Download the repo

@@ -7,8 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'PhenomeDB'
-copyright = '2023, Gordon A. Haggart'
-author = 'Gordon A. Haggart'
+copyright = '2023, Imperial College London'
+author = 'Gordon A. Haggart-Davies'
 release = '1.0'
 
 # -- General configuration ---------------------------------------------------
