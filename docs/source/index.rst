@@ -12,13 +12,15 @@ Getting started
 ---------------
 
 Please see the following guides for installing and using PhenomeDB
+
 A. :ref:`installation`
 B. :ref:`usage`
-
+C. :ref:`development`
 
 .. toctree::
    installation
    usage
+   development
    analysis
    batch_correction
    base_view
