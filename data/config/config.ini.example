@@ -16,7 +16,7 @@ beta = phenomedb_beta
 port = 5433
 pool_size = 10
 max_overflow = 20
-create_script = ./sql/phenomedb_v0.9.4_postgres.sql
+create_script = /full/path/to/sql/phenomedb_test_v0.9.5_postgres.sql
 
 [WEBSERVER]
 url = http://localhost:8080/
