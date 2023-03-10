@@ -23,15 +23,42 @@ Local/desktop installation
    $ cp .env-example .env
    $ docker compose up
 
-The minimum settings that need configuring are:
+
+Python installatiion
+--------------------
+
+Python installation is necessary for local IDE debugging of unit tests,running unit tests and building the docs.
+
+To install the phenomedb library locally:
+
+1. Checkout the repo
+2. install the pip requirements (inside a virtualenv or conda env)
+3. run setup.py sdist
+
+.. code-block:: console
+
+  $ pip install -r requirements.txt
+  $ python setup.py sdist
+
+Running the tests
+-----------------
+
+The tests can be run using pytest.
+
+Settings
+========
+
+To use the ImportCompoundTask compound lookup functionality the following setting must be configured to use chemspider by obtaining a chemspider api key:
+
+PHENOMEDB__API_KEYS__CHEMSPIDER
+
+The following settings are recommended to be changed however the defaults will work.
 
 PHENOMEDB__REDIS__PASSWORD
 
 PHENOMEDB__PIPELINES__PIPELINE_MANAGER_USER
 
 PHENOMEDB__PIPELINES__PIPELINE_MANAGER_PASSWORD
-
-PHENOMEDB__API_KEYS__CHEMSPIDER
 
 POSTGRES_USER
 
