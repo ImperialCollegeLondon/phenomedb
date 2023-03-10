@@ -380,8 +380,7 @@ def import_devset_ivdr_biquant_annotations():
                                        annotation_method="Bi-Quant-P",
                                        unified_csv_path=config['DATA']['test_data'] + 'DEVSET_P_BIQUANTv2_combinedData.csv',
                                        sample_matrix="plasma",
-                                       db_env=DB_ENV
-                                       )
+                                       db_env=DB_ENV)
 
     return task.run()
 

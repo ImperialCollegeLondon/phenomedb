@@ -154,6 +154,9 @@ class PipelineFactoryView(PhenomeDBBaseView):
             if len(dag_json) > 0:
                 desc = param_dict['dag_description']
                 name = param_dict['name'].replace(" ","_")
+                if self.db_session.query(Pipeline).filter(Pipeline.name==name).count() > 0:
+                    raise Exception('Pipeline with that name already exists, please choose another')
+
                 db_env = param_dict['set_db_env']
                 schedule_interval = param_dict['schedule_interval']
 
@@ -170,11 +173,12 @@ class PipelineFactoryView(PhenomeDBBaseView):
                 else:
                     sequential = False
 
-                dag = PipelineFactory(pipeline_name=name,description=desc, schedule_interval=schedule_interval, db_env=db_env,tags=dag_tags,sequential=sequential)
+                pipeline = PipelineFactory(pipeline_name=name,description=desc, schedule_interval=schedule_interval,
+                                           db_env=db_env,tags=dag_tags,sequential=sequential,hard_code_data=True)
 
                 airflow_dir = config['DATA']['app_data']
                 project_dir = config['DATA']['project_data_base_path']
-                                 
+                upstream_task_id = None      
                 for task in dag_json:
 
                     task_class = task['task_class']
@@ -185,63 +189,76 @@ class PipelineFactoryView(PhenomeDBBaseView):
 
                     task_mod = task['task_module']
                     task_args = task['args']
-                    
-                    for arg_val in task_args:
-                        
-                        self.logger.debug("SUBMITTED ARG %s = %s", arg_val, task_args[arg_val])
 
-                        if task_args[arg_val] != '':
+                    if task_args is None:
+                        task_args = {}
+                    else:
+                        task_mod_split = task_mod.split('.')
+                        task_key = task_mod_split[1] + '.' + task_class
 
-                            arg_def = json_spec[task_class][arg_val]
-                            if arg_def['type'] == 'lambda' and task_args[arg_val] != '':
+                        #self.logger.info(json_spec)
+                        self.logger.info(task_key)
+                        self.logger.info(task_args)
 
-                                try:
-                                    test_lambda = eval(task_args[arg_val])
-                                except Exception:
-                                    self.logger.exception('User enterered lambda is not computable - ' + task_args[arg_val])
-                                    raise Exception('User enterered lambda is not computable - ' + task_args[arg_val])
+                        method_params = json.loads(json_spec[task_key]['params'])
+                        for arg_name in task_args.keys():
 
-                            elif arg_def['type'] == 'lambda' and task_args[arg_val] == '':
-                                task_args[arg_val] = None
+                            self.logger.debug("SUBMITTED ARG %s = %s", arg_name, task_args[arg_name])
 
-                            elif arg_def['type'] == 'list':
+                            if task_args[arg_name] != '':
 
-                                list = []
-                                for col in task_args[arg_val].split(','):
-                                    if col != '':
-                                        list.append(col.strip())
-                                task_args[arg_val] = list
+                                arg_def = method_params[arg_name]
+                                if arg_def['type'] == 'lambda' and task_args[arg_name] != '':
 
-                            elif arg_def['type']=='file_path_remote' or arg_def['type']=='file_upload':
+                                    try:
+                                        test_lambda = eval(task_args[arg_name])
+                                    except Exception:
+                                        self.logger.exception('User enterered lambda is not computable - ' + task_args[arg_val])
+                                        raise Exception('User enterered lambda is not computable - ' + task_args[arg_val])
 
-                                remote_folder_path = arg_def['remote_folder_path']
+                                elif arg_def['type'] == 'lambda' and task_args[arg_name] == '':
+                                    task_args[arg_name] = None
 
-                                self.logger.debug("FILE TYPE DEF is %s", arg_def)
-                                if arg_def['project_folder'] == True:
-                                    project_name = task_args['project_name']
-                                    if project_name is None or len(project_name)==0:
-                                        self.logger.error("Missing project name from %s task_typespec: cannot get path to \
-                                                            project folder", task_class)
-                                        file_path = os.path.join(project_dir, remote_folder_path, task_args[arg_val])
+                                elif arg_def['type'] == 'list':
+
+                                    list = []
+                                    for col in task_args[arg_name].split(','):
+                                        if col != '':
+                                            list.append(col.strip())
+                                    task_args[arg_name] = list
+
+                                elif arg_def['type']=='file_path_remote' or arg_def['type']=='file_upload':
+
+                                    remote_folder_path = arg_def['remote_folder_path']
+
+                                    self.logger.debug("FILE TYPE DEF is %s", arg_def)
+                                    if arg_def['project_folder'] == True:
+                                        project_name = task_args['project_name']
+                                        if project_name is None or len(project_name)==0:
+                                            self.logger.error("Missing project name from %s task_typespec: cannot get path to \
+                                                                project folder", task_class)
+                                            file_path = os.path.join(project_dir, remote_folder_path, task_args[arg_name])
+                                        else:
+
+                                            project_folder = ""
+                                            data_dir = self.execute_sql("SELECT project_folder_name from project where name = :name", {"name":project_name})
+                                            if ( len(data_dir) > 0 ):
+                                                project_folder = data_dir[0]['project_folder_name']
+                                            file_path = os.path.join(project_dir, project_folder, remote_folder_path, task_args[arg_name])
+
                                     else:
-
-                                        project_folder = ""
-                                        data_dir = self.execute_sql("SELECT project_folder_name from project where name = :name", {"name":project_name})
-                                        if ( len(data_dir) > 0 ):
-                                            project_folder = data_dir[0]['project_folder_name']
-                                        file_path = os.path.join(project_dir, project_folder, remote_folder_path, task_args[arg_val])
-
-                                else:
-                                    self.logger.debug("This is NOT a project folder, using airflow path")
-                                    print(task_args[arg_val])
-                                    file_path = os.path.join(airflow_dir, remote_folder_path, secure_filename(task_args[arg_val]))
+                                        self.logger.debug("This is NOT a project folder, using airflow path")
+                                        print(task_args[arg_name])
+                                        file_path = os.path.join(airflow_dir, remote_folder_path, secure_filename(task_args[arg_name]))
 
 
-                                self.logger.debug("Built file path for %s at %s", arg_val, file_path)
-                                task_args[arg_val] = file_path
+                                    self.logger.debug("Built file path for %s at %s", arg_name, file_path)
+                                    task_args[arg_name] = file_path
 
-                    dag.add_task(task_mod, task_class, task_label, task_args)
-                dag.submit()
+                    pipeline.add_task(task_module=task_mod, task_class=task_class, task_id=task_label, run_config=task_args)
+                    upstream_task_id = task_label
+
+                pipeline.commit_definition()
                 data['user_msg'] = ["Pipeline '" + name + "' saved."]
             
         except Exception as e:
