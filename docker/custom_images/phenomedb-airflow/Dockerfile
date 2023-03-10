@@ -26,7 +26,7 @@ RUN pip install --upgrade pandas
 RUN pip install --upgrade isatools
 RUN pip install --upgrade markupsafe
 RUN pip install --upgrade jinja2
-RUN pip install --default-timeout=100 chemspipy xlrd redis pyarrow rdkit-pypi pytest azure-servicebus "pymzml[full]" libchebipy
+RUN pip install --default-timeout=100 chemspipy xlrd redis pyarrow rdkit-pypi pytest azure-servicebus "pymzml[full]" libchebipy rdkit
 #COPY ../../../requirements.txt /opt/requirements.txt
 #RUN pip install -r /opt/requirements.txt
 RUN R -e "install.packages('jsonlite',dependencies=TRUE, repos='http://cran.rstudio.com/')"

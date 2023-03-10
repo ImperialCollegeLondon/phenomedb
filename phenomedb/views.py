@@ -5,18 +5,12 @@ import pandas as pd
 import phenomedb.database as db
 from pprint import pprint
 from phenomedb.base_view import PhenomeDBBaseView
-from phenomedb.models import EvidenceRecord, EvidenceType, Project
-from phenomedb.tasks.imports.import_sample_manifest import ImportSampleManifest
-from phenomedb.tasks.imports.import_data_locations import ImportDataLocations
+from phenomedb.models import AnnotationEvidence, EvidenceType, Project
+from phenomedb.imports import ImportSampleManifest
 
-from phenomedb.tasks.imports.ivdr_import_task_basic_csv import IVDRImportTaskBasicCSV
-from phenomedb.tasks.imports.import_targetlynx_annotations import ImportTargetLynxAnnotations
-from phenomedb.tasks.imports.import_peakpanther_annotations import ImportPeakPantherAnnotations
-from phenomedb.tasks.imports.import_bruker_ivdr_annotations import ImportBrukerIVDRAnnotations
 from phenomedb.models import *
 from phenomedb import utilities as utils
 import logging
-from sonic import SearchClient
 
 
     
@@ -78,7 +72,7 @@ def insert_evidence_record(json_object, type_id):
     :type type_id: integer
     """    
     # test jsonb      
-    er = EvidenceRecord()   
+    er = AnnotationEvidence()   
     er.evidence_type_id = type_id
     er.analysed_by_user ="Jazz"
     er.validated_by_user = "Chris"
@@ -92,9 +86,9 @@ def insert_evidence_record(json_object, type_id):
     db_session.add(er)
     db_session.commit()
     
-    for a in db_session.query(EvidenceRecord).all():
+    for a in db_session.query(AnnotationEvidence).all():
         print(a.json_data)
-    for a in db_session.query(EvidenceRecord).filter(EvidenceRecord.json_data.contains([{"one": 1}])).all():  
+    for a in db_session.query(AnnotationEvidence).filter(AnnotationEvidence.json_data.contains([{"one": 1}])).all():  
         pprint(a.json_data) 
 
 def look_for_directories():
@@ -191,30 +185,6 @@ def import_project(project):
     task = ImportSampleManifest(project_name,sample_manifest_path)
     task.run(db_session=db_session)
     db_session.close()
-       
-def load_datalocations(project):
-    """Load the datalocations.
-
-    :param project: dictionary containing the project['name'] and the project['data_locations'].
-    :type project: dict
-    """    
-    db_session = db.get_db_session()
-    count = 0
-    if project["data_locations"]:
-        for s in project["sample_types"]:
-            print("loading", s)
-            print("file", project["data_locations"][count])
-            task = ImportDataLocations(project_name=project["name"],
-                                       data_locations_path=project["data_locations"][count],
-                                       sample_matrix=s,
-                                       assay_platform="NMR")
-            count = count + 1
-            output = task.run(db_session=db_session)
-
-            print(output)
-    db_session.close()
-
-
     
 def walk(top, match_str, max_depth ):
     """Recursively search the folders for the match_str, up to a max_depth.
@@ -281,45 +251,7 @@ def get_entities_as_dicts(entity_list):
         table_map = attribute_dict(entity)
         result.append(table_map)
     return result
-    
-def search(search_term):
-    """Search against the Sonic search index.
 
-    :param search_term: The term to search.
-    :type search_term: str
-    :return: The matching models for the search.
-    :rtype: list
-    """    
-
-    db_session = db.get_db_session()
-
-    search_cats = {Compound:        ["Compounds", "Compound", "CompoundView.compound"],
-                  Sample :   ["Sampling Events", "Sample", "ViewData.sample"],
-                  ChemicalStandardPeakList:        ["Standards", "ChemicalStandardPeakList", "CompoundView.chemical_standard_dataset"],
-                  Annotation:      ["Annotations", "Annotation","CompoundView.chemical_standard_dataset"]
-                  }
-                      
-    search_results = {}
-    if len(search_term) > 0:
-        with SearchClient("127.0.0.1", 1491, "password") as querycl:
-
-            for model, bucket in search_cats.items():
-                
-                result_header = bucket[0]
-                
-                model_object = bucket[1]
-                ids = querycl.query("main", model_object, search_term)
-                if len(ids) > 0:
-                    
- 
-                    entity_list = db_session.query(model).filter(model.id.in_(ids)).all()
-                    as_dicts  = get_entities_as_dicts(entity_list) 
-                    search_results[model_object] = {"label":result_header,"entities":entity_list}
-                else:
-                    search_results[model_object] = []
-    
-    return search_results
-       
 
 def sample_event(id):
     """Get the Sample by id.

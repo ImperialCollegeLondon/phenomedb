@@ -1350,7 +1350,7 @@ class AnnotationEvidence(Base):
             return "<AnnotationEvidence(id=%s)>" % (self.id)
 
     def toString(self):
-        "<Class EvidenceRecord id :: "+str(self.id)+" :: "+self.evidence_type_id+" >"
+        "<Class EvidenceRAnnotationEvidence id :: "+str(self.id)+" :: "+self.evidence_type_id+" >"
 
 class AnnotationEvidenceFileUpload(Base):
 
