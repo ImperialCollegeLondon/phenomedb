@@ -57,6 +57,9 @@ No docker -> ./data/config/config.ini
 
 With docker -> ./.env
 
+.. warning::
+    Even if using docker you still need to create the config.ini file by copying config.ini.example -> config.ini
+
 Apache Airflow settings can be configured with the following syntax:
 
 .. code-block:: console
