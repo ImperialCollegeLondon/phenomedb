@@ -170,7 +170,7 @@ class PipelineFactoryView(PhenomeDBBaseView):
                 else:
                     sequential = False
 
-                dag = PipelineFactory(name, desc, schedule_interval=schedule_interval, db_env=db_env,tags=dag_tags,sequential=sequential)
+                dag = PipelineFactory(pipeline_name=name,description=desc, schedule_interval=schedule_interval, db_env=db_env,tags=dag_tags,sequential=sequential)
 
                 airflow_dir = config['DATA']['app_data']
                 project_dir = config['DATA']['project_data_base_path']
