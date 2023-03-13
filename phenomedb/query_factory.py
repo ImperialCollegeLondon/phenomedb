@@ -1083,7 +1083,7 @@ class QueryFactory:
             self.saved_query.sql = str(
                 self.query.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
             self.saved_query.json = None
-            self.saved_query.role_id = self.role_id
+            #self.saved_query.role_id = self.role_id
             self.db_session.flush()
             self.saved_query.json = dict(self.query_dict)
             self.db_session.flush()
