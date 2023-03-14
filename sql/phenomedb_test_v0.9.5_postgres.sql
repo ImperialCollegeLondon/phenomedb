@@ -1,17 +1,3 @@
---------------------------------------
--- DATABASE SCHEMA
--- PhenomeDB
---------------------------------------
--- serial size is 2,147,483,647 bytes
--- BIGserial size is 922,337,203,685,477,5807
--- MySQL unsigned int is 4,294,967,295 bytes
-
--- ALTER TABLE tbl ADD CONSTRAINT tbl_col_len CHECK (length(col) < 51);
--- select * from information_schema.columns where table_catalog = 'phenomedb' and table_name = 'assay';
-
--- ALTER TABLE mspeaklist ALTER COLUMN validated DROP DEFAULT;
--- ALTER TABLE mspeaklist ALTER validated TYPE bool USING CASE WHEN validated=0 THEN FALSE ELSE TRUE END;
--- ALTER TABLE mspeaklist ALTER COLUMN validated SET DEFAULT FALSE;
 
 --------------------------------------
 -- TABLE unit
@@ -23,15 +9,6 @@ CREATE TABLE unit (
                       description text NOT NULL
 );
 
-
---------------------------------------
--- TABLE role
---------------------------------------
---DROP TABLE IF EXISTS role CASCADE;
---CREATE TABLE role (
---                      id serial PRIMARY KEY,
---                     name text NOT NULL
---);
 
 --------------------------------------
 -- TABLE saved_query
@@ -48,7 +25,6 @@ CREATE TABLE saved_query (
                              created_by text,
                              date_added timestamp,
                              type text NOT NULL,
---                             role_id integer REFERENCES role ON DELETE CASCADE,
                              cache_state jsonb not null default '{}'::jsonb,
                              constraint unq_query_name unique(name)
 );
@@ -121,20 +97,6 @@ CREATE TABLE missing_import_data (
                                      comment text DEFAULT NULL
 );
 
---------------------------------------
--- TABLE analysis_result
---------------------------------------
---DROP TABLE if exists analysis_result CASCADE;
---CREATE TABLE analysis_result (
---                                id serial PRIMARY KEY,
---                                 analysis_class text,
---                                 saved_query_id integer REFERENCES saved_query ON DELETE CASCADE,
---                                 results jsonb,
---                                 date_run timestamp,
---                                 args jsonb,
---                                 username text,
---                                 reports jsonb
---);
 
 --------------------------------------
 -- TABLE laboratory
@@ -163,15 +125,7 @@ CREATE TABLE project (
                          chart_colour text
 );
 
---------------------------------------
--- TABLE project_role
---------------------------------------
---DROP TABLE IF EXISTS project_role CASCADE;
---CREATE TABLE project_role (
---                              id serial PRIMARY KEY,
- --                             role_id integer REFERENCES role ON DELETE CASCADE,
- --                             project_id integer REFERENCES project ON DELETE CASCADE
---);
+
 
 --------------------------------------
 -- TABLE subject
@@ -948,26 +902,7 @@ CREATE OR REPLACE VIEW v_sample_id as (
 	left join assay a on a.id = sa.assay_id
 );
 
---DROP VIEW IF EXISTS v_read_benchmark;
---CREATE OR REPLACE VIEW v_read_benchmark AS
---(
---    SELECT *
---    FROM annotated_feature af
---    left join sample_assay sa on af.sample_assay_id = sa.id
---    left join sample s on sa.sample_id = s.id
---    left join subject su on s.subject_id = su.id
---    left join project p on su.project_id = p.id
---    left join feature_metadata fm on af.feature_metadata_id = fm.id
---    LEFT JOIN annotation an on an.id = fm.annotation_id
---    LEFT JOIN annotation_method am on am.id = an.annotation_method_id
---    left join assay a on an.assay_id = a.id
---    left join annotation_compound ac on ac.annotation_id = an.id
---    left join compound c on ac.compound_id = c.id
---    left join compound_class_compound ccc on ccc.compound_id = c.id
---    left join compound_class cc on ccc.compound_class_id = cc.id
---    left join metadata_value mv on mv.sample_id = s.id
---    left join metadata_field mf on mv.metadata_field_id = mf.id
---);
+
 
 DROP VIEW IF EXISTS v_compound_with_peaklists;
 CREATE OR REPLACE VIEW v_compound_with_peaklists AS

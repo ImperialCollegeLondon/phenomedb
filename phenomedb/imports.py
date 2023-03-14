@@ -2963,18 +2963,18 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
                 self.logger.info("RunNPYCBatchCorrection %s batch correction not triggered!" % self.run_batch_correction)
                 self.logger.exception(err)
 
-        elif self.batch_corrected_data_csv_path:
-            try:
-                self.batch_correction_pipeline = PipelineFactory(pipeline_name='RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset')
-                run_config = {utils.clean_task_id('RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset'):{
-                                                                            'saved_query_id':self.saved_query.id,
-                                                                            'correction_type': 'SR',
-                                                                            'db_env':self.db_env}}
-                self.batch_correction_pipeline.run_pipeline(run_config=run_config)
-                #self.logger.info("RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset %s triggered %s" % (self.run_batch_correction,self.batch_correction_pipeline.pipeline_manager.task_runs[0].get_url()))
-            except Exception as err:
-                self.logger.info("RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset %s batch correction not triggered!" % self.run_batch_correction)
-                self.logger.exception(err)
+        #elif self.batch_corrected_data_csv_path:
+        #    try:
+        #        self.batch_correction_pipeline = PipelineFactory(pipeline_name='RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset')
+        #        run_config = {utils.clean_task_id('RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset'):{
+        #                                                                    'saved_query_id':self.saved_query.id,
+        #                                                                    'correction_type': 'SR',
+        #                                                                    'db_env':self.db_env}}
+        #        self.batch_correction_pipeline.run_pipeline(run_config=run_config)
+        #        #self.logger.info("RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset %s triggered %s" % (self.run_batch_correction,self.batch_correction_pipeline.pipeline_manager.task_runs[0].get_url()))
+        #    except Exception as err:
+        #        self.logger.info("RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset %s batch correction not triggered!" % self.run_batch_correction)
+        #        self.logger.exception(err)
 
         super().post_commit_actions()
 

@@ -539,17 +539,21 @@ def get_api_access_token():
 
 @pytest.fixture(scope="module")
 def create_saved_queries():
-
-    create_project('PipelineTesting2')
+    project_name = 'PipelineTesting2'
+    create_project(project_name)
+    import_devset_project_sample_manifest(project_name)
+    import_devset_project_ivdr_bilisa_annotations(project_name)
 
     query_factory = QueryFactory(query_name='test_query_bilisa',query_description='test description',db_env='TEST')
     query_factory.add_filter(query_filter=QueryFilter(model='Project',property='name',operator='eq',value='PipelineTesting'))
     query_factory.add_filter(query_filter=QueryFilter(model='AnnotationMethod',property='name',operator='eq',value='Bi-LISA'))
+    query_factory.add_filter(query_filter=QueryFilter(model='Assay', property='name', operator='eq', value='NOESY'))
     query_factory.save_query()
 #    query_factory.load_dataframe(reload_cache=True,output_model='AnnotatedFeature')
 
     query_factory = QueryFactory(query_name='test_query_bilisa_2_projects',query_description='test description',db_env='TEST')
     query_factory.add_filter(query_filter=QueryFilter(model='Project',property='name',operator='in',value=['PipelineTesting','PipelineTesting2']))
+    query_factory.add_filter(query_filter=QueryFilter(model='Assay', property='name', operator='eq', value='NOESY'))
     query_factory.add_filter(query_filter=QueryFilter(model='AnnotationMethod',property='name',operator='eq',value='Bi-LISA'))
     query_factory.save_query()
 #    query_factory.load_dataframe(reload_cache=True,output_model='AnnotatedFeature')
@@ -557,6 +561,7 @@ def create_saved_queries():
     query_factory = QueryFactory(query_name='test_query_lpos',query_description='test description',db_env='TEST')
     query_factory.add_filter(query_filter=QueryFilter(model='Project',property='name',operator='eq',value='PipelineTesting'))
     query_factory.add_filter(query_filter=QueryFilter(model='Assay',property='name',operator='eq',value='LPOS'))
+    query_factory.add_filter(query_filter=QueryFilter(model='AnnotationMethod', property='name', operator='eq', value='PPR'))
     query_factory.save_query()
 #    query_factory.load_dataframe(reload_cache=True,output_model='AnnotatedFeature')
 
