@@ -4,8 +4,8 @@ import sys,os
 import json
 from pathlib import Path
 
-if os.environ['PHENOMEDB_PATH'] not in sys.path:
-    sys.path.append( os.environ['PHENOMEDB_PATH'])
+#if os.environ['PHENOMEDB_PATH'] not in sys.path:
+#    sys.path.append( os.environ['PHENOMEDB_PATH'])
 
 import os
 from phenomedb.config import config

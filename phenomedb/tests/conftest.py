@@ -1,8 +1,8 @@
 import pytest
 
-import sys, os
-if os.environ['PHENOMEDB_PATH'] not in sys.path:
-    sys.path.append( os.environ['PHENOMEDB_PATH'])
+#import sys, os
+#if os.environ['PHENOMEDB_PATH'] not in sys.path:
+#    sys.path.append( os.environ['PHENOMEDB_PATH'])
 
 import phenomedb.database as db
 from sqlalchemy import create_engine

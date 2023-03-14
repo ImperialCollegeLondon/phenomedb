@@ -4,8 +4,8 @@ import importlib
 import inspect as isp
 import argparse
 import os, sys
-if os.environ['PHENOMEDB_PATH'] not in sys.path:
-   sys.path.append(os.environ['PHENOMEDB_PATH'])
+#if os.environ['PHENOMEDB_PATH'] not in sys.path:
+#   sys.path.append(os.environ['PHENOMEDB_PATH'])
 
 import phenomedb.utilities as utils
 from phenomedb.config import config
@@ -24,8 +24,8 @@ class CLI:
         :return: The task spec json.
         :rtype: dict
         """        
-        print(config['PIPELINES'])
-        with open(config['PIPELINES']['task_spec_file'], "r") as read_file:
+
+        with open(config['DATA']['config'] + 'task_typespec.json', "r") as read_file:
             json_tasks = json.load(read_file)
     
         return json_tasks

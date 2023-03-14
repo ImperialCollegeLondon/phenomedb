@@ -3,8 +3,8 @@ from pathlib import Path
 import sys
 import os
 import sys, os
-if os.environ['PHENOMEDB_PATH'] not in sys.path:
-    sys.path.append( os.environ['PHENOMEDB_PATH'])
+#if os.environ['PHENOMEDB_PATH'] not in sys.path:
+#    sys.path.append( os.environ['PHENOMEDB_PATH'])
 from phenomedb.compounds import *
 from phenomedb.config import config
 

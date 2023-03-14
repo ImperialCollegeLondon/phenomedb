@@ -1,6 +1,6 @@
-import sys, os
-if os.environ['PHENOMEDB_PATH'] not in sys.path:
-    sys.path.append( os.environ['PHENOMEDB_PATH'])
+#import sys, os
+#if os.environ['PHENOMEDB_PATH'] not in sys.path:
+#    sys.path.append( os.environ['PHENOMEDB_PATH'])
 from phenomedb.config import config
 import phenomedb.utilities as utils
 import math

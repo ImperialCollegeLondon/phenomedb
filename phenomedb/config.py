@@ -1,14 +1,14 @@
 import configparser, os
 
 config = configparser.ConfigParser()
-#if 'PHENOMEDB_CONFIG_PATH' in os.environ:
-#     config_file = os.environ['PHENOMEDB_CONFIG_PATH']
-#else:
-config_file = os.path.join(os.path.dirname(__file__), "../data/config/config.ini")
-#print(config_file)
-#config_file = os.path.join(os.path.dirname(__file__), "config.ini")
+#
+if os.path.exists(os.path.join(os.path.dirname(__file__), "./data/config/config.ini")):
+     config_file = os.path.join(os.path.dirname(__file__), "./data/config/config.ini")
+elif os.path.join(os.path.dirname(__file__), "./data/config/config-pypi.ini"):
+     config_file = os.path.join(os.path.dirname(__file__), "./data/config/config-pypi.ini")
 
 config.read(config_file)
+print(config.sections())
 
 # Credentials can be overwritten by environment variables
 

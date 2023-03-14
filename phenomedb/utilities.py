@@ -3,8 +3,8 @@ import logging
 
 import re
 
-if os.environ['PHENOMEDB_PATH'] not in sys.path:
-    sys.path.append(os.environ['PHENOMEDB_PATH'])
+#if os.environ['PHENOMEDB_PATH'] not in sys.path:
+#    sys.path.append(os.environ['PHENOMEDB_PATH'])
 from phenomedb.config import config
 from nPYc.enumerations import *
 import datetime

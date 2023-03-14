@@ -6,8 +6,8 @@ AUTH_TYPE = AUTH_DB
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-if os.environ['PHENOMEDB_PATH'] not in sys.path:
-    sys.path.append( os.environ['PHENOMEDB_PATH'])
+#if os.environ['PHENOMEDB_PATH'] not in sys.path:
+#    sys.path.append( os.environ['PHENOMEDB_PATH'])
 
 if 'PHENOMEDB__API__ROOT' in os.environ:
     APPLICATION_ROOT = os.environ['PHENOMEDB__API__ROOT']

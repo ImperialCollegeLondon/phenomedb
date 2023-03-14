@@ -14,7 +14,7 @@ services:
         restart: on-failure
         volumes:
             - ./docker/postgres/a_create_dbs.sql:/docker-entrypoint-initdb.d/a_create_dbs.sql
-            - ./sql/phenomedb_v0.9.5_postgres.sql:/docker-entrypoint-initdb.d/b_schema.sql
+            - ./phenomedb/sql/phenomedb_v0.9.5_postgres.sql:/docker-entrypoint-initdb.d/b_schema.sql
             - ../dockerdb/:/var/lib/postgresql/data
         stdin_open: true
         tty: true
@@ -34,7 +34,7 @@ services:
             - ./docker/wait-for-redis.py:/opt/wait-for-redis.py
             - ./dags:/opt/airflow/dags
             - ./logs:/opt/airflow/logs
-            - ./plugins:/opt/airflow/plugins
+            - ./phenomedb/views:/opt/airflow/plugins/phenomedb_views
             - .:/opt/phenomedb_app
             - ./docker/scheduler/airflow.cfg:/opt/aiflow/airflow.cfg
             - ./docker/scheduler/entrypoint.sh:/opt/airflow/entrypoint.sh
@@ -59,7 +59,7 @@ services:
             - ./docker/wait-for-scheduler.py:/opt/wait-for-scheduler.py
             - ./dags:/opt/airflow/dags
             - ./logs:/opt/airflow/logs
-            - ./plugins:/opt/airflow/plugins
+            - ./phenomedb//plugins:/opt/airflow/plugins
             - .:/opt/phenomedb_app
             - ./docker/webserver/webserver_config.py:/opt/airflow/webserver_config.py
             - ./docker/webserver/entrypoint.sh:/opt/airflow/entrypoint.sh

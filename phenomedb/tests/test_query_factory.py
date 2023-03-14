@@ -3,7 +3,7 @@ import os
 import pytest
 from pathlib import Path
 import sys
-sys.path.insert(0,str(Path("../../").absolute()))
+
 from phenomedb.query_factory import *
 from phenomedb.cache import *
 import phenomedb.database as db

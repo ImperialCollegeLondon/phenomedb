@@ -2,8 +2,8 @@ from distutils.core import setup
 #requires = open('./requirements.txt').read().strip().split('\n')
 setup(
     name='PhenomeDB',
-    version='0.95',
-    packages=['phenomedb'],
+    version='0.9.6',
+    packages=['phenomedb','phenomedb.views'],
     license='',
     long_description='PhenomeDB is a platform for harmonisation and integration of multi-study metabolomics data.',
     author='Gordon A. Davies',
@@ -26,5 +26,6 @@ setup(
         'pytest',
         "pymzml[full]",
         'libchebipy'
-    ]
+    ],
+    include_package_data=True
 )
