@@ -1,2 +1,19 @@
 include phenomedb/sql/*
-include phenomedb/data/*
+include phenomedb/data/compounds/*
+include phenomedb/data/config/*
+include phenomedb/data/test/*
+include phenomedb/views/templates/analysis/*
+include phenomedb/views/templates/annotation/*
+include phenomedb/views/templates/batch_correction/*
+include phenomedb/views/templates/cache/*
+include phenomedb/views/templates/compound/*
+include phenomedb/views/templates/metadata/*
+include phenomedb/views/templates/phenomedb_browser/*
+include phenomedb/views/templates/pipeline_factory/*
+include phenomedb/views/templates/project/*
+include phenomedb/views/templates/query_factory/*
+include phenomedb/views/templates/report/*
+include phenomedb/views/templates/static/*
+include phenomedb/views/templates/view_data/*
+
+

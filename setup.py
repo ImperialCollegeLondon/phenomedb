@@ -1,7 +1,7 @@
 from distutils.core import setup
 #requires = open('./requirements.txt').read().strip().split('\n')
 setup(
-    name='PhenomeDB',
+    name='phenomedb',
     version='0.9.6',
     packages=['phenomedb','phenomedb.views'],
     license='',
