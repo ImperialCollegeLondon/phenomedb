@@ -8,12 +8,15 @@ version: 2
 # Set the version of Python and other tools you might need
 build:
   os: ubuntu-22.04
+  #apt_packages:
+  #  - postgresql
+  #  - postgresql postgresql-contrib
+  #  - redis-server
   tools:
     python: "3.9"
-    # You can also specify other tool versions:
-    # nodejs: "19"
-    # rust: "1.64"
-    # golang: "1.19"
+  jobs:
+    pre_build:
+      - bash ./utils/pre_install.sh
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
