@@ -15,6 +15,7 @@ build:
   tools:
     python: "3.9"
   commands:
+    - mkdir -p _readthedocs/html/
     - cp --recursive docs/build/* _readthedocs/html/
   #jobs:
   #  pre_build:
