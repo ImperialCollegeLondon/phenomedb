@@ -8,6 +8,8 @@ Welcome to PhenomeDB's documentation
 
 **PhenomeDB** (/fee-gnome-dee-bee/) is a platform for harmonising and integrating metabolomics data across multiple projects.
 
+PhenomeDB was developed by the informatics team at the National Phenome Centre at Imperial College London.
+
 Getting started
 ---------------
 
