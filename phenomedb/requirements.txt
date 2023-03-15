@@ -111,7 +111,7 @@ pathspec==0.9.0
 patsy==0.5.3
 pendulum==2.0.5
 pexpect==4.8.0
-phenomedb==0.9.7
+phenomedb==0.9.8
 pickleshare==0.7.5
 Pillow==9.4.0
 plotly==4.14.3

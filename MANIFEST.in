@@ -15,5 +15,6 @@ include phenomedb/views/templates/query_factory/*
 include phenomedb/views/templates/report/*
 include phenomedb/views/templates/static/*
 include phenomedb/views/templates/view_data/*
+include phenomedb/COPYING
 
 
