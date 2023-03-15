@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>phenomedb.utilities &mdash; PhenomeDB 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="phenomedb.views" href="views.html" />
+    <link rel="prev" title="phenomedb.task" href="task.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PhenomeDB
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#settings">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#id2">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_factory.html">phenomedb.pipeline_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipelines.html">phenomedb.pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="query_factory.html">phenomedb.query_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task.html">phenomedb.task</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">phenomedb.utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.CustomEncoder"><code class="docutils literal notranslate"><span class="pre">CustomEncoder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.utilities.CustomEncoder.default"><code class="docutils literal notranslate"><span class="pre">CustomEncoder.default()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.breakdown_annotation_id"><code class="docutils literal notranslate"><span class="pre">breakdown_annotation_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.breakdown_compound_class_id"><code class="docutils literal notranslate"><span class="pre">breakdown_compound_class_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.configure_logging"><code class="docutils literal notranslate"><span class="pre">configure_logging()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.flatten_model_for_search"><code class="docutils literal notranslate"><span class="pre">flatten_model_for_search()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.get_date"><code class="docutils literal notranslate"><span class="pre">get_date()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.get_module_and_class_name"><code class="docutils literal notranslate"><span class="pre">get_module_and_class_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.get_npyc_enum_from_value"><code class="docutils literal notranslate"><span class="pre">get_npyc_enum_from_value()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.is_number"><code class="docutils literal notranslate"><span class="pre">is_number()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.isfloat"><code class="docutils literal notranslate"><span class="pre">isfloat()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.isint"><code class="docutils literal notranslate"><span class="pre">isint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.round_decimals_down"><code class="docutils literal notranslate"><span class="pre">round_decimals_down()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.round_decimals_up"><code class="docutils literal notranslate"><span class="pre">round_decimals_up()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.send_tls_email"><code class="docutils literal notranslate"><span class="pre">send_tls_email()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.serialise_unserialise"><code class="docutils literal notranslate"><span class="pre">serialise_unserialise()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.utilities.total_size"><code class="docutils literal notranslate"><span class="pre">total_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">phenomedb.views</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PhenomeDB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">phenomedb.utilities</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/utilities.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-phenomedb.utilities">
+<span id="phenomedb-utilities"></span><h1>phenomedb.utilities<a class="headerlink" href="#module-phenomedb.utilities" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.utilities.CustomEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">CustomEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipkeys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_ascii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.CustomEncoder" title="Permalink to this definition"></a></dt>
+<dd><p>Custom encoder for numpy data types</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.utilities.CustomEncoder.default">
+<span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.CustomEncoder.default" title="Permalink to this definition"></a></dt>
+<dd><p>Implement this method in a subclass such that it returns
+a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation
+(to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p>
+<p>For example, to support arbitrary iterators, you could
+implement default like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">iterable</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="c1"># Let the base class default method raise the TypeError</span>
+    <span class="k">return</span> <span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.breakdown_annotation_id">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">breakdown_annotation_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">harmonise_annotations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.breakdown_annotation_id" title="Permalink to this definition"></a></dt>
+<dd><p>Breakdown an annotation id into its constituent parts
+ie
+feature::1::LPOS:PPR:CAR(8:10):noUnit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>colname</strong> (<em>str</em>) – The column name to breakdown</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.breakdown_compound_class_id">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">breakdown_compound_class_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.breakdown_compound_class_id" title="Permalink to this definition"></a></dt>
+<dd><p>Breakdown a compound_class id</p>
+<p>compound_class:1828::hmdb:direct_parent:Hypoxanthines:noUnit</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.configure_logging">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">configure_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'phenomedb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'phenomedb.log'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.configure_logging" title="Permalink to this definition"></a></dt>
+<dd><p>Setup a logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifier</strong> (<em>str</em><em>, </em><em>optional</em>) – an identifier for your messages in the log, defaults to ‘phenomedb’.</p></li>
+<li><p><strong>log_file</strong> (<em>str</em><em>, </em><em>optional</em>) – file to log to at location specified in config.ini; (will create this dir if necessary), defaults to ‘phenomedb.log’.</p></li>
+<li><p><strong>level</strong> (<em>int</em><em>, </em><em>optional</em>) – log level, logging.INFO, logging.ERROR, logging.WARNING, defaults to logging.DEBUG.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the logger.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.logger</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.flatten_model_for_search">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">flatten_model_for_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.flatten_model_for_search" title="Permalink to this definition"></a></dt>
+<dd><p>Flatten an SQLAlchemy model for the search index. Takes a model and returns a paragraph containing the values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.*</span></code>) – The model to flatten.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The whitespace seperated values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.get_date">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">get_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.get_date" title="Permalink to this definition"></a></dt>
+<dd><p>Get data from potential formats</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>date</strong> (<em>str</em>) – date string</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Date object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>datetime.datetime</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.get_module_and_class_name">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">get_module_and_class_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod_class</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.get_module_and_class_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the module name and class name from the module.class_name string from the typespec.json</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mod_class</strong> (<em>str</em>) – The module and class name string, ie imports.ImportSampleManifest</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – mod_class not in the correct format</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>module_name, class_name</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.get_npyc_enum_from_value">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">get_npyc_enum_from_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.get_npyc_enum_from_value" title="Permalink to this definition"></a></dt>
+<dd><p>Get the nPYc enum from the value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">nPYc.enumerations.AssayRole</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">nPYc.enumerations.SampleType</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">nPYc.enumerations.QuantificationType</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">nPYc.enumerations.CalibrationMethod</span></code>) – the value of the enum.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The corresponding enum.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">nPYc.enumerations.AssayRole</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">nPYc.enumerations.SampleType</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">nPYc.enumerations.QuantificationType</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">nPYc.enumerations.CalibrationMethod</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.is_number">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">is_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.is_number" title="Permalink to this definition"></a></dt>
+<dd><p>Check if is number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>float</em><em>, </em><em>int</em><em>, or </em><em>str</em>) – value to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True or False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.isfloat">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">isfloat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.isfloat" title="Permalink to this definition"></a></dt>
+<dd><p>Check is a float.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>float</em><em>, </em><em>int</em><em>, or </em><em>str</em>) – value to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True or False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.isint">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">isint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.isint" title="Permalink to this definition"></a></dt>
+<dd><p>Check if is an integer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>float</em><em>, </em><em>int</em><em>, or </em><em>str</em>) – value to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True or False.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.round_decimals_down">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">round_decimals_down</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.round_decimals_down" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a value rounded down to a specific number of decimal places.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number</strong> (<em>float</em>) – the number to round</p></li>
+<li><p><strong>decimals</strong> (<em>int</em><em>, </em><em>optional</em>) – How many decimals to round to defaults to 2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – [description]</p></li>
+<li><p><strong>ValueError</strong> – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The rounded value</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.round_decimals_up">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">round_decimals_up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.round_decimals_up" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a value rounded up to a specific number of decimal places.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number</strong> (<em>float</em>) – the number to round</p></li>
+<li><p><strong>decimals</strong> (<em>int</em><em>, </em><em>optional</em>) – How many decimals to round to defaults to 2</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The rounded value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.send_tls_email">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">send_tls_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.send_tls_email" title="Permalink to this definition"></a></dt>
+<dd><p>Send TLS email. Email settings are configuration options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_email</strong> (<em>str</em>) – The email of the recipient</p></li>
+<li><p><strong>subject</strong> (<em>str</em>) – The email subject</p></li>
+<li><p><strong>message_text</strong> (<em>str</em>) – The email body</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.serialise_unserialise">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">serialise_unserialise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.serialise_unserialise" title="Permalink to this definition"></a></dt>
+<dd><p>Serialise unserialise</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>my_dict</strong> (<em>dict</em>) – Dictionary to serialise and unserialise</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>my_dict</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.utilities.total_size">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.utilities.</span></span><span class="sig-name descname"><span class="pre">total_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handlers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.utilities.total_size" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the approximate memory footprint an object and all of its contents.</p>
+<p>Automatically finds the contents of the following builtin containers and
+their subclasses:  tuple, list, deque, dict, set and frozenset.
+To search other containers, add handlers to iterate over their contents:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>handlers = {SomeContainerClass: iter,</dt><dd><p>OtherContainerClass: OtherContainerClass.get_elements}</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="task.html" class="btn btn-neutral float-left" title="phenomedb.task" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="views.html" class="btn btn-neutral float-right" title="phenomedb.views" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Imperial College London.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

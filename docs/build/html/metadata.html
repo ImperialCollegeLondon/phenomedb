@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>phenomedb.metadata &mdash; PhenomeDB 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="phenomedb.models" href="models.html" />
+    <link rel="prev" title="phenomedb.imports" href="imports.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PhenomeDB
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#settings">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#id2">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">phenomedb.metadata</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.check_functions"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.check_functions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.load_dataset"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.load_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.map_and_add_dataset_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.process"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.process()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.metadata.getrandbits"><code class="docutils literal notranslate"><span class="pre">getrandbits()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.metadata.random"><code class="docutils literal notranslate"><span class="pre">random()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.metadata.simple_assignment"><code class="docutils literal notranslate"><span class="pre">simple_assignment()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.metadata.transform_dob_and_sampling_date_to_age"><code class="docutils literal notranslate"><span class="pre">transform_dob_and_sampling_date_to_age()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_factory.html">phenomedb.pipeline_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipelines.html">phenomedb.pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="query_factory.html">phenomedb.query_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task.html">phenomedb.task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">phenomedb.utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">phenomedb.views</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PhenomeDB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">phenomedb.metadata</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/metadata.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-phenomedb.metadata">
+<span id="phenomedb-metadata"></span><h1>phenomedb.metadata<a class="headerlink" href="#module-phenomedb.metadata" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.metadata.HarmoniseMetadataField">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.metadata.</span></span><span class="sig-name descname"><span class="pre">HarmoniseMetadataField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_field_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">harmonised_metadata_field_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inbuilt_transform_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_function_string</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lambda</span> <span class="pre">x</span> <span class="pre">:</span> <span class="pre">x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_decimal_places</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_data_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.metadata.HarmoniseMetadataField" title="Permalink to this definition"></a></dt>
+<dd><p>AutoHarmoniseMetadataField Class. Takes a project metadata field and harmonised metadata field, and applies a lambda
+function to transform the raw data into the harmonised one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_options</strong> (<em>dict</em>) – A dictionary containing the task options</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.metadata.HarmoniseMetadataField.check_functions">
+<span class="sig-name descname"><span class="pre">check_functions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.metadata.HarmoniseMetadataField.check_functions" title="Permalink to this definition"></a></dt>
+<dd><p>Check the functions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.metadata.HarmoniseMetadataField.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.metadata.HarmoniseMetadataField.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Load the dataset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.metadata.HarmoniseMetadataField.map_and_add_dataset_data">
+<span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.metadata.HarmoniseMetadataField.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map and add dataset data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.metadata.HarmoniseMetadataField.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.metadata.HarmoniseMetadataField.process" title="Permalink to this definition"></a></dt>
+<dd><p>Main method</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.metadata.getrandbits">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.metadata.</span></span><span class="sig-name descname"><span class="pre">getrandbits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">x.</span>&#160; <span class="pre">Generates</span> <span class="pre">an</span> <span class="pre">int</span> <span class="pre">with</span> <span class="pre">k</span> <span class="pre">random</span> <span class="pre">bits.</span></span></span><a class="headerlink" href="#phenomedb.metadata.getrandbits" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.metadata.random">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.metadata.</span></span><span class="sig-name descname"><span class="pre">random</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">x</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">interval</span> <span class="pre">[0,</span> <span class="pre">1).</span></span></span><a class="headerlink" href="#phenomedb.metadata.random" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.metadata.simple_assignment">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.metadata.</span></span><span class="sig-name descname"><span class="pre">simple_assignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_data_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_decimal_places</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.metadata.simple_assignment" title="Permalink to this definition"></a></dt>
+<dd><p>Method for simple assignment of data from raw to harmonised. Uses the HarmonisedMetadataField.datatype to cast to correct harmonised value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>MetadataHarmonisationError</strong> – If the transform cannot work, raise this Exception.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transformed, harmonised MetadataValue object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#phenomedb.models.MetadataValue" title="phenomedb.models.MetadataValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.MetadataValue</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.metadata.transform_dob_and_sampling_date_to_age">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.metadata.</span></span><span class="sig-name descname"><span class="pre">transform_dob_and_sampling_date_to_age</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_data_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_decimal_places</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.metadata.transform_dob_and_sampling_date_to_age" title="Permalink to this definition"></a></dt>
+<dd><p>Method to transform date of birth and sampling date into a harmonised numeric age. Requires Sample.sample_date to exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metadata_value</strong> (<a class="reference internal" href="models.html#phenomedb.models.MetadataValue" title="phenomedb.models.MetadataValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.MetadataValue</span></code></a>) – The MetadataValue object.</p></li>
+<li><p><strong>datatype</strong> (<a class="reference internal" href="models.html#phenomedb.models.HarmonisedMetadataField.HarmonisedMetadataFieldDatatype" title="phenomedb.models.HarmonisedMetadataField.HarmonisedMetadataFieldDatatype"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.HarmonisedMetadataField.HarmonisedMetadataFieldDatatype</span></code></a>) – The HarmonisedMetadataField.datatype.</p></li>
+<li><p><strong>allowed_data_range</strong> (<em>list</em>) – A constraint to prevent values outside of this allowed range.</p></li>
+<li><p><strong>allowed_decimal_places</strong> (<em>int</em>) – How many decimal places are allowed.</p></li>
+<li><p><strong>db_session</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.orm.session</span></code>, optional) – The db_session to use, defaults to None.</p></li>
+<li><p><strong>db_env</strong> (<em>str</em><em>, </em><em>optional</em>) – The db_env to use, ‘PROD’, ‘BETA’, or ‘TEST’, defaults to None (‘PROD’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>MetadataHarmonisationError</strong> – If the transform cannot work, raise this Exception.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The transformed, harmonised MetadataValue object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="models.html#phenomedb.models.MetadataValue" title="phenomedb.models.MetadataValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.MetadataValue</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="imports.html" class="btn btn-neutral float-left" title="phenomedb.imports" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="models.html" class="btn btn-neutral float-right" title="phenomedb.models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Imperial College London.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

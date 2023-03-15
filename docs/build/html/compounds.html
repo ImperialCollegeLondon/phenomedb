@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>phenomedb.compounds &mdash; PhenomeDB 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="phenomedb.imports" href="imports.html" />
+    <link rel="prev" title="phenomedb.cache" href="cache.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PhenomeDB
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#settings">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#id2">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">phenomedb.compounds</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.AddMissingClassyFireClasses"><code class="docutils literal notranslate"><span class="pre">AddMissingClassyFireClasses</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.AddMissingClassyFireClasses.load_data"><code class="docutils literal notranslate"><span class="pre">AddMissingClassyFireClasses.load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.AddMissingClassyFireClasses.loop_and_map_data"><code class="docutils literal notranslate"><span class="pre">AddMissingClassyFireClasses.loop_and_map_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile"><code class="docutils literal notranslate"><span class="pre">CleanROIFile</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_cas"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_cas()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_chebi"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_chebi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_chembl"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_chembl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_chemspider"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_chemspider()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_classyfire"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_classyfire()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_field"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_fields"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_hmdb"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_hmdb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_kegg"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_kegg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_lipidmaps"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_lipidmaps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_logP_RDKit"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_logP_RDKit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_merged_file"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_merged_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_pubchem"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_pubchem()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.check_refmet"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.check_refmet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.get_assay"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.get_assay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.load_data"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.loop_and_map_data"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.loop_and_map_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.process"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.process()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CleanROIFile.remove_whitespace_and_weird_characters"><code class="docutils literal notranslate"><span class="pre">CleanROIFile.remove_whitespace_and_weird_characters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.CompoundTask"><code class="docutils literal notranslate"><span class="pre">CompoundTask</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.add_cas_from_hmdb"><code class="docutils literal notranslate"><span class="pre">CompoundTask.add_cas_from_hmdb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.add_or_update_chebi"><code class="docutils literal notranslate"><span class="pre">CompoundTask.add_or_update_chebi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.add_or_update_chembl"><code class="docutils literal notranslate"><span class="pre">CompoundTask.add_or_update_chembl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.add_or_update_classyfire"><code class="docutils literal notranslate"><span class="pre">CompoundTask.add_or_update_classyfire()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.add_or_update_hmdb"><code class="docutils literal notranslate"><span class="pre">CompoundTask.add_or_update_hmdb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.add_or_update_kegg"><code class="docutils literal notranslate"><span class="pre">CompoundTask.add_or_update_kegg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.add_or_update_lipid_maps"><code class="docutils literal notranslate"><span class="pre">CompoundTask.add_or_update_lipid_maps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.add_or_update_ontology_ref"><code class="docutils literal notranslate"><span class="pre">CompoundTask.add_or_update_ontology_ref()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.add_or_update_pubchem_from_api"><code class="docutils literal notranslate"><span class="pre">CompoundTask.add_or_update_pubchem_from_api()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.add_stereo_group"><code class="docutils literal notranslate"><span class="pre">CompoundTask.add_stereo_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.build_subrows"><code class="docutils literal notranslate"><span class="pre">CompoundTask.build_subrows()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.calculate_log_p"><code class="docutils literal notranslate"><span class="pre">CompoundTask.calculate_log_p()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.find_chebi"><code class="docutils literal notranslate"><span class="pre">CompoundTask.find_chebi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.generate_inchi_key"><code class="docutils literal notranslate"><span class="pre">CompoundTask.generate_inchi_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_cas_from_pubchem"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_cas_from_pubchem()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_classyfire_reference"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_classyfire_reference()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_from_chebi"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_from_chebi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_from_chembl"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_from_chembl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_from_classyfire"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_from_classyfire()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_from_hmdb"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_from_hmdb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_from_kegg"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_from_kegg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_from_lipidmaps"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_from_lipidmaps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_from_pubchem"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_from_pubchem()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_from_pubchem_api"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_from_pubchem_api()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_from_refmet"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_from_refmet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_inchi_key_from_pubchem_or_hmdb"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_inchi_key_from_pubchem_or_hmdb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_lipid_maps_reference"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_lipid_maps_reference()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_or_add_compound_external_db"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_or_add_compound_external_db()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_pubchem_prop"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_pubchem_prop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.get_pubchem_view_from_api"><code class="docutils literal notranslate"><span class="pre">CompoundTask.get_pubchem_view_from_api()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.load_data"><code class="docutils literal notranslate"><span class="pre">CompoundTask.load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.loop_and_map_data"><code class="docutils literal notranslate"><span class="pre">CompoundTask.loop_and_map_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.parse_pubchem_value"><code class="docutils literal notranslate"><span class="pre">CompoundTask.parse_pubchem_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.process"><code class="docutils literal notranslate"><span class="pre">CompoundTask.process()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.update_annotation"><code class="docutils literal notranslate"><span class="pre">CompoundTask.update_annotation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.CompoundTask.update_name_to_refmet"><code class="docutils literal notranslate"><span class="pre">CompoundTask.update_name_to_refmet()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.ExportCompoundsToCSV"><code class="docutils literal notranslate"><span class="pre">ExportCompoundsToCSV</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ExportCompoundsToCSV.build_dataset"><code class="docutils literal notranslate"><span class="pre">ExportCompoundsToCSV.build_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ExportCompoundsToCSV.build_row"><code class="docutils literal notranslate"><span class="pre">ExportCompoundsToCSV.build_row()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ExportCompoundsToCSV.process"><code class="docutils literal notranslate"><span class="pre">ExportCompoundsToCSV.process()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.ImportBrukerBiLISACompounds"><code class="docutils literal notranslate"><span class="pre">ImportBrukerBiLISACompounds</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportBrukerBiLISACompounds.add_annotation"><code class="docutils literal notranslate"><span class="pre">ImportBrukerBiLISACompounds.add_annotation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportBrukerBiLISACompounds.load_data"><code class="docutils literal notranslate"><span class="pre">ImportBrukerBiLISACompounds.load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportBrukerBiLISACompounds.loop_and_map_data"><code class="docutils literal notranslate"><span class="pre">ImportBrukerBiLISACompounds.loop_and_map_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.ImportBrukerBiQuantCompounds"><code class="docutils literal notranslate"><span class="pre">ImportBrukerBiQuantCompounds</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportBrukerBiQuantCompounds.add_compound_and_mappings"><code class="docutils literal notranslate"><span class="pre">ImportBrukerBiQuantCompounds.add_compound_and_mappings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportBrukerBiQuantCompounds.load_data"><code class="docutils literal notranslate"><span class="pre">ImportBrukerBiQuantCompounds.load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportBrukerBiQuantCompounds.loop_and_map_data"><code class="docutils literal notranslate"><span class="pre">ImportBrukerBiQuantCompounds.loop_and_map_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.ImportCompoundsFromCSV"><code class="docutils literal notranslate"><span class="pre">ImportCompoundsFromCSV</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportCompoundsFromCSV.load_data"><code class="docutils literal notranslate"><span class="pre">ImportCompoundsFromCSV.load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportCompoundsFromCSV.loop_and_map_data"><code class="docutils literal notranslate"><span class="pre">ImportCompoundsFromCSV.loop_and_map_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.ImportROICompounds"><code class="docutils literal notranslate"><span class="pre">ImportROICompounds</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportROICompounds.add_or_update_compound"><code class="docutils literal notranslate"><span class="pre">ImportROICompounds.add_or_update_compound()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportROICompounds.add_or_update_compound_from_subrow"><code class="docutils literal notranslate"><span class="pre">ImportROICompounds.add_or_update_compound_from_subrow()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportROICompounds.import_row"><code class="docutils literal notranslate"><span class="pre">ImportROICompounds.import_row()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportROICompounds.load_data"><code class="docutils literal notranslate"><span class="pre">ImportROICompounds.load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportROICompounds.loop_and_map_data"><code class="docutils literal notranslate"><span class="pre">ImportROICompounds.loop_and_map_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportROICompounds.process"><code class="docutils literal notranslate"><span class="pre">ImportROICompounds.process()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.ImportStandardsV1"><code class="docutils literal notranslate"><span class="pre">ImportStandardsV1</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportStandardsV1.load_data"><code class="docutils literal notranslate"><span class="pre">ImportStandardsV1.load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ImportStandardsV1.loop_and_map_data"><code class="docutils literal notranslate"><span class="pre">ImportStandardsV1.loop_and_map_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.ParseHMDBXMLtoCSV"><code class="docutils literal notranslate"><span class="pre">ParseHMDBXMLtoCSV</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ParseHMDBXMLtoCSV.download_file"><code class="docutils literal notranslate"><span class="pre">ParseHMDBXMLtoCSV.download_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ParseHMDBXMLtoCSV.process"><code class="docutils literal notranslate"><span class="pre">ParseHMDBXMLtoCSV.process()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ParseHMDBXMLtoCSV.reset_found_fields"><code class="docutils literal notranslate"><span class="pre">ParseHMDBXMLtoCSV.reset_found_fields()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask"><code class="docutils literal notranslate"><span class="pre">ParseKEGGtoPubchemCIDTask</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.extract_and_set_compound_id"><code class="docutils literal notranslate"><span class="pre">ParseKEGGtoPubchemCIDTask.extract_and_set_compound_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.extract_kegg_ids"><code class="docutils literal notranslate"><span class="pre">ParseKEGGtoPubchemCIDTask.extract_kegg_ids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.get_pubchem_cid"><code class="docutils literal notranslate"><span class="pre">ParseKEGGtoPubchemCIDTask.get_pubchem_cid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.get_pubchem_sid"><code class="docutils literal notranslate"><span class="pre">ParseKEGGtoPubchemCIDTask.get_pubchem_sid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.loop_into_brite_fields"><code class="docutils literal notranslate"><span class="pre">ParseKEGGtoPubchemCIDTask.loop_into_brite_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.parse_kegg_compound_class"><code class="docutils literal notranslate"><span class="pre">ParseKEGGtoPubchemCIDTask.parse_kegg_compound_class()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.process"><code class="docutils literal notranslate"><span class="pre">ParseKEGGtoPubchemCIDTask.process()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.compounds.UpdateCompoundRefs"><code class="docutils literal notranslate"><span class="pre">UpdateCompoundRefs</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.UpdateCompoundRefs.load_data"><code class="docutils literal notranslate"><span class="pre">UpdateCompoundRefs.load_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.compounds.UpdateCompoundRefs.loop_and_map_data"><code class="docutils literal notranslate"><span class="pre">UpdateCompoundRefs.loop_and_map_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_factory.html">phenomedb.pipeline_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipelines.html">phenomedb.pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="query_factory.html">phenomedb.query_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task.html">phenomedb.task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">phenomedb.utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">phenomedb.views</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PhenomeDB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">phenomedb.compounds</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/compounds.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-phenomedb.compounds">
+<span id="phenomedb-compounds"></span><h1>phenomedb.compounds<a class="headerlink" href="#module-phenomedb.compounds" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.AddMissingClassyFireClasses">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">AddMissingClassyFireClasses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.AddMissingClassyFireClasses" title="Permalink to this definition"></a></dt>
+<dd><p>Update the Compound properties and external references from the InChI lookups</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CompoundTask</strong> (<cite>phenomedb.compounds.CompoundTask</cite>) – The Base CompoundTask</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.AddMissingClassyFireClasses.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.AddMissingClassyFireClasses.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>Load the data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.AddMissingClassyFireClasses.loop_and_map_data">
+<span class="sig-name descname"><span class="pre">loop_and_map_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.AddMissingClassyFireClasses.loop_and_map_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loop over compounds and update the references</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">CleanROIFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">roi_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_dtypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">merged_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace_missing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields_to_replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields_to_ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpds_to_replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpds_to_ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile" title="Permalink to this definition"></a></dt>
+<dd><p>Clean an ROI file. Takes ROI file, checks IDs from source, adds missing fields, writes out to log file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CompoundTask</strong> (<cite>phenomedb.compounds.CompoundTask</cite>) – The Base CompoundTask</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>Exception</strong> – [description]</p></li>
+<li><p><strong>ROICleanCheckFail</strong> – [description]</p></li>
+<li><p><strong>ROICleanCheckFail</strong> – [description]</p></li>
+<li><p><strong>ROICleanCheckFail</strong> – [description]</p></li>
+<li><p><strong>ROICleanCheckFail</strong> – [description]</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_cas">
+<span class="sig-name descname"><span class="pre">check_cas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pubchem_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_cas" title="Permalink to this definition"></a></dt>
+<dd><p>Check the CAS number from pubchem against the row data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p></li>
+<li><p><strong>pubchem_data</strong> (<em>dict</em>) – The pubchem record</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_chebi">
+<span class="sig-name descname"><span class="pre">check_chebi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_chebi" title="Permalink to this definition"></a></dt>
+<dd><p>Check ChEBI using the InChI</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_chembl">
+<span class="sig-name descname"><span class="pre">check_chembl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_chembl" title="Permalink to this definition"></a></dt>
+<dd><p>Check found ChEMBL against the ChEMBLID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p></li>
+<li><p><strong>inchi_key</strong> (<em>str</em>) – The InChI Key to use to search ChEMBL</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_chemspider">
+<span class="sig-name descname"><span class="pre">check_chemspider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_chemspider" title="Permalink to this definition"></a></dt>
+<dd><p>Check found chemspider against the chemspider.</p>
+<p>Only works for those without IDs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p></li>
+<li><p><strong>inchi_key</strong> (<em>str</em>) – The InChI Key to use to search ChEMBL</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_classyfire">
+<span class="sig-name descname"><span class="pre">check_classyfire</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_classyfire" title="Permalink to this definition"></a></dt>
+<dd><p>Check classyfire fields</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p></li>
+<li><p><strong>inchi_key</strong> (<em>str</em>) – The InChI Key to use to search CLASSYFIRE</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_field">
+<span class="sig-name descname"><span class="pre">check_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">found_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_field" title="Permalink to this definition"></a></dt>
+<dd><p>Check an individual field’s value and update if specified to</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>found_value</strong> (<em>object</em>) – The value of the property found via DB lookup</p></li>
+<li><p><strong>field_name</strong> (<em>str</em>) – The name of the field to check</p></li>
+<li><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the fields</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ROICleanCheckFail</strong> – [description]</p></li>
+<li><p><strong>ROICleanCheckFail</strong> – [description]</p></li>
+<li><p><strong>ROICleanCheckFail</strong> – [description]</p></li>
+<li><p><strong>ROICleanCheckFail</strong> – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The subrow containing the fields</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_fields">
+<span class="sig-name descname"><span class="pre">check_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Check the fields for a row. Adds warnings, and replaces if settings specify to</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>row</strong> (<cite>pandas.Series</cite>) – The row from the Dataframe</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The row from the Dataframe</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_hmdb">
+<span class="sig-name descname"><span class="pre">check_hmdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_hmdb" title="Permalink to this definition"></a></dt>
+<dd><p>Check HMDB using inchi_key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p></li>
+<li><p><strong>inchi_key</strong> (<em>str</em>) – The InChI Key to use to search HMDB</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_kegg">
+<span class="sig-name descname"><span class="pre">check_kegg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pubchem_cid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_kegg" title="Permalink to this definition"></a></dt>
+<dd><p>Check KEGG using pubchem id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p></li>
+<li><p><strong>pubchem_cid</strong> (<em>str</em>) – The Pubchem CID to search KEGG with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_lipidmaps">
+<span class="sig-name descname"><span class="pre">check_lipidmaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_lipidmaps" title="Permalink to this definition"></a></dt>
+<dd><p>Check the lipidmaps fields</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p></li>
+<li><p><strong>inchi_key</strong> (<em>str</em>) – The InChI Key to use to search lipidmaps</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_logP_RDKit">
+<span class="sig-name descname"><span class="pre">check_logP_RDKit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_logP_RDKit" title="Permalink to this definition"></a></dt>
+<dd><p>Check the logP calculated in RDKit against the one in the ROI file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_merged_file">
+<span class="sig-name descname"><span class="pre">check_merged_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_merged_file" title="Permalink to this definition"></a></dt>
+<dd><p>Checked the mergedName against the merged_file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_pubchem">
+<span class="sig-name descname"><span class="pre">check_pubchem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_pubchem" title="Permalink to this definition"></a></dt>
+<dd><p>[summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p></li>
+<li><p><strong>inchi_key</strong> (<em>str</em>) – The InChI Key to search with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.check_refmet">
+<span class="sig-name descname"><span class="pre">check_refmet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.check_refmet" title="Permalink to this definition"></a></dt>
+<dd><p>Check refmet using inchi_key or mass range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The subrow containing the data</p></li>
+<li><p><strong>inchi_key</strong> (<em>str</em>) – The InChI Key to use to search REFMET</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subrow containing the data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.get_assay">
+<span class="sig-name descname"><span class="pre">get_assay</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.get_assay" title="Permalink to this definition"></a></dt>
+<dd><p>Get assay</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – [description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the necessary files</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.loop_and_map_data">
+<span class="sig-name descname"><span class="pre">loop_and_map_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.loop_and_map_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loop and map dataset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.process" title="Permalink to this definition"></a></dt>
+<dd><p>Main method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CleanROIFile.remove_whitespace_and_weird_characters">
+<span class="sig-name descname"><span class="pre">remove_whitespace_and_weird_characters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CleanROIFile.remove_whitespace_and_weird_characters" title="Permalink to this definition"></a></dt>
+<dd><p>Remove whitespace and strip commonly used weird characters</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">CompoundTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask" title="Permalink to this definition"></a></dt>
+<dd><p>The CompoundTask base class. Used for CompoundTasks. Loads the lookup files to be used as a reference, 
+and has methods for checking various databases (KEGG,HMDB,REFMET,CHEBI,LIPIDMAPS,PUBCHEM,CHEMBL,CAS)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Task</strong> (<cite>phenomedb.task.Task</cite>) – The Task base class</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>Exception</strong> – [description]</p></li>
+<li><p><strong>Exception</strong> – [description]</p></li>
+<li><p><strong>Exception</strong> – [description]</p></li>
+<li><p><strong>Exception</strong> – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The CompoundTask class</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>phenomedb.compound.CompoundTask</cite></p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.add_cas_from_hmdb">
+<span class="sig-name descname"><span class="pre">add_cas_from_hmdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lookup_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lookup_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.add_cas_from_hmdb" title="Permalink to this definition"></a></dt>
+<dd><p>Add CAS from HMDB for a Compound. Uses Compound.inchi_key by default</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>) – The Compound to update</p></li>
+<li><p><strong>lookup_field</strong> (<em>str</em><em>, </em><em>optional</em>) – The search field, defaults to None</p></li>
+<li><p><strong>lookup_value</strong> (<em>str</em><em>, </em><em>optional</em>) – The search value, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>CAS</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.add_or_update_chebi">
+<span class="sig-name descname"><span class="pre">add_or_update_chebi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.add_or_update_chebi" title="Permalink to this definition"></a></dt>
+<dd><p>Add or update chebi based on a Compound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>, optional) – Compound to add or update ChEBI for, defaults to None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – [description]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Found ChEBI id</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.add_or_update_chembl">
+<span class="sig-name descname"><span class="pre">add_or_update_chembl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.add_or_update_chembl" title="Permalink to this definition"></a></dt>
+<dd><p>Add of update ChEMBL for compound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>) – Compound to update</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ChEMBL ID</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.add_or_update_classyfire">
+<span class="sig-name descname"><span class="pre">add_or_update_classyfire</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.add_or_update_classyfire" title="Permalink to this definition"></a></dt>
+<dd><p>Add or update the Classyfire references and classes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>) – The Compound to update</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.add_or_update_hmdb">
+<span class="sig-name descname"><span class="pre">add_or_update_hmdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lookup_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lookup_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.add_or_update_hmdb" title="Permalink to this definition"></a></dt>
+<dd><p>Add or update HMDB ID + Groups using Compound.inchi_key or a lookup field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>) – The Compound to update</p></li>
+<li><p><strong>lookup_field</strong> (<em>str</em><em>, </em><em>optional</em>) – The search field, defaults to None</p></li>
+<li><p><strong>lookup_value</strong> (<em>str</em><em>, </em><em>optional</em>) – The search value, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>HMDB ID</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.add_or_update_kegg">
+<span class="sig-name descname"><span class="pre">add_or_update_kegg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pubchem_cid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kegg_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.add_or_update_kegg" title="Permalink to this definition"></a></dt>
+<dd><p>Add or update KEGG using pubchem_cid or kegg_id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>) – The Compound to update</p></li>
+<li><p><strong>pubchem_cid</strong> (<em>str</em><em>, </em><em>optional</em>) – The Pubchem CID to use for searching, defaults to None</p></li>
+<li><p><strong>kegg_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The KEGG ID to use for searching, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>kegg_id</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.add_or_update_lipid_maps">
+<span class="sig-name descname"><span class="pre">add_or_update_lipid_maps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lookup_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lookup_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.add_or_update_lipid_maps" title="Permalink to this definition"></a></dt>
+<dd><p>Add or update LipidMAPS IDs and Groups.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>) – The Compound to update</p></li>
+<li><p><strong>lookup_field</strong> (<em>str</em><em>, </em><em>optional</em>) – The search field to use, defaults to None</p></li>
+<li><p><strong>lookup_value</strong> (<em>str</em><em>, </em><em>optional</em>) – The search value, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>LipidMAPs ID</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.add_or_update_ontology_ref">
+<span class="sig-name descname"><span class="pre">add_or_update_ontology_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ontology_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accession_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.add_or_update_ontology_ref" title="Permalink to this definition"></a></dt>
+<dd><p>Add or update an ontology ref</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ontology_source</strong> (<cite>phenomedb.models.OntologySource</cite>) – The OntologySource</p></li>
+<li><p><strong>accession_number</strong> (<em>str</em>) – The accession number for the ontology</p></li>
+<li><p><strong>field</strong> (<em>str</em>) – The model field to map the ontology to</p></li>
+<li><p><strong>model_id</strong> (<em>int</em>) – The ID of the mapped model</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.add_or_update_pubchem_from_api">
+<span class="sig-name descname"><span class="pre">add_or_update_pubchem_from_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.add_or_update_pubchem_from_api" title="Permalink to this definition"></a></dt>
+<dd><p>Add or update pubchem info for a Compound.
+Updates all the Compound properties including mass, chemical_formula, IUPAC and smiles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>) – The Compound to update</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The matching pubchem CID</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.add_stereo_group">
+<span class="sig-name descname"><span class="pre">add_stereo_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.add_stereo_group" title="Permalink to this definition"></a></dt>
+<dd><p>Add the stereo group for the compound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>) – The compound to add</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.build_subrows">
+<span class="sig-name descname"><span class="pre">build_subrows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.build_subrows" title="Permalink to this definition"></a></dt>
+<dd><p>Take a row from an ROI file and create sub row, where each sub row contains the info for 1 compound. Required because ROI files can contain ‘Annotation’ information that maps to multiple ‘Compounds’ (ie unique InChIs)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>row</strong> (<cite>pandas.Series</cite>) – The row to split into multiple rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.calculate_log_p">
+<span class="sig-name descname"><span class="pre">calculate_log_p</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.calculate_log_p" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate logP using RDKit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inchi</strong> (<em>str</em>) – InCHI for compound</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>logP</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.find_chebi">
+<span class="sig-name descname"><span class="pre">find_chebi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.find_chebi" title="Permalink to this definition"></a></dt>
+<dd><p>Find a ChEBI based on inchi. If there are multiple InChIs in the row,</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inchi</strong> (<em>str</em>) – The InChI to search</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ChEBI ID</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.generate_inchi_key">
+<span class="sig-name descname"><span class="pre">generate_inchi_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.generate_inchi_key" title="Permalink to this definition"></a></dt>
+<dd><p>Generate inchi_key using RDKit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inchi</strong> (<em>str</em>) – InChI for compound</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>InChI key for compound</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_cas_from_pubchem">
+<span class="sig-name descname"><span class="pre">get_cas_from_pubchem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pubchem_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_cas_from_pubchem" title="Permalink to this definition"></a></dt>
+<dd><p>Get CAS from pubchem</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pubchem_data</strong> (<em>dict</em>) – The pubchem record</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pubchem record</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_classyfire_reference">
+<span class="sig-name descname"><span class="pre">get_classyfire_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_classyfire_reference" title="Permalink to this definition"></a></dt>
+<dd><p>Get the Classyfire ontology reference</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>str</em>) – The Classyfire ID to get the reference from</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Classyfire ontology reference</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_from_chebi">
+<span class="sig-name descname"><span class="pre">get_from_chebi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_from_chebi" title="Permalink to this definition"></a></dt>
+<dd><p>Get from ChEBI by inchi</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inchi</strong> (<em>str</em>) – The InChI</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ChEBI ID</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_from_chembl">
+<span class="sig-name descname"><span class="pre">get_from_chembl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_from_chembl" title="Permalink to this definition"></a></dt>
+<dd><p>Get from ChEMBL by inchi_key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inchi_key</strong> (<em>str</em>) – The InChI Key</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ChEMBL ID</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_from_classyfire">
+<span class="sig-name descname"><span class="pre">get_from_classyfire</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_from_classyfire" title="Permalink to this definition"></a></dt>
+<dd><p>Get content from classyfire</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inchi_key</strong> (<em>str</em>) – InChI key to search with</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>data from classyfire</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_from_hmdb">
+<span class="sig-name descname"><span class="pre">get_from_hmdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_from_hmdb" title="Permalink to this definition"></a></dt>
+<dd><p>Get from HMDB row by inchi_key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inchi_key</strong> (<em>str</em>) – The InChI key to search by</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The HMDB dataset row number</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_from_kegg">
+<span class="sig-name descname"><span class="pre">get_from_kegg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pubchem_cid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_from_kegg" title="Permalink to this definition"></a></dt>
+<dd><p>Get from Kegg</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pubchem_cid</strong> (<em>int</em>) – The Pubchem CID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>kegg id</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_from_lipidmaps">
+<span class="sig-name descname"><span class="pre">get_from_lipidmaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_from_lipidmaps" title="Permalink to this definition"></a></dt>
+<dd><p>Get from lipidmaps by inchi_key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inchi_key</strong> (<em>str</em>) – The InChI Key to search by</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The row number from lipidmaps dataset</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_from_pubchem">
+<span class="sig-name descname"><span class="pre">get_from_pubchem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_from_pubchem" title="Permalink to this definition"></a></dt>
+<dd><p>Get from pubchem by inchi_key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>inchi_key</strong> (<em>str</em>) – The inchi_key to search by</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pubchem result</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_from_pubchem_api">
+<span class="sig-name descname"><span class="pre">get_from_pubchem_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lookup_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lookup_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_from_pubchem_api" title="Permalink to this definition"></a></dt>
+<dd><p>Get from pubchem by lookup_field and lookup_value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lookup_field</strong> (<em>str</em>) – The field to search with</p></li>
+<li><p><strong>lookup_value</strong> (<em>str</em>) – The value to search with</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the found record</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_from_refmet">
+<span class="sig-name descname"><span class="pre">get_from_refmet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subrow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_from_refmet" title="Permalink to this definition"></a></dt>
+<dd><p>Get from refmet by subrow or inchi_key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subrow</strong> (<cite>pandas.Series</cite>) – The row of the ROI file</p></li>
+<li><p><strong>inchi_key</strong> (<em>str</em><em>, </em><em>optional</em>) – The InChI Key, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The row number of the refmet database</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_inchi_key_from_pubchem_or_hmdb">
+<span class="sig-name descname"><span class="pre">get_inchi_key_from_pubchem_or_hmdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hmdb_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_inchi_key_from_pubchem_or_hmdb" title="Permalink to this definition"></a></dt>
+<dd><p>Get an inchi_key from an InChI via Pubchem or HMDB_ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inchi</strong> (<em>str</em>) – The InChI to find the inchi_key.</p></li>
+<li><p><strong>hmdb_id</strong> (<em>int</em>) – The HMDBID</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The InChI Key</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_lipid_maps_reference">
+<span class="sig-name descname"><span class="pre">get_lipid_maps_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_lipid_maps_reference" title="Permalink to this definition"></a></dt>
+<dd><p>Get the lipid maps ontology reference from the ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>str</em>) – The LipidMAPS ID to strip the ontology reference from</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The LipidMAPS ontology reference</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_or_add_compound_external_db">
+<span class="sig-name descname"><span class="pre">get_or_add_compound_external_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_db_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database_ref</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_or_add_compound_external_db" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add CompoundExternalDB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>) – The Compound to update</p></li>
+<li><p><strong>external_db_name</strong> (<em>str</em>) – The name of the db to update</p></li>
+<li><p><strong>database_ref</strong> (<em>str</em>) – The database ref to add</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_pubchem_prop">
+<span class="sig-name descname"><span class="pre">get_pubchem_prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pubchem_compound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_pubchem_prop" title="Permalink to this definition"></a></dt>
+<dd><p>Get a pubchem property based on it’s label and name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pubchem_compound</strong> (<em>dict</em>) – The pubchem record</p></li>
+<li><p><strong>label</strong> (<em>str</em>) – The label to search for</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name to search for, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.get_pubchem_view_from_api">
+<span class="sig-name descname"><span class="pre">get_pubchem_view_from_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pubchem_cid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.get_pubchem_view_from_api" title="Permalink to this definition"></a></dt>
+<dd><p>Get a pubchem view record (more info) by pubchem_cid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pubchem_cid</strong> (<em>int</em>) – The Pubchem CID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The found record</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>Load the databases + the ExternalDB.ids</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.loop_and_map_data">
+<span class="sig-name descname"><span class="pre">loop_and_map_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.loop_and_map_data" title="Permalink to this definition"></a></dt>
+<dd><p>Override this method in your CompoundTasks</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.parse_pubchem_value">
+<span class="sig-name descname"><span class="pre">parse_pubchem_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.parse_pubchem_value" title="Permalink to this definition"></a></dt>
+<dd><p>Parse a pubchem value into it’s defined type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value_dict</strong> (<em>dict</em>) – The value dict of the record.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The converted typed value (str, int, or float)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.process" title="Permalink to this definition"></a></dt>
+<dd><p>Process method. Loads the data and then maps it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.update_annotation">
+<span class="sig-name descname"><span class="pre">update_annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cpd_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.update_annotation" title="Permalink to this definition"></a></dt>
+<dd><p>Update a compound annotation with the config to store. Used for adding the ion types from a ROI row</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cpd_name</strong> (<em>str</em>) – The name of the annotated compound</p></li>
+<li><p><strong>feature_dict</strong> (<em>dict</em>) – The config dictionary</p></li>
+<li><p><strong>version</strong> (<em>str</em>) – The version of the Annotation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.CompoundTask.update_name_to_refmet">
+<span class="sig-name descname"><span class="pre">update_name_to_refmet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lookup_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lookup_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.CompoundTask.update_name_to_refmet" title="Permalink to this definition"></a></dt>
+<dd><p>Updata the compound name to refmet. Optionally use a lookup_field. Defaults to Compound.inchi_key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>) – The Compound to update the name for.</p></li>
+<li><p><strong>lookup_field</strong> (<em>str</em><em>, </em><em>optional</em>) – The field to use for searching, defaults to None</p></li>
+<li><p><strong>lookup_value</strong> (<em>str</em><em>, </em><em>optional</em>) – The value to use for searching, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>refmet_name</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.ExportCompoundsToCSV">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">ExportCompoundsToCSV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_config_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ExportCompoundsToCSV" title="Permalink to this definition"></a></dt>
+<dd><p>Export Compounds To CSV Class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CompoundTask</strong> (<cite>phenomedb.compounds.CompoundTask</cite>) – The Base CompoundTask</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ExportCompoundsToCSV.build_dataset">
+<span class="sig-name descname"><span class="pre">build_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ExportCompoundsToCSV.build_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Build the dataset from the compounds</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ExportCompoundsToCSV.build_row">
+<span class="sig-name descname"><span class="pre">build_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compound</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ExportCompoundsToCSV.build_row" title="Permalink to this definition"></a></dt>
+<dd><p>Build a row from a Compound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compound</strong> (<cite>phenomedb.models.Compound</cite>) – Compound to build a row from</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ExportCompoundsToCSV.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ExportCompoundsToCSV.process" title="Permalink to this definition"></a></dt>
+<dd><p>Export all the compounds in the db</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportBrukerBiLISACompounds">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">ImportBrukerBiLISACompounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bilisa_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportBrukerBiLISACompounds" title="Permalink to this definition"></a></dt>
+<dd><p>Import the Bruker BILISA Lipoprotein fractions. The file is in test_data/compounds/
+These are imported as Annotations, not Compounds, as they represent centrifuged fractions of lipoproteins, not individual compounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CompoundTask</strong> (<cite>phenomedb.compounds.CompoundTask</cite>) – The Base CompoundTask</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportBrukerBiLISACompounds.add_annotation">
+<span class="sig-name descname"><span class="pre">add_annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportBrukerBiLISACompounds.add_annotation" title="Permalink to this definition"></a></dt>
+<dd><p>Add Annotation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>row</strong> (<cite>pandas.Series</cite>) – The row from the file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportBrukerBiLISACompounds.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportBrukerBiLISACompounds.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the annotation method and then assay. The</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportBrukerBiLISACompounds.loop_and_map_data">
+<span class="sig-name descname"><span class="pre">loop_and_map_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportBrukerBiLISACompounds.loop_and_map_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loop and map data</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportBrukerBiQuantCompounds">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">ImportBrukerBiQuantCompounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">biquant_compounds_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportBrukerBiQuantCompounds" title="Permalink to this definition"></a></dt>
+<dd><p>Import Bruker BI-QUANT Compounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CompoundTask</strong> (<cite>phenomedb.compounds.CompoundTask</cite>) – The Base CompoundTask</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportBrukerBiQuantCompounds.add_compound_and_mappings">
+<span class="sig-name descname"><span class="pre">add_compound_and_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportBrukerBiQuantCompounds.add_compound_and_mappings" title="Permalink to this definition"></a></dt>
+<dd><p>Add compound and mappings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>row</strong> (<cite>pandas.Series</cite>) – The row from the file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportBrukerBiQuantCompounds.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportBrukerBiQuantCompounds.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>load the data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportBrukerBiQuantCompounds.loop_and_map_data">
+<span class="sig-name descname"><span class="pre">loop_and_map_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportBrukerBiQuantCompounds.loop_and_map_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loop and map data</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportCompoundsFromCSV">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">ImportCompoundsFromCSV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportCompoundsFromCSV" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportCompoundsFromCSV.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportCompoundsFromCSV.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>Load the databases + the ExternalDB.ids</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportCompoundsFromCSV.loop_and_map_data">
+<span class="sig-name descname"><span class="pre">loop_and_map_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportCompoundsFromCSV.loop_and_map_data" title="Permalink to this definition"></a></dt>
+<dd><p>Override this method in your CompoundTasks</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportROICompounds">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">ImportROICompounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">roi_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">na_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">na_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_lipid_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportROICompounds" title="Permalink to this definition"></a></dt>
+<dd><p>Import ROI Compounds</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CompoundTask</strong> (<cite>phenomedb.compounds.CompoundTask</cite>) – The Base CompoundTask</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportROICompounds.add_or_update_compound">
+<span class="sig-name descname"><span class="pre">add_or_update_compound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inchi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inchi_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chemical_formula</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monoisotopic_mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iupac</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_cpd_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportROICompounds.add_or_update_compound" title="Permalink to this definition"></a></dt>
+<dd><p>Adds or updates a compound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>row</strong> (<cite>pandas.Series</cite>) – The row from the ROI dataframe</p></li>
+<li><p><strong>annotation</strong> (<cite>phenomedb.models.Annotation</cite>) – The Annotation object</p></li>
+<li><p><strong>inchi</strong> (<em>str</em>) – The InChI for the Compound</p></li>
+<li><p><strong>inchi_key</strong> (<em>str</em>) – The InChI Key for the Compound</p></li>
+<li><p><strong>chemical_formula</strong> (<em>str</em>) – The chemical formula for the Compound</p></li>
+<li><p><strong>monoisotopic_mass</strong> (<em>float</em>) – The monoisotopic_mass of the Compound</p></li>
+<li><p><strong>log_p</strong> (<em>float</em>) – The logP (partition coefficient) of the Compound</p></li>
+<li><p><strong>iupac</strong> (<em>str</em>) – The IUPAC identifier of the Compound</p></li>
+<li><p><strong>smiles</strong> (<em>str</em>) – The SMILES string of the Compound</p></li>
+<li><p><strong>sub_cpd_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The split cpd_name of the Annotation, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Compound</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.Compound</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportROICompounds.add_or_update_compound_from_subrow">
+<span class="sig-name descname"><span class="pre">add_or_update_compound_from_subrow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportROICompounds.add_or_update_compound_from_subrow" title="Permalink to this definition"></a></dt>
+<dd><p>Add or update compound from subrow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>row</strong> (<cite>pandas.Series</cite>) – The row from the ROI dataframe</p></li>
+<li><p><strong>annotation</strong> (<cite>phenomedb.models.Annotation</cite>) – The Annotation object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportROICompounds.import_row">
+<span class="sig-name descname"><span class="pre">import_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportROICompounds.import_row" title="Permalink to this definition"></a></dt>
+<dd><p>Imports a row from the file.</p>
+<ol class="arabic simple">
+<li><p>Breaks the row into subrows and imports seperately.</p></li>
+<li><p>Finds or adds Annotation + harmonised annotation</p></li>
+<li><p>Adds compounds + identifiers</p></li>
+<li><p>Adds groups</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>row</strong> (<cite>pandas.Series</cite>) – The row from the ROI dataframe</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The row from the ROI dataframe</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>pandas.Series</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportROICompounds.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportROICompounds.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loads data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportROICompounds.loop_and_map_data">
+<span class="sig-name descname"><span class="pre">loop_and_map_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportROICompounds.loop_and_map_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loop and map the data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportROICompounds.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportROICompounds.process" title="Permalink to this definition"></a></dt>
+<dd><p>Main method</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportStandardsV1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">ImportStandardsV1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">standards_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportStandardsV1" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportStandardsV1.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportStandardsV1.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>Load the databases + the ExternalDB.ids</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ImportStandardsV1.loop_and_map_data">
+<span class="sig-name descname"><span class="pre">loop_and_map_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ImportStandardsV1.loop_and_map_data" title="Permalink to this definition"></a></dt>
+<dd><p>Override this method in your CompoundTasks</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseHMDBXMLtoCSV">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">ParseHMDBXMLtoCSV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hmdb_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseHMDBXMLtoCSV" title="Permalink to this definition"></a></dt>
+<dd><p>Parse HMDB XML to CSV, used for simpler lookups</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CompoundTask</strong> (<cite>phenomedb.compounds.CompoundTask</cite>) – The Base CompoundTask</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseHMDBXMLtoCSV.download_file">
+<span class="sig-name descname"><span class="pre">download_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseHMDBXMLtoCSV.download_file" title="Permalink to this definition"></a></dt>
+<dd><p>Downloads the HMDB file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseHMDBXMLtoCSV.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseHMDBXMLtoCSV.process" title="Permalink to this definition"></a></dt>
+<dd><p>Main method. Downloads file or uses cache, then loops and builds a CSV</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseHMDBXMLtoCSV.reset_found_fields">
+<span class="sig-name descname"><span class="pre">reset_found_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseHMDBXMLtoCSV.reset_found_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the fields when they are found</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>found field dictionary</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseKEGGtoPubchemCIDTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">ParseKEGGtoPubchemCIDTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compound_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask" title="Permalink to this definition"></a></dt>
+<dd><p>This task parses KEGG and builds a dataframe of KEGGID -&gt; Pubchem CID lookups</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CompoundTask</strong> (<cite>phenomedb.compounds.CompoundTask</cite>) – The Base CompoundTask</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseKEGGtoPubchemCIDTask.extract_and_set_compound_id">
+<span class="sig-name descname"><span class="pre">extract_and_set_compound_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.extract_and_set_compound_id" title="Permalink to this definition"></a></dt>
+<dd><p>Extract KEGG ID from name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – KEGG element name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseKEGGtoPubchemCIDTask.extract_kegg_ids">
+<span class="sig-name descname"><span class="pre">extract_kegg_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.extract_kegg_ids" title="Permalink to this definition"></a></dt>
+<dd><p>Extracts the KEGG IDs from the brite codes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseKEGGtoPubchemCIDTask.get_pubchem_cid">
+<span class="sig-name descname"><span class="pre">get_pubchem_cid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pubchem_sid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.get_pubchem_cid" title="Permalink to this definition"></a></dt>
+<dd><p>Get pubchem CID from pubchem SID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kegg_id</strong> (<em>str</em>) – Pubchem SID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pubchem CID</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseKEGGtoPubchemCIDTask.get_pubchem_sid">
+<span class="sig-name descname"><span class="pre">get_pubchem_sid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kegg_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.get_pubchem_sid" title="Permalink to this definition"></a></dt>
+<dd><p>Get pubchem SID from kegg id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kegg_id</strong> (<em>str</em>) – KEGG ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pubchem SID</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseKEGGtoPubchemCIDTask.loop_into_brite_fields">
+<span class="sig-name descname"><span class="pre">loop_into_brite_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.loop_into_brite_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Recurse into brite fields to extract all required parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>element</strong> (<em>object</em>) – element to recurse into</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseKEGGtoPubchemCIDTask.parse_kegg_compound_class">
+<span class="sig-name descname"><span class="pre">parse_kegg_compound_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">brite_code</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.parse_kegg_compound_class" title="Permalink to this definition"></a></dt>
+<dd><p>Parse a KEGG compound class by brite code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>brite_code</strong> (<em>str</em>) – The code to search with</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.ParseKEGGtoPubchemCIDTask.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.ParseKEGGtoPubchemCIDTask.process" title="Permalink to this definition"></a></dt>
+<dd><p>Main method</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.compounds.UpdateCompoundRefs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">UpdateCompoundRefs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.UpdateCompoundRefs" title="Permalink to this definition"></a></dt>
+<dd><p>Update the Compound properties and external references from the InChI lookups</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CompoundTask</strong> (<cite>phenomedb.compounds.CompoundTask</cite>) – The Base CompoundTask</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.UpdateCompoundRefs.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.UpdateCompoundRefs.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>Load the data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.compounds.UpdateCompoundRefs.loop_and_map_data">
+<span class="sig-name descname"><span class="pre">loop_and_map_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.UpdateCompoundRefs.loop_and_map_data" title="Permalink to this definition"></a></dt>
+<dd><p>Loop over compounds and update the references</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cache.html" class="btn btn-neutral float-left" title="phenomedb.cache" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="imports.html" class="btn btn-neutral float-right" title="phenomedb.imports" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Imperial College London.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

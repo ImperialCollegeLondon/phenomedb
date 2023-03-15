@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>phenomedb.base_view &mdash; PhenomeDB 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="phenomedb.cache" href="cache.html" />
+    <link rel="prev" title="phenomedb.batch_correction" href="batch_correction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PhenomeDB
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#settings">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#id2">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">phenomedb.base_view</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.attribute_dict"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.attribute_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.configure_logging"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.configure_logging()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.delete_entity"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.delete_entity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.delete_rows_by_id"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.delete_rows_by_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.execute_sql"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.execute_sql()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.flask_form_to_ORM_dict"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.flask_form_to_ORM_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.foreign_keys"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.foreign_keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.get_all_by_model"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.get_all_by_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.get_class_by_tablename"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.get_class_by_tablename()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.get_entities_as_dicts"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.get_entities_as_dicts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.get_entity_as_df"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.get_entity_as_df()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.get_entity_as_dict"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.get_entity_as_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.get_project_metadata_fields"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.get_project_metadata_fields()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.get_relations_by_fk"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.get_relations_by_fk()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.get_table_columns"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.get_table_columns()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.get_table_names"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.get_table_names()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.handle_json_error"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.handle_json_error()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.insert_entity"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.insert_entity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.relationship_dict"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.relationship_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.set_db"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.set_db()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.set_db_session"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.set_db_session()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.sql_to_dataframe"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.sql_to_dataframe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.base_view.PhenomeDBBaseView.update_entity"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView.update_entity()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_factory.html">phenomedb.pipeline_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipelines.html">phenomedb.pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="query_factory.html">phenomedb.query_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task.html">phenomedb.task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">phenomedb.utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">phenomedb.views</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PhenomeDB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">phenomedb.base_view</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/base_view.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-phenomedb.base_view">
+<span id="phenomedb-base-view"></span><h1>phenomedb.base_view<a class="headerlink" href="#module-phenomedb.base_view" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.base_view.</span></span><span class="sig-name descname"><span class="pre">PhenomeDBBaseView</span></span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView" title="Permalink to this definition"></a></dt>
+<dd><p>The base view for all PhenomeDB views, for common methods and db_session usage.
+Extends the <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_appbuilder.BaseView</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.attribute_dict">
+<span class="sig-name descname"><span class="pre">attribute_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orm_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.attribute_dict" title="Permalink to this definition"></a></dt>
+<dd><p>get an ORM object”s (eg a phenomedb.models.Project) attributes and return as dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>orm_object</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.*</span></code>) – The model object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dictionary version of the model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.configure_logging">
+<span class="sig-name descname"><span class="pre">configure_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'phenomedb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'phenomedb.log'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.configure_logging" title="Permalink to this definition"></a></dt>
+<dd><p>Setup a logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifier</strong> (<em>str</em><em>, </em><em>optional</em>) – an identifier for your messages in the log, defaults to ‘phenomedb’.</p></li>
+<li><p><strong>log_file</strong> (<em>str</em><em>, </em><em>optional</em>) – file to log to at location specified in config.ini; (will create this dir if necessary), defaults to ‘phenomedb.log’.</p></li>
+<li><p><strong>level</strong> (<em>int</em><em>, </em><em>optional</em>) – log level, logging.INFO, logging.ERROR, logging.WARNING, defaults to logging.DEBUG.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the logger.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.logger</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.delete_entity">
+<span class="sig-name descname"><span class="pre">delete_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.delete_entity" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a row from a table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – The name of the table.</p></li>
+<li><p><strong>id</strong> (<em>int</em>) – The id of the row to delete.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.delete_rows_by_id">
+<span class="sig-name descname"><span class="pre">delete_rows_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ids</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.delete_rows_by_id" title="Permalink to this definition"></a></dt>
+<dd><p>Delete rows from a table by id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_class</strong> (<em>str</em>) – The table name.</p></li>
+<li><p><strong>ids</strong> (<em>list</em>) – A list of ids to delete.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.execute_sql">
+<span class="sig-name descname"><span class="pre">execute_sql</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sql</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.execute_sql" title="Permalink to this definition"></a></dt>
+<dd><p>Execute an SQL statement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sql</strong> (<em>str</em>) – The SQL statement.</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>optional</em>) – The SQL parameters, defaults to {}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of result row dictionaries.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.flask_form_to_ORM_dict">
+<span class="sig-name descname"><span class="pre">flask_form_to_ORM_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.flask_form_to_ORM_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Takes a request.form object and returns a dictionary, having removed the csrf_token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>form</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Flask.request.Form</span></code>) – the flask request.form object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The form key/value pairs as a dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.foreign_keys">
+<span class="sig-name descname"><span class="pre">foreign_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.foreign_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Finds the foreign key columns in an ORM class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.*</span></code>) – The model class.</p></li>
+<li><p><strong>key_name</strong> (<em>str</em><em>, </em><em>optional</em>) – optionally specify the key to find, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The column name/value pairs as a dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.get_all_by_model">
+<span class="sig-name descname"><span class="pre">get_all_by_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.get_all_by_model" title="Permalink to this definition"></a></dt>
+<dd><p>Get all records by table_name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>table_name</strong> (<em>str</em>) – The name of the table to query.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of model records.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.get_class_by_tablename">
+<span class="sig-name descname"><span class="pre">get_class_by_tablename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.get_class_by_tablename" title="Permalink to this definition"></a></dt>
+<dd><p>Get model class by table name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>table_name</strong> (<em>str</em>) – The name of the table.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The related model class reference.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.*</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.get_entities_as_dicts">
+<span class="sig-name descname"><span class="pre">get_entities_as_dicts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.get_entities_as_dicts" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a SQLAlchemy result list of objects into a list of dictionaries for ease of use in the web interface  - note no related entities</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>entity_list</strong> (<em>list</em>) – Results list of query.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of dictionaries.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.get_entity_as_df">
+<span class="sig-name descname"><span class="pre">get_entity_as_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.get_entity_as_df" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch a single row from a table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – The name of the table.</p></li>
+<li><p><strong>id</strong> (<em>int</em>) – The entity id.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pandas dataframe of results.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.get_entity_as_dict">
+<span class="sig-name descname"><span class="pre">get_entity_as_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_relations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.get_entity_as_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Represent a SQLAlchemy mapped table object and optionally its related table entries as a dictionary of column:value mappings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – The name of the table.</p></li>
+<li><p><strong>id</strong> (<em>int</em>) – The entity id.</p></li>
+<li><p><strong>with_relations</strong> (<em>bool</em><em>, </em><em>optional</em>) – add top-level related entities to result, defaults to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Results as dictionary</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.get_project_metadata_fields">
+<span class="sig-name descname"><span class="pre">get_project_metadata_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.get_project_metadata_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Get the metadata fields for a project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_id</strong> (<em>int</em>) – The id of the project.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of dictionary metadata_fields for the project.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.get_relations_by_fk">
+<span class="sig-name descname"><span class="pre">get_relations_by_fk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_relations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.get_relations_by_fk" title="Permalink to this definition"></a></dt>
+<dd><p>Get the table rows where the key==value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – The table name.</p></li>
+<li><p><strong>key_name</strong> (<em>str</em>) – The id field to link on, eg “compound_id”</p></li>
+<li><p><strong>key_value</strong> (<em>int</em>) – a value for the key id</p></li>
+<li><p><strong>with_relations</strong> (<em>bool</em><em>, </em><em>optional</em>) – include the first level related entities in the result, defaults to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of results.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.get_table_columns">
+<span class="sig-name descname"><span class="pre">get_table_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.get_table_columns" title="Permalink to this definition"></a></dt>
+<dd><p>Get the columns of a table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>table_name</strong> (<em>str</em>) – The table name.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of attribute names and types.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.get_table_names">
+<span class="sig-name descname"><span class="pre">get_table_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.get_table_names" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of all tables in database</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of table names.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.handle_json_error">
+<span class="sig-name descname"><span class="pre">handle_json_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.handle_json_error" title="Permalink to this definition"></a></dt>
+<dd><p>Handle a json error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>e</strong> (<em>dict</em>) – The error message dictionary.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The response 400.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">flask.response</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.insert_entity">
+<span class="sig-name descname"><span class="pre">insert_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.insert_entity" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new row in a table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – The name of the table.</p></li>
+<li><p><strong>value_dict</strong> (<em>dict</em>) – A dictionary containing correctly mapped values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The newly inserted id.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.relationship_dict">
+<span class="sig-name descname"><span class="pre">relationship_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orm_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.relationship_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Get an ORM object”s related entities and return as dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>orm_object</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.*</span></code>) – The model object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The attribute dictionary plus related entities.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.set_db">
+<span class="sig-name descname"><span class="pre">set_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_env</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.set_db" title="Permalink to this definition"></a></dt>
+<dd><p>Set the db using the db_env</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db_env</strong> (<em>str</em>) – “PROD”, “BETA”, or “TEST”, default “PROD”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.set_db_session">
+<span class="sig-name descname"><span class="pre">set_db_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.set_db_session" title="Permalink to this definition"></a></dt>
+<dd><p>Set the db_session. If db_env is in the get params, set it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">flask.request</span></code>) – The flask request object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.sql_to_dataframe">
+<span class="sig-name descname"><span class="pre">sql_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sql</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.sql_to_dataframe" title="Permalink to this definition"></a></dt>
+<dd><p>Execute an sql statement and return as pandas dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sql</strong> (<em>str</em>) – The SQL statement.</p></li>
+<li><p><strong>params</strong> (<em>dict</em><em>, </em><em>optional</em>) – The SQL parameters, defaults to {}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pandas dataframe of results.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.base_view.PhenomeDBBaseView.update_entity">
+<span class="sig-name descname"><span class="pre">update_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.base_view.PhenomeDBBaseView.update_entity" title="Permalink to this definition"></a></dt>
+<dd><p>Update a single row in a table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_name</strong> (<em>str</em>) – The name of the table.</p></li>
+<li><p><strong>update_dict</strong> (<em>dict</em>) – The dictionary of the new values, including the id.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="batch_correction.html" class="btn btn-neutral float-left" title="phenomedb.batch_correction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cache.html" class="btn btn-neutral float-right" title="phenomedb.cache" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Imperial College London.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

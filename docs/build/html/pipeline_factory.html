@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>phenomedb.pipeline_factory &mdash; PhenomeDB 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="phenomedb.pipelines" href="pipelines.html" />
+    <link rel="prev" title="phenomedb.models" href="models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PhenomeDB
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#settings">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#id2">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">phenomedb.pipeline_factory</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.pipeline_factory.BasePipelineManager"><code class="docutils literal notranslate"><span class="pre">BasePipelineManager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory"><code class="docutils literal notranslate"><span class="pre">PipelineFactory</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.add_task"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.add_task()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.run_pipeline"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.run_pipeline()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pipelines.html">phenomedb.pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="query_factory.html">phenomedb.query_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task.html">phenomedb.task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">phenomedb.utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">phenomedb.views</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PhenomeDB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">phenomedb.pipeline_factory</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pipeline_factory.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-phenomedb.pipeline_factory">
+<span id="phenomedb-pipeline-factory"></span><h1>phenomedb.pipeline_factory<a class="headerlink" href="#module-phenomedb.pipeline_factory" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.pipeline_factory.BasePipelineManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.pipeline_factory.</span></span><span class="sig-name descname"><span class="pre">BasePipelineManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.pipeline_factory.BasePipelineManager" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract BasePipeline class. Extend this class to use another offline worker system, ie RedisQueue.</p>
+<p>add_task() and submit() must be implemented.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.pipeline_factory.PipelineFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.pipeline_factory.</span></span><span class="sig-name descname"><span class="pre">PipelineFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_folder_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hard_code_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedule_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'None'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequential</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_active_runs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concurrency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.pipeline_factory.PipelineFactory" title="Permalink to this definition"></a></dt>
+<dd><p>PipelineFactory class. Default manager is apache-airflow. Most of the options below are airflow specific.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The pipeline name - the main identifier of the pipeline, must be unique</p></li>
+<li><p><strong>description</strong> (<em>str</em><em>, </em><em>optional</em>) – The pipeline description, defaults to None.</p></li>
+<li><p><strong>start_date</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code>, optional) – The start date of the airflow pipeline, defaults to None.</p></li>
+<li><p><strong>default_args</strong> (<em>dict</em><em>, </em><em>optional</em>) – The default arguments of the airflow pipeline, defaults to {‘owner’: ‘airflow’,’retries’:1,’retries_delay’:datetime.timedelta(minutes=5)}.</p></li>
+<li><p><strong>schedule_interval</strong> (<em>str</em><em>, </em><em>optional</em>) – How often to run the airflow pipeline, defaults to “&#64;once”.</p></li>
+<li><p><strong>db_env</strong> (<em>str</em><em>, </em><em>optional</em>) – Which db to use - “PROD”,”BETA”, or “TEST”, defaults to None (“PROD”).</p></li>
+<li><p><strong>tags</strong> (<em>list</em><em>, </em><em>optional</em>) – The Airflow tags to add (for UI filtering), defaults to [].</p></li>
+<li><p><strong>sequential</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to run tasks sequentially, defaults to True. False means tasks will run concurrently, in no specific order.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.pipeline_factory.PipelineFactory.add_task">
+<span class="sig-name descname"><span class="pre">add_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.pipeline_factory.PipelineFactory.add_task" title="Permalink to this definition"></a></dt>
+<dd><p>Add a task to the pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_module</strong> (<em>str</em>) – The module of the task.</p></li>
+<li><p><strong>task_class</strong> (<em>str</em>) – The class of the task.</p></li>
+<li><p><strong>upstream_task_id</strong> (<em>int</em><em>, </em><em>optional</em>) – If specified, specifies this task is downstream of the upstream_task_id, defaults to None</p></li>
+<li><p><strong>depends_on_past</strong> (<em>bool</em><em>, </em><em>optional</em>) – If specified, this will only run when upstream tasks complete, defaults to True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>task_label: The label of the task.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.pipeline_factory.PipelineFactory.run_pipeline">
+<span class="sig-name descname"><span class="pre">run_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.pipeline_factory.PipelineFactory.run_pipeline" title="Permalink to this definition"></a></dt>
+<dd><p>Submit the pipeline to the queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>success (True) or failure (False)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="models.html" class="btn btn-neutral float-left" title="phenomedb.models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pipelines.html" class="btn btn-neutral float-right" title="phenomedb.pipelines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Imperial College London.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

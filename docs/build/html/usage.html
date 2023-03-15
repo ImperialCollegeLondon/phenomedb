@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage &mdash; PhenomeDB 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Development" href="development.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PhenomeDB
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#settings">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#id2">Settings</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core-platform-architecture">Core platform architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-apache-airflow-interface">The Apache-Airflow interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#importing-analytical-data-and-sample-metadata">Importing analytical data and sample metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#harmonising-sample-metadata">Harmonising sample metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#importing-compound-metadata">Importing compound metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#harmonising-annotation-metadata">Harmonising annotation metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-and-executing-queries">Creating and executing queries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scaling-normalisation-and-batch-correction">Scaling, normalisation, and batch correction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-analyses">Running analyses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tasks-and-pipelines">Tasks and Pipelines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_factory.html">phenomedb.pipeline_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipelines.html">phenomedb.pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="query_factory.html">phenomedb.query_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task.html">phenomedb.task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">phenomedb.utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">phenomedb.views</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PhenomeDB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage">
+<span id="id1"></span><h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h1>
+<p>PhenomeDB is a database, data processing, and analysis and visualisation platform for metabolomics data. The general usage of which is outlined below, where users import data, harmonise the data, build queries to integrate and stratify the data, scale, normalise, and batch correct the data, and run analyses and reports to analyse, visualise, and interpret the data. PhenomeDB provides python APIs and web-based UIs for these steps, including a novel QueryFactory for building and executing queries, and a novel PipelineFactory for building and executing pipelines via Apache-Airflow.</p>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="_images/method-development-overview.png"><img alt="PhenomeDB usage overview" src="_images/method-development-overview.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Overview of using PhenomeDB, including import, harmonisation, querying, scaling/normalisation, and analysis/visualisation.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<section id="core-platform-architecture">
+<h2>Core platform architecture<a class="headerlink" href="#core-platform-architecture" title="Permalink to this heading"></a></h2>
+<p>PhenomeDB is a relatively complex application consisting of the following sub-systems:</p>
+<ol class="upperalpha simple">
+<li><p>Postgres database</p></li>
+<li><p>Python library with modules for importing, harmonising, querying, normalising, and analysing the data. The code in these modules is organised into ‘tasks’ that can be chained together into pipelines using the PipelineFactory.</p></li>
+<li><p>Redis cache (with a file-system backend extension) for storing query sets and analysis results</p></li>
+<li><p>Apache-Airflow for running pipelines</p></li>
+<li><p>Flask plugins for exploring the data, building queries, running analyses, and visualising results</p></li>
+</ol>
+<figure class="align-default" id="id3">
+<a class="reference internal image-reference" href="_images/phenomedb-software-main-components.png"><img alt="PhenomeDB core architecture" src="_images/phenomedb-software-main-components.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">PhenomeDB core architectural components (note that important components Redis and the file-system are not shown here)</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="the-apache-airflow-interface">
+<h2>The Apache-Airflow interface<a class="headerlink" href="#the-apache-airflow-interface" title="Permalink to this heading"></a></h2>
+<p>To access Apache-Airflow, once the system is running, open your web browser and navigate to <a class="reference external" href="http://localhost:8080/">http://localhost:8080/</a>. The default username and password are admin and testpass.</p>
+<p>From here, pipelines (‘DAGs’ in Airflow) for individual tasks can be parameterised, executed, and monitored, and the various PhenomeDB views can be accessed.</p>
+<p>Apache-Airflow is structured around the concepts of pipelines and pipeline runs (executions). You parameterise a pipeline run and then Airflow manages the execution. Output logs for each task in the pipeline can be inspected via the interface.</p>
+<p>For more information regarding the usage of Apache-Airflow, please see the Apache-Airflow documentation.</p>
+<figure class="align-default" id="id4">
+<a class="reference internal image-reference" href="_images/airflow-ui-1.png"><img alt="Airflow UI home" src="_images/airflow-ui-1.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Airflow home page showing registered pipelines (DAGs)</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id5">
+<a class="reference internal image-reference" href="_images/airflow-ui-2.png"><img alt="Airflow Pipeline Overview" src="_images/airflow-ui-2.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Graphical view of the ImportPeakPantherAnnotations pipeline</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id6">
+<a class="reference internal image-reference" href="_images/airflow-ui-3.png"><img alt="Airflow Run Pipeline" src="_images/airflow-ui-3.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">View for running a pipeline, with example JSON for parameterising the import task.</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id7">
+<a class="reference internal image-reference" href="_images/airflow-ui-4.png"><img alt="Airflow Logs example" src="_images/airflow-ui-4.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example output of the TaskRun logs, viewed from within the Airflow interface</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="importing-analytical-data-and-sample-metadata">
+<h2>Importing analytical data and sample metadata<a class="headerlink" href="#importing-analytical-data-and-sample-metadata" title="Permalink to this heading"></a></h2>
+<p>Two main analytical data import sources are supported - Metabolights format, and the nPYc-toolbox 3-file format, consisting of 3 separate sources of information:</p>
+<ol class="upperalpha simple">
+<li><p>Sample manifests: CSV files containing sample metadata subject as clinical factors, outcomes-of-interest, or covariates.</p></li>
+<li><p>Feature metadata: CSV files containing feature metadata such as RT, m/z, and other feature-specific analytical metadata.</p></li>
+<li><p>Study data files: CSV files containing analytical features (measurements) relating to the samples and features/annotated compounds.</p></li>
+</ol>
+<figure class="align-default" id="id8">
+<a class="reference internal image-reference" href="_images/source-to-model.png"><img alt="Mappings between 3-file format at PhenomeDB" src="_images/source-to-model.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Mappings between a 3-file format metabolomics dataset and the PhenomeDB core data model</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Import Tasks:</p>
+<ol class="upperalpha simple">
+<li><p>ImportMetadata - import sample metadata from a CSV where rows are samples and columns are metadata fields</p></li>
+<li><p>ImportBrukerIVDrAnnotations - import annotated metabolite measurements/abundances from a Bruker IVDr NMR dataset.</p></li>
+<li><p>ImportPeakPantheRAnnotation - import annotated metabolite measurements/abundances from a PeakPantheR LC-MS dataset.</p></li>
+<li><p>ImportMetabolights - import metabolite features and annotations from Metabolights format</p></li>
+</ol>
+</section>
+<section id="harmonising-sample-metadata">
+<h2>Harmonising sample metadata<a class="headerlink" href="#harmonising-sample-metadata" title="Permalink to this heading"></a></h2>
+<p>In order to compare, integrate, and stratify data across multiple cohorts, the sample metadata must be harmonised. To do this, it is recommended to use the CurateMetadataTask, which enables the curation of unharmonised ‘raw’ metadata fields and values into harmonised ‘curated’ metadata fields and values.</p>
+<figure class="align-default" id="id9">
+<a class="reference internal image-reference" href="_images/curate-metadata-task.png"><img alt="PhenomeDB CurateMetadata task" src="_images/curate-metadata-task.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The CurateMetadataTask architecture, with methods for harmonising types, names, and values</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="importing-compound-metadata">
+<h2>Importing compound metadata<a class="headerlink" href="#importing-compound-metadata" title="Permalink to this heading"></a></h2>
+<p>PhenomeDB enables the storage of annotation metadata such as chemical references and classes, and has a data model and import processes capable of harmonising annotations to their analytical specificity.</p>
+<p>The minimum information required for import is compound name (as annotated) and InChI (if available). If the specificity of the annotation is low, multiple compounds and InChIs can be recorded per annotation. With this minimum information, PhenomeDB can lookup and record the following external references and classes and make them queryable and reportable.</p>
+<p>Databases: PubChem, ChEBI, ChEMBL, ChemSpider, LipidMAPS, HMDB</p>
+<p>Classes: LipidMAPS, HMDB, ClassyFIRE</p>
+<figure class="align-default" id="id10">
+<a class="reference internal image-reference" href="_images/compound-task-overview.png"><img alt="PhenomeDB ImportCompoundTask overview" src="_images/compound-task-overview.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The ImportCompoundTask overview, which looks up compound metadata and populates the database</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Compound metadata can be imported from PeakPantheR region-of-interest files (ROI) files for LC-MS annotations. Recent versions for these can be found in ./data/compounds/.</p>
+<p>To import the ROI compound data use the tasks ImportROICompounds and ImportROILipids</p>
+<p>IVDr annotation metadata can be imported using ImportBrukerBiLISACompounds and ImportBrukerBiQuantCompounds,. The source data are available in ./data/compounds/</p>
+<p>Once imported, compounds and compound classes can be explored using the Compound View UI.</p>
+<figure class="align-default" id="id11">
+<a class="reference internal image-reference" href="_images/compound-list-view.png"><img alt="PhenomeDB Compound List View" src="_images/compound-list-view.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The Compound List View, showing a searchable, paginated table of imported compounds</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id12">
+<a class="reference internal image-reference" href="_images/compound-view-example.png"><img alt="PhenomeDB Compound View" src="_images/compound-view-example.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The Compound View, showing the imported information for one compound, with links to external databases</span><a class="headerlink" href="#id12" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="harmonising-annotation-metadata">
+<h2>Harmonising annotation metadata<a class="headerlink" href="#harmonising-annotation-metadata" title="Permalink to this heading"></a></h2>
+<p>In order to integrate annotations across projects, the annotations must be harmonised. PhenomeDB will attempt to do this automatically where possible, however in some cases it is necessary to manually harmonise annotations. To do this use the ‘Harmonise Annotations’ view.</p>
+<figure class="align-default" id="id13">
+<a class="reference internal image-reference" href="_images/manual-annotation-harmonisation-view.png"><img alt="PhenomeDB manual annotation harmonisation" src="_images/manual-annotation-harmonisation-view.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The Harmonise Annotations View, where unharmonised annotations can be harmonised manually to enable cross-project comparisons</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="creating-and-executing-queries">
+<h2>Creating and executing queries<a class="headerlink" href="#creating-and-executing-queries" title="Permalink to this heading"></a></h2>
+<p>Creating queries can be done either via the Query Factory view or the QueryFactory Python API. In PhenomeDB Queries are created by chaining QueryFilter objects containing boolean operators and QueryMatches, which specifying the fields and comparison operators and values. An overview of this can be seen below. With the collection of QueryFilters and QueryMatches, the QueryFactory then calculates/transpiles the query definition into an SQLAlchemy query, and executes the query. The QueryFactory can then construct a combined-format and 3-file format dataset of the results, and store them in the PhenomeDB Cache, an extended version of Redis that enables file-system persistency of objects. Generating the dataframes can currently take a long time depending on the number of records the query returns, for this reason once the query has been defined the user should run the CreateSavedQueryDataframeCache task to execute the query and set it into the cache. This can be run manually via the interface or via the QueryFactory UI.</p>
+<figure class="align-default" id="id14">
+<a class="reference internal image-reference" href="_images/query-filters-overview.png"><img alt="PhenomeDB QueryFactory QueryFilters and QueryMatches" src="_images/query-filters-overview.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The QueryFilter and QueryMatch architecture. Multiple QueryFilters can be added, each with AND or OR boolean operators. Each QueryFilter can have multiple QueryMatches, targeting a specific Model.property, with a specific comparison operator and value.</span><a class="headerlink" href="#id14" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>An example of using these to construct a query is shown below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate the QueryFactory</span>
+<span class="n">query_factory</span> <span class="o">=</span> <span class="n">QueryFactory</span><span class="p">(</span><span class="n">query_name</span><span class="o">=</span><span class="s1">&#39;Users under 40&#39;</span><span class="p">,</span> <span class="n">query_description</span><span class="o">=</span><span class="s1">&#39;test description&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add a filter with the match properties added in the constructor (default &#39;AND&#39;)</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;My Project&#39;</span><span class="p">)</span>
+
+<span class="c1"># Create another filter with the match properties added in the constructor</span>
+<span class="nb">filter</span> <span class="o">=</span> <span class="n">QueryFilter</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;HarmonisedMetadataField&#39;</span><span class="p">,</span><span class="nb">property</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="n">operator</span><span class="o">=</span><span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;Age&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add another match to the filter</span>
+<span class="nb">filter</span><span class="o">.</span><span class="n">add_match</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;MetadataValue&#39;</span><span class="p">,</span><span class="nb">property</span><span class="o">=</span><span class="s1">&#39;harmonised numeric value&#39;</span><span class="p">,</span><span class="n">operator</span><span class="o">=</span><span class="s1">&#39;lt&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+
+<span class="c1"># Add the filter to the query factory (default &#39;AND&#39;)</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">query_filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">)</span>
+
+<span class="c1">#4. Save the query in the SavedQuery data model</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">save_query</span><span class="p">()</span>
+
+<span class="c1">#5. Generate the summary statistics</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">calculate_summary_statistics</span><span class="p">()</span>
+
+<span class="c1">#6. Execute the query, build the 3-file format, load into cache, and return dataframes</span>
+<span class="n">intensity_data</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;intensity_data&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sample_metadata</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;sample_metadata&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">feature_metadata</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;feature_metadata&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To simplify querying HarmonisedMetadataFields, the following MetadataFilter can be used</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate the QueryFactory</span>
+<span class="n">query</span> <span class="n">factory</span> <span class="o">=</span> <span class="n">QueryFactory</span><span class="p">(</span><span class="n">query_name</span><span class="o">=</span><span class="s1">&#39;Users under 40&#39;</span><span class="p">,</span> <span class="n">query_description</span><span class="o">=</span><span class="s1">&#39;test description&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add a filter with the match properties added in the constructor (default &#39;AND&#39;)</span>
+<span class="n">query</span> <span class="n">factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">QueryFilter</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="nb">property</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="n">operator</span><span class="o">=</span><span class="s1">&#39;eq&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;My Project&#39;</span><span class="p">))</span>
+
+<span class="c1"># Add a Metadata filter with the match properties added in the constructor (default &#39;AND&#39;)</span>
+<span class="n">query</span> <span class="n">factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">MetadataFilter</span><span class="p">(</span><span class="s1">&#39;Age&#39;</span><span class="p">,</span><span class="s1">&#39;lt&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="mi">40</span><span class="p">))</span>
+
+<span class="c1">#4. Save the query in the SavedQuery data model</span>
+<span class="n">query</span> <span class="n">factory</span><span class="o">.</span><span class="n">save_query</span><span class="p">()</span>
+
+<span class="c1">#5. Generate the summary statistics</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">calculate_summary_statistics</span><span class="p">()</span>
+
+<span class="c1">#6. Execute the query, build the 3-file format, load into cache, and return dataframes</span>
+<span class="n">intensity_data</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;intensity_data&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sample_metadata</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;sample_metadata&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">feature_metadata</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;feature_metadata&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>SavedQueries can be created and explored using the QueryFactory user interface. Through the interface the summary statistics for the query can be visually explored to assess the composition of the generated cohort. Once you are happy with the composition you should then execute the CreateSavedQueryDataframeCache task for the SavedQuery to build the query dataframes and store them in the Cache.</p>
+<figure class="align-default" id="id15">
+<a class="reference internal image-reference" href="_images/query-ui-create.png"><img alt="PhenomeDB QueryFactory UI create" src="_images/query-ui-create.png" style="width: 650px;" /></a>
+<figcaption>
+<p><span class="caption-text">Creating a SavedQuery using the UI.</span><a class="headerlink" href="#id15" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id16">
+<a class="reference internal image-reference" href="_images/query-summary-stats-example.png"><img alt="PhenomeDB QueryFactory summary stats" src="_images/query-summary-stats-example.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">The QueryFactory summary stats output.</span><a class="headerlink" href="#id16" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id17">
+<a class="reference internal image-reference" href="_images/query-ui-generate-cache-buttons.png"><img alt="PhenomeDB generate cache" src="_images/query-ui-generate-cache-buttons.png" style="width: 650px;" /></a>
+<figcaption>
+<p><span class="caption-text">Buttons to trigger a CreateSavedQueryDataframe task via the QueryFactory UI</span><a class="headerlink" href="#id17" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id18">
+<a class="reference internal image-reference" href="_images/query-ui-download-dataframe.png"><img alt="PhenomeDB QueryFactory download options" src="_images/query-ui-download-dataframe.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">QueryFactory options for downloading a dataframe. Options include the ability to bin harmonised metadata fields, include or exclude specific columns, and specify the output format.</span><a class="headerlink" href="#id18" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="scaling-normalisation-and-batch-correction">
+<h2>Scaling, normalisation, and batch correction<a class="headerlink" href="#scaling-normalisation-and-batch-correction" title="Permalink to this heading"></a></h2>
+<p>In order to compare metabolite levels across different batches, projects, or assays, scaling/normalisation, transformation, and batch correction must be undertaken. The aim of these methods is to minimise inter-batch technical variation while maintaining inter-sample biological variation.</p>
+</section>
+<section id="running-analyses">
+<h2>Running analyses<a class="headerlink" href="#running-analyses" title="Permalink to this heading"></a></h2>
+<p>Implemented analysis functions include:</p>
+<ol class="upperalpha simple">
+<li><p>PCA via the RunPCA task</p></li>
+<li><p>PCPR2 via the RunPCPR2 task</p></li>
+<li><p>MWAS via the RunMWAS task</p></li>
+<li><p>nPYc reports via the RunNPYCReport task</p></li>
+</ol>
+<p>Individual analyses can be run via the AnalysisView page, where task runs can be parameterised and scheduled, and the results can be explored.</p>
+<figure class="align-default" id="id19">
+<a class="reference internal image-reference" href="_images/analysis-view-list.png"><img alt="PhenomeDB AnalysisView list" src="_images/analysis-view-list.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Analyses can be executed against queries (and upstream task runs) using the AnalysisView. Parameters for the task run can be specified using the html form, including scaling and transformation steps and task-specific options. Previous task runs can be explored via a table.</span><a class="headerlink" href="#id19" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>The results of each analysis can be explored via a dedicated UI, with panels common to all analysis tasks with options to rerun the task, and options to download the input and output datasets.</p>
+<figure class="align-default" id="id20">
+<a class="reference internal image-reference" href="_images/analysis-view-common.png"><img alt="PhenomeDB AnalysisView common" src="_images/analysis-view-common.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Each task run output view has the ability to re-run the task with new parameters, and explore and download the input and output datasets.</span><a class="headerlink" href="#id20" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Each AnalysisTask also has specific charts and figures available to explore the results.</p>
+<figure class="align-default" id="id21">
+<a class="reference internal image-reference" href="_images/pca-view.png"><img alt="PhenomeDB RunPCA visualisation" src="_images/pca-view.png" style="width: 650px;" /></a>
+<figcaption>
+<p><span class="caption-text">Interactive visualisation of PCA outputs, including A: Scree plot, B: control panel to control the chart options, C: 2D scores plots, D, E, F: loadings plots.</span><a class="headerlink" href="#id21" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id22">
+<a class="reference internal image-reference" href="_images/pcpr2-view-1.png"><img alt="PhenomeDB RunPCPr2 visualisation" src="_images/pcpr2-view-1.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Visualisation of PCPR2 results</span><a class="headerlink" href="#id22" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id23">
+<a class="reference internal image-reference" href="_images/MWAS-view-example.png"><img alt="PhenomeDB RunMWAS visualisation" src="_images/MWAS-view-example.png" style="width: 650px;" /></a>
+<figcaption>
+<p><span class="caption-text">Interactive visualisation of 1D MWAS outputs</span><a class="headerlink" href="#id23" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id24">
+<a class="reference internal image-reference" href="_images/example-lneg-mwas-sex-comparison-consistent.png"><img alt="PhenomeDB RunMWAS compare visualisation" src="_images/example-lneg-mwas-sex-comparison-consistent.png" style="width: 650px;" /></a>
+<figcaption>
+<p><span class="caption-text">Interactive visualisation of MWAS comparison heatmaps, where the results of two MWAS analyses can be compared, in this case comparing the age-associated metabolites of males and females</span><a class="headerlink" href="#id24" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="tasks-and-pipelines">
+<h2>Tasks and Pipelines<a class="headerlink" href="#tasks-and-pipelines" title="Permalink to this heading"></a></h2>
+<p>Major processing steps including import, harmonisation, integration, analysis are structured into repeatable and reusable ‘tasks’. These tasks can then be organised into ‘pipelines’ using the PipelineFactory and registered to and executed and monitored by Apace-Airflow. When a task is executed it records a TaskRun object in the database with information regarding the parameters used. Task outputs are stored in the persistent cache for later use.</p>
+<p>Pipelines can be created, registered with Airflow, and executed via the PipelineFactory. Using this approach removes the requirements for manually writing Airflow DAG files.</p>
+<figure class="align-default" id="id25">
+<a class="reference internal image-reference" href="_images/pipeline-factory-overview.png"><img alt="PhenomeB PipelineFactory Overview" src="_images/pipeline-factory-overview.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Overview of how the PipelineFactory can be used to create Apache Airflow pipelines</span><a class="headerlink" href="#id25" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id26">
+<a class="reference internal image-reference" href="_images/backfill-annotations-pipeline-overview.png"><img alt="PhenomeB Pipeline Example" src="_images/backfill-annotations-pipeline-overview.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of using a task to create a Pipeline, using the PipelineFactory to chain tasks together and register it with Airflow</span><a class="headerlink" href="#id26" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="development.html" class="btn btn-neutral float-right" title="Development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Imperial College London.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

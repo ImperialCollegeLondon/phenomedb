@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>phenomedb.imports &mdash; PhenomeDB 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="phenomedb.metadata" href="metadata.html" />
+    <link rel="prev" title="phenomedb.compounds" href="compounds.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PhenomeDB
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#settings">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#id2">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">phenomedb.imports</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.AnnotationImportTask"><code class="docutils literal notranslate"><span class="pre">AnnotationImportTask</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.AnnotationImportTask.add_or_update_annotated_feature_unified"><code class="docutils literal notranslate"><span class="pre">AnnotationImportTask.add_or_update_annotated_feature_unified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.AnnotationImportTask.add_or_update_sample_assay"><code class="docutils literal notranslate"><span class="pre">AnnotationImportTask.add_or_update_sample_assay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.AnnotationImportTask.get_or_add_feature_metadata_unified"><code class="docutils literal notranslate"><span class="pre">AnnotationImportTask.get_or_add_feature_metadata_unified()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.AnnotationImportTask.process"><code class="docutils literal notranslate"><span class="pre">AnnotationImportTask.process()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.DownloadMetabolightsStudy"><code class="docutils literal notranslate"><span class="pre">DownloadMetabolightsStudy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportBrukerIVDRAnnotations"><code class="docutils literal notranslate"><span class="pre">ImportBrukerIVDRAnnotations</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.add_or_update_feature_metadata"><code class="docutils literal notranslate"><span class="pre">ImportBrukerIVDRAnnotations.add_or_update_feature_metadata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.get_or_add_metadata"><code class="docutils literal notranslate"><span class="pre">ImportBrukerIVDRAnnotations.get_or_add_metadata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.get_or_add_unit"><code class="docutils literal notranslate"><span class="pre">ImportBrukerIVDRAnnotations.get_or_add_unit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.load_dataset"><code class="docutils literal notranslate"><span class="pre">ImportBrukerIVDRAnnotations.load_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">ImportBrukerIVDRAnnotations.map_and_add_dataset_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.post_commit_actions"><code class="docutils literal notranslate"><span class="pre">ImportBrukerIVDRAnnotations.post_commit_actions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportDataLocations"><code class="docutils literal notranslate"><span class="pre">ImportDataLocations</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportDataLocations.get_or_add_sample"><code class="docutils literal notranslate"><span class="pre">ImportDataLocations.get_or_add_sample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportDataLocations.get_or_add_sample_assay"><code class="docutils literal notranslate"><span class="pre">ImportDataLocations.get_or_add_sample_assay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportDataLocations.get_or_add_subject"><code class="docutils literal notranslate"><span class="pre">ImportDataLocations.get_or_add_subject()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportDataLocations.load_dataset"><code class="docutils literal notranslate"><span class="pre">ImportDataLocations.load_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportDataLocations.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">ImportDataLocations.map_and_add_dataset_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportDataLocations.nmr_assay_regexes"><code class="docutils literal notranslate"><span class="pre">ImportDataLocations.nmr_assay_regexes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportLCMSUntargeted"><code class="docutils literal notranslate"><span class="pre">ImportLCMSUntargeted</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportLCMSUntargeted.load_dataset"><code class="docutils literal notranslate"><span class="pre">ImportLCMSUntargeted.load_dataset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.add_annotated_features"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.add_annotated_features()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.add_annotation_compounds"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.add_annotation_compounds()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_data_repository"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.get_or_add_data_repository()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_metabolights_compound"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.get_or_add_metabolights_compound()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_metadata_field"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.get_or_add_metadata_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_protocol"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.get_or_add_protocol()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_publication"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.get_or_add_publication()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_sample"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.get_or_add_sample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_subject"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.get_or_add_subject()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.load_dataset"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.load_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.load_study_description_file"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.load_study_description_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.map_and_add_dataset_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.parse_assay_file"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.parse_assay_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.parse_assays"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.parse_assays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.parse_persons"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.parse_persons()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.parse_protocols"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.parse_protocols()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.parse_publications"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.parse_publications()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.parse_sample_information"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.parse_sample_information()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsStudy.parse_study_description"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsStudy.parse_study_description()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.add_annotated_features"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.add_annotated_features()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.add_annotation_compounds"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.add_annotation_compounds()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_data_repository"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.get_or_add_data_repository()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_metabolights_compound"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.get_or_add_metabolights_compound()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_metadata_field"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.get_or_add_metadata_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_protocol"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.get_or_add_protocol()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_publication"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.get_or_add_publication()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_sample"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.get_or_add_sample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_subject"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.get_or_add_subject()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.load_dataset"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.load_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.load_study_description_file"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.load_study_description_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.map_and_add_dataset_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_assay_file"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.parse_assay_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_assays"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.parse_assays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_persons"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.parse_persons()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_protocols"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.parse_protocols()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_publications"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.parse_publications()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_sample_information"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.parse_sample_information()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_study_description"><code class="docutils literal notranslate"><span class="pre">ImportMetabolightsXCMSAnnotations.parse_study_description()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportMetadata"><code class="docutils literal notranslate"><span class="pre">ImportMetadata</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetadata.load_dataset"><code class="docutils literal notranslate"><span class="pre">ImportMetadata.load_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportMetadata.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">ImportMetadata.map_and_add_dataset_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportNPYC"><code class="docutils literal notranslate"><span class="pre">ImportNPYC</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportNPYC.get_or_add_sample"><code class="docutils literal notranslate"><span class="pre">ImportNPYC.get_or_add_sample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportNPYC.get_or_add_sample_assay"><code class="docutils literal notranslate"><span class="pre">ImportNPYC.get_or_add_sample_assay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportNPYC.get_or_add_subject"><code class="docutils literal notranslate"><span class="pre">ImportNPYC.get_or_add_subject()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportNPYC.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">ImportNPYC.map_and_add_dataset_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportPeakPantherAnnotations"><code class="docutils literal notranslate"><span class="pre">ImportPeakPantherAnnotations</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportPeakPantherAnnotations.get_or_add_unit"><code class="docutils literal notranslate"><span class="pre">ImportPeakPantherAnnotations.get_or_add_unit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportPeakPantherAnnotations.load_dataset"><code class="docutils literal notranslate"><span class="pre">ImportPeakPantherAnnotations.load_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportPeakPantherAnnotations.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">ImportPeakPantherAnnotations.map_and_add_dataset_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportPeakPantherAnnotations.post_commit_actions"><code class="docutils literal notranslate"><span class="pre">ImportPeakPantherAnnotations.post_commit_actions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportSampleManifest"><code class="docutils literal notranslate"><span class="pre">ImportSampleManifest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportSampleManifest.add_metadata"><code class="docutils literal notranslate"><span class="pre">ImportSampleManifest.add_metadata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportSampleManifest.add_metadata_from_sample_worksheet"><code class="docutils literal notranslate"><span class="pre">ImportSampleManifest.add_metadata_from_sample_worksheet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportSampleManifest.add_metadata_from_subject_worksheet"><code class="docutils literal notranslate"><span class="pre">ImportSampleManifest.add_metadata_from_subject_worksheet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportSampleManifest.get_or_add_sample"><code class="docutils literal notranslate"><span class="pre">ImportSampleManifest.get_or_add_sample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportSampleManifest.get_or_add_subject"><code class="docutils literal notranslate"><span class="pre">ImportSampleManifest.get_or_add_subject()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportSampleManifest.load_dataset"><code class="docutils literal notranslate"><span class="pre">ImportSampleManifest.load_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportSampleManifest.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">ImportSampleManifest.map_and_add_dataset_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportTargetLynxAnnotations"><code class="docutils literal notranslate"><span class="pre">ImportTargetLynxAnnotations</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTargetLynxAnnotations.add_or_update_feature_metadata"><code class="docutils literal notranslate"><span class="pre">ImportTargetLynxAnnotations.add_or_update_feature_metadata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTargetLynxAnnotations.load_dataset"><code class="docutils literal notranslate"><span class="pre">ImportTargetLynxAnnotations.load_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTargetLynxAnnotations.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">ImportTargetLynxAnnotations.map_and_add_dataset_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportTask"><code class="docutils literal notranslate"><span class="pre">ImportTask</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.add_metadata_field"><code class="docutils literal notranslate"><span class="pre">ImportTask.add_metadata_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.add_metadata_field_and_value"><code class="docutils literal notranslate"><span class="pre">ImportTask.add_metadata_field_and_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.add_metadata_value"><code class="docutils literal notranslate"><span class="pre">ImportTask.add_metadata_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.get_annotated_feature"><code class="docutils literal notranslate"><span class="pre">ImportTask.get_annotated_feature()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.get_annotation_by_cpd_name_and_annotation_method"><code class="docutils literal notranslate"><span class="pre">ImportTask.get_annotation_by_cpd_name_and_annotation_method()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.get_or_add_sample"><code class="docutils literal notranslate"><span class="pre">ImportTask.get_or_add_sample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.get_or_add_subject"><code class="docutils literal notranslate"><span class="pre">ImportTask.get_or_add_subject()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.get_or_build_sample_name"><code class="docutils literal notranslate"><span class="pre">ImportTask.get_or_build_sample_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.get_or_build_subject_name"><code class="docutils literal notranslate"><span class="pre">ImportTask.get_or_build_subject_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.get_project"><code class="docutils literal notranslate"><span class="pre">ImportTask.get_project()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.get_sample_assay"><code class="docutils literal notranslate"><span class="pre">ImportTask.get_sample_assay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.load_dataset"><code class="docutils literal notranslate"><span class="pre">ImportTask.load_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">ImportTask.map_and_add_dataset_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.process"><code class="docutils literal notranslate"><span class="pre">ImportTask.process()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportTask.simple_report"><code class="docutils literal notranslate"><span class="pre">ImportTask.simple_report()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.ImportXCMSFeatures"><code class="docutils literal notranslate"><span class="pre">ImportXCMSFeatures</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportXCMSFeatures.get_or_add_assay"><code class="docutils literal notranslate"><span class="pre">ImportXCMSFeatures.get_or_add_assay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportXCMSFeatures.load_dataset"><code class="docutils literal notranslate"><span class="pre">ImportXCMSFeatures.load_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.imports.ImportXCMSFeatures.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">ImportXCMSFeatures.map_and_add_dataset_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.getrandbits"><code class="docutils literal notranslate"><span class="pre">getrandbits()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phenomedb.imports.random"><code class="docutils literal notranslate"><span class="pre">random()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_factory.html">phenomedb.pipeline_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipelines.html">phenomedb.pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="query_factory.html">phenomedb.query_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task.html">phenomedb.task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">phenomedb.utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">phenomedb.views</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PhenomeDB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">phenomedb.imports</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/imports.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="phenomedb-imports">
+<h1>phenomedb.imports<a class="headerlink" href="#phenomedb-imports" title="Permalink to this heading"></a></h1>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="_images/import-task-overview.png"><img alt="ImportTask overview" src="_images/import-task-overview.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Overview of the ImportTask class structure. All ImportTasks inherit this transactional-validation approach.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<span class="target" id="module-phenomedb.imports"></span><dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.AnnotationImportTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">AnnotationImportTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.AnnotationImportTask" title="Permalink to this definition"></a></dt>
+<dd><p>Annotation Import Task is the Base task for importing AnnotatedFeatures and Annotations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ImportTask</strong> (<cite>phenomedb.imports.ImportTask</cite>) – The Base Import Task</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.AnnotationImportTask.add_or_update_annotated_feature_unified">
+<span class="sig-name descname"><span class="pre">add_or_update_annotated_feature_unified</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_assay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.AnnotationImportTask.add_or_update_annotated_feature_unified" title="Permalink to this definition"></a></dt>
+<dd><p>Add a annotated_feature</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_assay</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.sample_assay</span></code>) – The sample_assay of the annotation</p></li>
+<li><p><strong>feature_metadata_row</strong> (<em>dict</em>) – The row the feature_metadata</p></li>
+<li><p><strong>intensity</strong> (<em>float</em>) – The intensity value</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.AnnotationImportTask.add_or_update_sample_assay">
+<span class="sig-name descname"><span class="pre">add_or_update_sample_assay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.AnnotationImportTask.add_or_update_sample_assay" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add a new sample_assay</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.sample</span></code>) – The sample of the sample_assay</p></li>
+<li><p><strong>sample_row_index</strong> (<em>int</em>) – The dataset row index of the sample</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sample_assay object <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.sample_assay</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class:<cite>phenomedb.models.sample_assay</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.AnnotationImportTask.get_or_add_feature_metadata_unified">
+<span class="sig-name descname"><span class="pre">get_or_add_feature_metadata_unified</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.AnnotationImportTask.get_or_add_feature_metadata_unified" title="Permalink to this definition"></a></dt>
+<dd><p>Gets or adds the feature_metadata (where cpd_name == Feature Name)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.AnnotationImportTask.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.AnnotationImportTask.process" title="Permalink to this definition"></a></dt>
+<dd><p>The annotation import process method</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.DownloadMetabolightsStudy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">DownloadMetabolightsStudy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_folder_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">study_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.DownloadMetabolightsStudy" title="Permalink to this definition"></a></dt>
+<dd><p>Import Metabolights Study Task</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ImportTask</strong> (<cite>phenomedb.imports.ImportTask</cite>) – Base ImportTask</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportBrukerIVDRAnnotations">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportBrukerIVDRAnnotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_latest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unified_csv_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportBrukerIVDRAnnotations" title="Permalink to this definition"></a></dt>
+<dd><p>Import Bruker IVDr Annotations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AnnotationImportTask</strong> (<cite>phenomedb.imports.AnnotationImportTask</cite>) – The AnnotationImportTask</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportBrukerIVDRAnnotations.add_or_update_feature_metadata">
+<span class="sig-name descname"><span class="pre">add_or_update_feature_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_column_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.add_or_update_feature_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Get FeatureMetadata (column) based on FeatureDataset.id and the Feature Name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feature_column_index</strong> (<em>int</em>) – The column index from the feature file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Annotation</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.Annotation</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportBrukerIVDRAnnotations.get_or_add_metadata">
+<span class="sig-name descname"><span class="pre">get_or_add_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.get_or_add_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Add the raw metadata to the metadata_raw table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.sample</span></code>) – The sampling event of metadata_raw</p></li>
+<li><p><strong>sample_row_index</strong> (<em>int</em>) – The dataset row index of the sample</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportBrukerIVDRAnnotations.get_or_add_unit">
+<span class="sig-name descname"><span class="pre">get_or_add_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.get_or_add_unit" title="Permalink to this definition"></a></dt>
+<dd><p>Gets or adds a unit to the database (by unit name)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportBrukerIVDRAnnotations.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the task dataset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportBrukerIVDRAnnotations.map_and_add_dataset_data">
+<span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map the imported nPYc dataset to the phenomeDB models and add to db.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportBrukerIVDRAnnotations.post_commit_actions">
+<span class="sig-name descname"><span class="pre">post_commit_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportBrukerIVDRAnnotations.post_commit_actions" title="Permalink to this definition"></a></dt>
+<dd><p>Triggers the pipelines</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportDataLocations">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportDataLocations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_locations_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_platform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportDataLocations" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportDataLocations.get_or_add_sample">
+<span class="sig-name descname"><span class="pre">get_or_add_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportDataLocations.get_or_add_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add Sample</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sample_row_index</strong> (<em>int</em>) – The index of the sample file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sample</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.Sample</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportDataLocations.get_or_add_sample_assay">
+<span class="sig-name descname"><span class="pre">get_or_add_sample_assay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportDataLocations.get_or_add_sample_assay" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add a SampleAssay</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_row_index</strong> (<em>int</em>) – The row index of the sample Dataframe</p></li>
+<li><p><strong>sample</strong> (<cite>phenomedb.models.Sample</cite>) – The Sample of the SampleAssay</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>SampleAssay</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.SampleAssay</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportDataLocations.get_or_add_subject">
+<span class="sig-name descname"><span class="pre">get_or_add_subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportDataLocations.get_or_add_subject" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add a new subject</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sample_row_index</strong> – The row number of the UnifiedCSV dataset</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>subject object <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.subject</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class:<cite>phenomedb.models.subject</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportDataLocations.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportDataLocations.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the task dataset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportDataLocations.map_and_add_dataset_data">
+<span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportDataLocations.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map the imported nPYc dataset to the phenomeDB models and add to db.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportDataLocations.nmr_assay_regexes">
+<span class="sig-name descname"><span class="pre">nmr_assay_regexes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'blood':</span> <span class="pre">{'0$':</span> <span class="pre">'NOESY',</span> <span class="pre">'1$':</span> <span class="pre">'CPMG',</span> <span class="pre">'2$':</span> <span class="pre">'JRES',</span> <span class="pre">'3$':</span> <span class="pre">'DAS'},</span> <span class="pre">'urine':</span> <span class="pre">{'0$':</span> <span class="pre">'NOESY',</span> <span class="pre">'1$':</span> <span class="pre">'JRES',</span> <span class="pre">'2$':</span> <span class="pre">'DAS'}}</span></em><a class="headerlink" href="#phenomedb.imports.ImportDataLocations.nmr_assay_regexes" title="Permalink to this definition"></a></dt>
+<dd><p>Import Run Order Class. Imports a run order file.
+:param task_options: A dictionary containing the task options
+:type task_options: dict</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportLCMSUntargeted">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportLCMSUntargeted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'XCMS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sop_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GenericMS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_metadata_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_metadata_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Basic</span> <span class="pre">CSV'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportLCMSUntargeted" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportLCMSUntargeted.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportLCMSUntargeted.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Load that dataset. This method should be over-ridden in the task class.
+This method can call a python package or do a system call.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportMetabolightsStudy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy" title="Permalink to this definition"></a></dt>
+<dd><p>Import Metabolights Study Task</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ImportTask</strong> (<cite>phenomedb.imports.ImportTask</cite>) – Base ImportTask</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.add_annotated_features">
+<span class="sig-name descname"><span class="pre">add_annotated_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metabolite_assignment_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_assay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_unit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.add_annotated_features" title="Permalink to this definition"></a></dt>
+<dd><p>Add Annotations and AnnotatedFeatures</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>assay</strong> (<cite>phenomedb.models.Assay</cite>) – The Assay</p></li>
+<li><p><strong>metabolite_assignment_file</strong> (<em>str</em>) – The maf file</p></li>
+<li><p><strong>sample_assay</strong> (<cite>phenomedb.models.SampleAssay</cite>) – The SampleAssay</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.add_annotation_compounds">
+<span class="sig-name descname"><span class="pre">add_annotation_compounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.add_annotation_compounds" title="Permalink to this definition"></a></dt>
+<dd><p>Add the AnnotationCompounds.</p>
+<p>1. Add the Compound
+3. Add the HarmonisedAnnotation
+4. Add the AnnotationCompound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>assay</strong> (<cite>phenomedb.models.Assay</cite>) – the Assay</p></li>
+<li><p><strong>annotation_file</strong> (<em>str</em>) – The annotation file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.get_or_add_data_repository">
+<span class="sig-name descname"><span class="pre">get_or_add_data_repository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accession_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public_release_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_data_repository" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the repo</p></li>
+<li><p><strong>accession_number</strong> (<em>str</em><em>, </em><em>optional</em>) – accession number of repo, defaults to None</p></li>
+<li><p><strong>submission_date</strong> (<cite>datetime.datetime</cite>, optional) – Date of submission, defaults to None</p></li>
+<li><p><strong>public_release_date</strong> (<cite>datetime.datetime</cite>, optional) – Date of release, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataRepository</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.DataRepository</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.get_or_add_metabolights_compound">
+<span class="sig-name descname"><span class="pre">get_or_add_metabolights_compound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">the_row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_metabolights_compound" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add Metabolights Compound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>assay</strong> (<cite>phenomedb.models.Assay</cite>) – Assay</p></li>
+<li><p><strong>annotation_method</strong> (<cite>phenomedb.models.AnnotationMethod</cite>) – AnnotationMethod</p></li>
+<li><p><strong>chebi_id</strong> (<em>str</em>) – ChEBI ID</p></li>
+<li><p><strong>chemical_formula</strong> (<em>str</em>) – Chemical formula</p></li>
+<li><p><strong>smiles</strong> (<em>str</em>) – SMILES</p></li>
+<li><p><strong>inchi</strong> (<em>str</em>) – InChI</p></li>
+<li><p><strong>cpd_name</strong> (<em>str</em>) – cpd_name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>AnnotationCompound</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.AnnotationCompound</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.get_or_add_metadata_field">
+<span class="sig-name descname"><span class="pre">get_or_add_metadata_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_metadata_field" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add metadata field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field_name</strong> (<em>str</em>) – The name of the metadata field</p></li>
+<li><p><strong>field_value</strong> (<em>str</em>) – The value of the metadata field</p></li>
+<li><p><strong>sample</strong> (<cite>phenomedb.models.Sample</cite>) – Sample</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.get_or_add_protocol">
+<span class="sig-name descname"><span class="pre">get_or_add_protocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_protocol" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add the protocol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – protocol name, defaults to None</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>optional</em>) – protocol type, defaults to None</p></li>
+<li><p><strong>description</strong> (<em>str</em><em>, </em><em>optional</em>) – description, defaults to None</p></li>
+<li><p><strong>uri</strong> (<em>str</em><em>, </em><em>optional</em>) – URI of the protocol, defaults to None</p></li>
+<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – version of the protocol, defaults to None</p></li>
+<li><p><strong>parameters</strong> (<em>dict</em><em>, </em><em>optional</em>) – parameters of the protocol, defaults to None</p></li>
+<li><p><strong>components</strong> (<em>dict</em><em>, </em><em>optional</em>) – components of the protocol, defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.get_or_add_publication">
+<span class="sig-name descname"><span class="pre">get_or_add_publication</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pubmed_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_publication" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add publication</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pubmed_id</strong> (<em>int</em><em>, </em><em>optional</em>) – pubmed id, defaults to None</p></li>
+<li><p><strong>doi</strong> (<em>str</em><em>, </em><em>optional</em>) – DOI, defaults to None</p></li>
+<li><p><strong>author_list</strong> (<em>list</em><em>, </em><em>optional</em>) – List of authors, defaults to None</p></li>
+<li><p><strong>title</strong> (<em>str</em><em>, </em><em>optional</em>) – publication title, defaults to None</p></li>
+<li><p><strong>status</strong> (<em>str</em><em>, </em><em>optional</em>) – Publication status, defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.get_or_add_sample">
+<span class="sig-name descname"><span class="pre">get_or_add_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_type_enum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_matrix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add Sample</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> (<cite>phenomedb.models.Subject</cite>) – Subject</p></li>
+<li><p><strong>sample_name</strong> (<em>str</em>) – Sample name</p></li>
+<li><p><strong>sample_type_enum</strong> (<cite>SampleType</cite>) – SampleType enum</p></li>
+<li><p><strong>sample_matrix</strong> (<em>sample matrix</em>) – Sample matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sample</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.Sample</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.get_or_add_subject">
+<span class="sig-name descname"><span class="pre">get_or_add_subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_type_enum</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.get_or_add_subject" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add subject</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_name</strong> (<em>str</em>) – Sample name</p></li>
+<li><p><strong>sample_type_enum</strong> (<em>str</em>) – Sample Type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Subject</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.Subject</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the dataset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.load_study_description_file">
+<span class="sig-name descname"><span class="pre">load_study_description_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.load_study_description_file" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Takes study description file and builds a 2D dictionary of sections, and key -&gt; values</dt><dd><p>Lists</p>
+</dd>
+</dl>
+<p>ONTOLOGY SOURCE REFERENCE
+Term Source Name        “OBI”   “NCBITAXON”     “CHMO”  “CL”    “EFO”   “MS”    “NCIT”
+INVESTIGATION
+Investigation Identifier        “MTBLS1073”</p>
+<p>study_description_dict[‘ONTOLOGY SOURCE REFERENCE’][‘Term Source Name’] = [“OBI”,”NCBITAXON”,”CHMO”,”CL”,”EFO”,”MS”,”NCIT”]
+study_description_dict[‘INVESTIGATION’][‘Investigation Identifier’] = “MTBLS1073”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The path to the study description file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.map_and_add_dataset_data">
+<span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map and add dataset data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.parse_assay_file">
+<span class="sig-name descname"><span class="pre">parse_assay_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assay_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.parse_assay_file" title="Permalink to this definition"></a></dt>
+<dd><p>Parse an assay file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>assay_file</strong> (<em>str</em>) – The name of the assay file</p></li>
+<li><p><strong>data</strong> (<cite>pandas.Dataframe</cite>) – The assay data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – [description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.parse_assays">
+<span class="sig-name descname"><span class="pre">parse_assays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.parse_assays" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the assays</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.parse_persons">
+<span class="sig-name descname"><span class="pre">parse_persons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.parse_persons" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the persons</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>person dict</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.parse_protocols">
+<span class="sig-name descname"><span class="pre">parse_protocols</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.parse_protocols" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the protocols</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.parse_publications">
+<span class="sig-name descname"><span class="pre">parse_publications</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.parse_publications" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the publications</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.parse_sample_information">
+<span class="sig-name descname"><span class="pre">parse_sample_information</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.parse_sample_information" title="Permalink to this definition"></a></dt>
+<dd><p>Parse sample information</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsStudy.parse_study_description">
+<span class="sig-name descname"><span class="pre">parse_study_description</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsStudy.parse_study_description" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the study description</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportMetabolightsXCMSAnnotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xcms_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_name_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.add_annotated_features">
+<span class="sig-name descname"><span class="pre">add_annotated_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metabolite_assignment_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_assay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_unit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.add_annotated_features" title="Permalink to this definition"></a></dt>
+<dd><p>Add Annotations and AnnotatedFeatures</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>assay</strong> (<cite>phenomedb.models.Assay</cite>) – The Assay</p></li>
+<li><p><strong>metabolite_assignment_file</strong> (<em>str</em>) – The maf file</p></li>
+<li><p><strong>sample_assay</strong> (<cite>phenomedb.models.SampleAssay</cite>) – The SampleAssay</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.add_annotation_compounds">
+<span class="sig-name descname"><span class="pre">add_annotation_compounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.add_annotation_compounds" title="Permalink to this definition"></a></dt>
+<dd><p>Add the AnnotationCompounds.</p>
+<p>1. Add the Compound
+3. Add the HarmonisedAnnotation
+4. Add the AnnotationCompound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>assay</strong> (<cite>phenomedb.models.Assay</cite>) – the Assay</p></li>
+<li><p><strong>annotation_file</strong> (<em>str</em>) – The annotation file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_data_repository">
+<span class="sig-name descname"><span class="pre">get_or_add_data_repository</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accession_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submission_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">public_release_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_data_repository" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add repository</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the repo</p></li>
+<li><p><strong>accession_number</strong> (<em>str</em><em>, </em><em>optional</em>) – accession number of repo, defaults to None</p></li>
+<li><p><strong>submission_date</strong> (<cite>datetime.datetime</cite>, optional) – Date of submission, defaults to None</p></li>
+<li><p><strong>public_release_date</strong> (<cite>datetime.datetime</cite>, optional) – Date of release, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataRepository</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.DataRepository</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_metabolights_compound">
+<span class="sig-name descname"><span class="pre">get_or_add_metabolights_compound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">the_row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_metabolights_compound" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add Metabolights Compound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>assay</strong> (<cite>phenomedb.models.Assay</cite>) – Assay</p></li>
+<li><p><strong>annotation_method</strong> (<cite>phenomedb.models.AnnotationMethod</cite>) – AnnotationMethod</p></li>
+<li><p><strong>chebi_id</strong> (<em>str</em>) – ChEBI ID</p></li>
+<li><p><strong>chemical_formula</strong> (<em>str</em>) – Chemical formula</p></li>
+<li><p><strong>smiles</strong> (<em>str</em>) – SMILES</p></li>
+<li><p><strong>inchi</strong> (<em>str</em>) – InChI</p></li>
+<li><p><strong>cpd_name</strong> (<em>str</em>) – cpd_name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>AnnotationCompound</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.AnnotationCompound</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_metadata_field">
+<span class="sig-name descname"><span class="pre">get_or_add_metadata_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_metadata_field" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add metadata field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field_name</strong> (<em>str</em>) – The name of the metadata field</p></li>
+<li><p><strong>field_value</strong> (<em>str</em>) – The value of the metadata field</p></li>
+<li><p><strong>sample</strong> (<cite>phenomedb.models.Sample</cite>) – Sample</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_protocol">
+<span class="sig-name descname"><span class="pre">get_or_add_protocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_protocol" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add the protocol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – protocol name, defaults to None</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>optional</em>) – protocol type, defaults to None</p></li>
+<li><p><strong>description</strong> (<em>str</em><em>, </em><em>optional</em>) – description, defaults to None</p></li>
+<li><p><strong>uri</strong> (<em>str</em><em>, </em><em>optional</em>) – URI of the protocol, defaults to None</p></li>
+<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – version of the protocol, defaults to None</p></li>
+<li><p><strong>parameters</strong> (<em>dict</em><em>, </em><em>optional</em>) – parameters of the protocol, defaults to None</p></li>
+<li><p><strong>components</strong> (<em>dict</em><em>, </em><em>optional</em>) – components of the protocol, defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_publication">
+<span class="sig-name descname"><span class="pre">get_or_add_publication</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pubmed_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">author_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_publication" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add publication</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pubmed_id</strong> (<em>int</em><em>, </em><em>optional</em>) – pubmed id, defaults to None</p></li>
+<li><p><strong>doi</strong> (<em>str</em><em>, </em><em>optional</em>) – DOI, defaults to None</p></li>
+<li><p><strong>author_list</strong> (<em>list</em><em>, </em><em>optional</em>) – List of authors, defaults to None</p></li>
+<li><p><strong>title</strong> (<em>str</em><em>, </em><em>optional</em>) – publication title, defaults to None</p></li>
+<li><p><strong>status</strong> (<em>str</em><em>, </em><em>optional</em>) – Publication status, defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_sample">
+<span class="sig-name descname"><span class="pre">get_or_add_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_type_enum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_matrix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add Sample</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> (<cite>phenomedb.models.Subject</cite>) – Subject</p></li>
+<li><p><strong>sample_name</strong> (<em>str</em>) – Sample name</p></li>
+<li><p><strong>sample_type_enum</strong> (<cite>SampleType</cite>) – SampleType enum</p></li>
+<li><p><strong>sample_matrix</strong> (<em>sample matrix</em>) – Sample matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sample</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.Sample</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_subject">
+<span class="sig-name descname"><span class="pre">get_or_add_subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_type_enum</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_subject" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add subject</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_name</strong> (<em>str</em>) – Sample name</p></li>
+<li><p><strong>sample_type_enum</strong> (<em>str</em>) – Sample Type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Subject</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.Subject</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the dataset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.load_study_description_file">
+<span class="sig-name descname"><span class="pre">load_study_description_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.load_study_description_file" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Takes study description file and builds a 2D dictionary of sections, and key -&gt; values</dt><dd><p>Lists</p>
+</dd>
+</dl>
+<p>ONTOLOGY SOURCE REFERENCE
+Term Source Name        “OBI”   “NCBITAXON”     “CHMO”  “CL”    “EFO”   “MS”    “NCIT”
+INVESTIGATION
+Investigation Identifier        “MTBLS1073”</p>
+<p>study_description_dict[‘ONTOLOGY SOURCE REFERENCE’][‘Term Source Name’] = [“OBI”,”NCBITAXON”,”CHMO”,”CL”,”EFO”,”MS”,”NCIT”]
+study_description_dict[‘INVESTIGATION’][‘Investigation Identifier’] = “MTBLS1073”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The path to the study description file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.map_and_add_dataset_data">
+<span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map and add dataset data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_assay_file">
+<span class="sig-name descname"><span class="pre">parse_assay_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assay_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_assay_file" title="Permalink to this definition"></a></dt>
+<dd><p>Parse an assay file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>assay_file</strong> (<em>str</em>) – The name of the assay file</p></li>
+<li><p><strong>data</strong> (<cite>pandas.Dataframe</cite>) – The assay data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – [description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_assays">
+<span class="sig-name descname"><span class="pre">parse_assays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_assays" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the assays</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_persons">
+<span class="sig-name descname"><span class="pre">parse_persons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_persons" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the persons</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>person dict</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_protocols">
+<span class="sig-name descname"><span class="pre">parse_protocols</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_protocols" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the protocols</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_publications">
+<span class="sig-name descname"><span class="pre">parse_publications</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_publications" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the publications</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_sample_information">
+<span class="sig-name descname"><span class="pre">parse_sample_information</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_sample_information" title="Permalink to this definition"></a></dt>
+<dd><p>Parse sample information</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_study_description">
+<span class="sig-name descname"><span class="pre">parse_study_description</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetabolightsXCMSAnnotations.parse_study_description" title="Permalink to this definition"></a></dt>
+<dd><p>Parse the study description</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetadata">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Sample'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_to_import</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetadata" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetadata.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetadata.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Load that dataset. This method should be over-ridden in the task class.
+This method can call a python package or do a system call.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportMetadata.map_and_add_dataset_data">
+<span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportMetadata.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map the dataset and import to phenomeDB</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportNPYC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportNPYC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_metadata_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_metadata_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportNPYC" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportNPYC.get_or_add_sample">
+<span class="sig-name descname"><span class="pre">get_or_add_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportNPYC.get_or_add_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add a new sample</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.subject</span></code>) – The subject of the sample</p></li>
+<li><p><strong>sample_row_index</strong> (<em>in</em>) – The dataset row index the sample</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sample object <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.sample</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class:<cite>phenomedb.models.sample</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportNPYC.get_or_add_sample_assay">
+<span class="sig-name descname"><span class="pre">get_or_add_sample_assay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportNPYC.get_or_add_sample_assay" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add a new sample</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.subject</span></code>) – The subject of the sample</p></li>
+<li><p><strong>sample_row_index</strong> (<em>in</em>) – The dataset row index the sample</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sample object <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.sample</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class:<cite>phenomedb.models.sample</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportNPYC.get_or_add_subject">
+<span class="sig-name descname"><span class="pre">get_or_add_subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportNPYC.get_or_add_subject" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add a new subject</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The row number of the sample_metadata</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>subject object <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.subject</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class:<cite>phenomedb.models.subject</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportNPYC.map_and_add_dataset_data">
+<span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportNPYC.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map the dataset and import to phenomeDB</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportPeakPantherAnnotations">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportPeakPantherAnnotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_metadata_csv_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_metadata_csv_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_data_csv_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppr_annotation_parameters_csv_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_corrected_data_csv_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_features_feature_metadata_csv_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppr_mz_csv_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ppr_rt_csv_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_latest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_batch_correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportPeakPantherAnnotations" title="Permalink to this definition"></a></dt>
+<dd><p>ImportPeakPantherAnnotations Class. Using the Basic CSV format, imports a peakPantheR Dataset, maps to phenomeDB.models, and commits to DB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_options</strong> (<em>dict</em>) – A dictionary containing the task options</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportPeakPantherAnnotations.get_or_add_unit">
+<span class="sig-name descname"><span class="pre">get_or_add_unit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportPeakPantherAnnotations.get_or_add_unit" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add units</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportPeakPantherAnnotations.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportPeakPantherAnnotations.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the PeakPanther dataset, sets the name, and the loads the sampleInfo</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportPeakPantherAnnotations.map_and_add_dataset_data">
+<span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportPeakPantherAnnotations.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map and add the intensity data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportPeakPantherAnnotations.post_commit_actions">
+<span class="sig-name descname"><span class="pre">post_commit_actions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportPeakPantherAnnotations.post_commit_actions" title="Permalink to this definition"></a></dt>
+<dd><p>Triggers the pipelines</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportSampleManifest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportSampleManifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_manifest_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_to_ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportSampleManifest" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor method. Once initialised as task, run using task.run()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The project name, defaults to None</p></li>
+<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – The username of the person running the task, defaults to None</p></li>
+<li><p><strong>sample_manifest_path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to the sample manifest file, defaults to None</p></li>
+<li><p><strong>columns_to_ignore</strong> (<em>array</em><em>, </em><em>optional</em>) – Columns to ignore in the sample manifest file, defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportSampleManifest.add_metadata">
+<span class="sig-name descname"><span class="pre">add_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportSampleManifest.add_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Add the raw metadata to the metadata_raw table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample</strong> (<a class="reference internal" href="models.html#phenomedb.models.Sample" title="phenomedb.models.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.Sample</span></code></a>) – The sampling event of metadata_raw</p></li>
+<li><p><strong>sample_row_index</strong> (<em>int</em>) – The dataset row index</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportSampleManifest.add_metadata_from_sample_worksheet">
+<span class="sig-name descname"><span class="pre">add_metadata_from_sample_worksheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_row</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportSampleManifest.add_metadata_from_sample_worksheet" title="Permalink to this definition"></a></dt>
+<dd><p>Adds metadata from the sample worksheet</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample</strong> (<a class="reference internal" href="models.html#phenomedb.models.Sample" title="phenomedb.models.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.Sample</span></code></a>) – sample object <a class="reference internal" href="models.html#phenomedb.models.Sample" title="phenomedb.models.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.Sample</span></code></a></p></li>
+<li><p><strong>sample_row_index</strong> (<em>int</em>) – The dataset row index</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportSampleManifest.add_metadata_from_subject_worksheet">
+<span class="sig-name descname"><span class="pre">add_metadata_from_subject_worksheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_row</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportSampleManifest.add_metadata_from_subject_worksheet" title="Permalink to this definition"></a></dt>
+<dd><p>Adds metadata fields from the subject worksheet</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample</strong> (<a class="reference internal" href="models.html#phenomedb.models.Sample" title="phenomedb.models.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.Sample</span></code></a>) – sample object <a class="reference internal" href="models.html#phenomedb.models.Sample" title="phenomedb.models.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.Sample</span></code></a></p></li>
+<li><p><strong>sample_row_index</strong> (<em>int</em>) – The dataset row index</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportSampleManifest.get_or_add_sample">
+<span class="sig-name descname"><span class="pre">get_or_add_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportSampleManifest.get_or_add_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add a sample</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.subject</span></code>) – the subject of the sample</p></li>
+<li><p><strong>sample_row_index</strong> (<em>int</em>) – The dataset row index of the sample</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sample object <a class="reference internal" href="models.html#phenomedb.models.Sample" title="phenomedb.models.Sample"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.Sample</span></code></a></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.sample</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportSampleManifest.get_or_add_subject">
+<span class="sig-name descname"><span class="pre">get_or_add_subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportSampleManifest.get_or_add_subject" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add the subject</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>subject_name</strong> (<em>str</em>) – the name of the subject</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the matching <a class="reference internal" href="models.html#phenomedb.models.Subject" title="phenomedb.models.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.Subject</span></code></a></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.subject</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportSampleManifest.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportSampleManifest.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the task dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – If the file extension is not .xlsx or .xlsx</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportSampleManifest.map_and_add_dataset_data">
+<span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportSampleManifest.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map the imported nPYc dataset to the phenomeDB models and add to db.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTargetLynxAnnotations">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportTargetLynxAnnotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unified_csv_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sop_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sop_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_latest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTargetLynxAnnotations" title="Permalink to this definition"></a></dt>
+<dd><p>TargetLynx Task Class. Imports an nPYc TargetLynx Targeted Dataset, maps to phenomeDB.models, and commits to DB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AnnotationImportTask</strong> (<cite>phenomedb.imports.AnnotationImportTask</cite>) – AnnotationImportTask</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTargetLynxAnnotations.add_or_update_feature_metadata">
+<span class="sig-name descname"><span class="pre">add_or_update_feature_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_column_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTargetLynxAnnotations.add_or_update_feature_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Get FeatureMetadata (column) based on FeatureDataset.id and the Feature Name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>feature_column_index</strong> (<em>int</em>) – The column index from the feature file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Annotation</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>phenomedb.models.Annotation</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTargetLynxAnnotations.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTargetLynxAnnotations.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the task datasets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTargetLynxAnnotations.map_and_add_dataset_data">
+<span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTargetLynxAnnotations.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map the imported nPYc dataset to the phenomeDB models and add to db.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask" title="Permalink to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.add_metadata_field">
+<span class="sig-name descname"><span class="pre">add_metadata_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.add_metadata_field" title="Permalink to this definition"></a></dt>
+<dd><p>Adds and flushes a metadata field</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.add_metadata_field_and_value">
+<span class="sig-name descname"><span class="pre">add_metadata_field_and_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.add_metadata_field_and_value" title="Permalink to this definition"></a></dt>
+<dd><p>Adds and flushes the metadata field and values
+:param sample_id:
+:param field_name:
+:param field_value:
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.add_metadata_value">
+<span class="sig-name descname"><span class="pre">add_metadata_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.add_metadata_value" title="Permalink to this definition"></a></dt>
+<dd><p>Add metadata value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.get_annotated_feature">
+<span class="sig-name descname"><span class="pre">get_annotated_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_metadata_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_assay_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.get_annotated_feature" title="Permalink to this definition"></a></dt>
+<dd><p>Get a annotated_feature by feature metadata id and sample_assay.id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_metadata_id</strong> (<em>int</em>) – The id of the annotation</p></li>
+<li><p><strong>sample_assay_id</strong> (<em>int</em>) – The id of the SampleAssay</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The AnnotatedFeature</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#phenomedb.models.AnnotatedFeature" title="phenomedb.models.AnnotatedFeature"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.AnnotatedFeature</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.get_annotation_by_cpd_name_and_annotation_method">
+<span class="sig-name descname"><span class="pre">get_annotation_by_cpd_name_and_annotation_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cpd_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.get_annotation_by_cpd_name_and_annotation_method" title="Permalink to this definition"></a></dt>
+<dd><p>Get the annotation by cpd_name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cpd_name</strong> (<em>str</em>) – The name of the compound as seen seen in the annotation datasets</p></li>
+<li><p><strong>version</strong> (<em>float</em><em>, </em><em>optional</em>) – The version of the method, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The found AnnotationCompound</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#phenomedb.models.AnnotationCompound" title="phenomedb.models.AnnotationCompound"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.AnnotationCompound</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.get_or_add_sample">
+<span class="sig-name descname"><span class="pre">get_or_add_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.get_or_add_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add a new sample</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.subject</span></code>) – The subject of the sample</p></li>
+<li><p><strong>sample_row_index</strong> (<em>in</em>) – The dataset row index the sample</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sample object <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.sample</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class:<cite>phenomedb.models.sample</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.get_or_add_subject">
+<span class="sig-name descname"><span class="pre">get_or_add_subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.get_or_add_subject" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add a new subject</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The row number of the sample_metadata</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>subject object <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.subject</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class:<cite>phenomedb.models.subject</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.get_or_build_sample_name">
+<span class="sig-name descname"><span class="pre">get_or_build_sample_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.get_or_build_sample_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get or build the sample name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sample_row_index</strong> (<em>int</em>) – The row index of the sample metadata</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Sample ID not found</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The sample name</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.get_or_build_subject_name">
+<span class="sig-name descname"><span class="pre">get_or_build_subject_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_metadata_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_type_column_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SampleType'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_column_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Subject</span> <span class="pre">ID'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.get_or_build_subject_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get or build subject name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>int</em>) – The row index</p></li>
+<li><p><strong>sample_metadata_row</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.Series</span></code>) – The sample_metadata row</p></li>
+<li><p><strong>sample_type_column_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the column with SampleType, defaults to ‘SampleType’</p></li>
+<li><p><strong>subject_column_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the column with the Subject ID, defaults to ‘Subject ID’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subject name</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.get_project">
+<span class="sig-name descname"><span class="pre">get_project</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.get_project" title="Permalink to this definition"></a></dt>
+<dd><p>Gets a project to the database (by project_name)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – If no project by that name exists</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.get_sample_assay">
+<span class="sig-name descname"><span class="pre">get_sample_assay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_row_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.get_sample_assay" title="Permalink to this definition"></a></dt>
+<dd><p>Get or add a new sample_assay</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.sample</span></code>) – The sample of the sample_assay</p></li>
+<li><p><strong>sample_row_index</strong> (<em>int</em>) – The dataset row index of the sample</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sample_assay object <a class="reference internal" href="models.html#phenomedb.models.SampleAssay" title="phenomedb.models.SampleAssay"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.SampleAssay</span></code></a></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class:<cite>phenomedb.models.sample_assay</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.load_dataset">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Load that dataset. This method should be over-ridden in the task class.
+This method can call a python package or do a system call.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.map_and_add_dataset_data">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map the dataset and import to phenomeDB</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.process" title="Permalink to this definition"></a></dt>
+<dd><p>Main method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportTask.simple_report">
+<span class="sig-name descname"><span class="pre">simple_report</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.simple_report" title="Permalink to this definition"></a></dt>
+<dd><p>Check the database contains entries for all records in the dataset</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportXCMSFeatures">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportXCMSFeatures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unified_csv_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assay_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportXCMSFeatures" title="Permalink to this definition"></a></dt>
+<dd><p>XCMSFeatureImportTaskUnifiedCSV Class. Using the Unified CSV format, imports an XCMS Dataset, maps to phenomeDB.models, and commits to DB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_options</strong> (<em>dict</em>) – A dictionary containing the task options</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportXCMSFeatures.get_or_add_assay">
+<span class="sig-name descname"><span class="pre">get_or_add_assay</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportXCMSFeatures.get_or_add_assay" title="Permalink to this definition"></a></dt>
+<dd><p>Gets or adds an assay to the database (by assay_name)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportXCMSFeatures.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportXCMSFeatures.load_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the XCMS dataset, sets the name, and the loads the sampleInfo</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="phenomedb.imports.ImportXCMSFeatures.map_and_add_dataset_data">
+<span class="sig-name descname"><span class="pre">map_and_add_dataset_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportXCMSFeatures.map_and_add_dataset_data" title="Permalink to this definition"></a></dt>
+<dd><p>Map the dataset and import to phenomeDB</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.imports.getrandbits">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">getrandbits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">x.</span>&#160; <span class="pre">Generates</span> <span class="pre">an</span> <span class="pre">int</span> <span class="pre">with</span> <span class="pre">k</span> <span class="pre">random</span> <span class="pre">bits.</span></span></span><a class="headerlink" href="#phenomedb.imports.getrandbits" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="phenomedb.imports.random">
+<span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">random</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">x</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">interval</span> <span class="pre">[0,</span> <span class="pre">1).</span></span></span><a class="headerlink" href="#phenomedb.imports.random" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="compounds.html" class="btn btn-neutral float-left" title="phenomedb.compounds" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="metadata.html" class="btn btn-neutral float-right" title="phenomedb.metadata" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Imperial College London.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

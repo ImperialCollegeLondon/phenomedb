@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation &mdash; PhenomeDB 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Usage" href="usage.html" />
+    <link rel="prev" title="Welcome to PhenomeDB’s documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PhenomeDB
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#local-desktop-installation">Local/desktop installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python-installatiion">Python installatiion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-tests">Running the tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#settings">Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#id2">Settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#test">TEST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#db">DB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#webserver">WEBSERVER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#redis">REDIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#r">R</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#smtp">SMTP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data">DATA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api-keys">API_KEYS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logging">LOGGING</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pipelines">PIPELINES</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_factory.html">phenomedb.pipeline_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipelines.html">phenomedb.pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="query_factory.html">phenomedb.query_factory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task.html">phenomedb.task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">phenomedb.utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">phenomedb.views</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PhenomeDB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
+<p>The various PhenomeDB components can be installed separately, however to simplify the usage of these interacting components, they have been docker-ised.</p>
+<section id="local-desktop-installation">
+<h2>Local/desktop installation<a class="headerlink" href="#local-desktop-installation" title="Permalink to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Install docker</p></li>
+<li><p>Download the repo</p></li>
+<li><p>cd into the repo directory</p></li>
+<li><p>Copy the ./data/config/config.ini.example to ./data/config/config.ini</p></li>
+<li><p>Copy the .env-example file to a file called .env, and edit the parameters as required (see settings)</p></li>
+<li><p>cd into the directory and run docker-compose up</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:ghaggart/phenomedb.git
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>phenomedb
+<span class="gp">$ </span>cp<span class="w"> </span>./data/config/config.ini.example<span class="w"> </span>./data/config/config.ini
+<span class="gp">$ </span>cp<span class="w"> </span>.env-example<span class="w"> </span>.env
+<span class="gp">$ </span>docker<span class="w"> </span>compose<span class="w"> </span>up
+</pre></div>
+</div>
+</section>
+<section id="python-installatiion">
+<h2>Python installatiion<a class="headerlink" href="#python-installatiion" title="Permalink to this heading"></a></h2>
+<p>Python installation is necessary for local IDE debugging of unit tests,running unit tests and building the docs.</p>
+<p>To install the phenomedb library locally:</p>
+<ol class="arabic simple">
+<li><p>Checkout the repo</p></li>
+<li><p>install the pip requirements (inside a virtualenv or conda env)</p></li>
+<li><p>run setup.py sdist</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+<span class="gp">$ </span>python<span class="w"> </span>setup.py<span class="w"> </span>sdist
+</pre></div>
+</div>
+</section>
+<section id="running-the-tests">
+<h2>Running the tests<a class="headerlink" href="#running-the-tests" title="Permalink to this heading"></a></h2>
+<p>The tests can be run using pytest.</p>
+</section>
+</section>
+<section id="settings">
+<h1>Settings<a class="headerlink" href="#settings" title="Permalink to this heading"></a></h1>
+<p>To use the ImportCompoundTask compound lookup functionality the following setting must be configured to use chemspider by obtaining a chemspider api key:</p>
+<p>PHENOMEDB__API_KEYS__CHEMSPIDER</p>
+<p>The following settings are recommended to be changed however the defaults will work.</p>
+<p>PHENOMEDB__REDIS__PASSWORD</p>
+<p>PHENOMEDB__PIPELINES__PIPELINE_MANAGER_USER</p>
+<p>PHENOMEDB__PIPELINES__PIPELINE_MANAGER_PASSWORD</p>
+<p>POSTGRES_USER</p>
+<p>POSTGRES_PASSWORD</p>
+<p>AIRFLOW_ADMIN_USER</p>
+<p>AIRFLOW_ADMIN_PASSWORD</p>
+<p>AIRFLOW_ADMIN_EMAIL</p>
+<p>AIRFLOW__DATABASE__SQL_ALCHEMY_CONN</p>
+<p>AIRFLOW__CORE__FERNET_KEY</p>
+</section>
+<section id="id2">
+<h1>Settings<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h1>
+<p>Settings in PhenomeDB are configured in different ways depending if PhenomeDB is being run via docker compose or not.</p>
+<p>No docker -&gt; ./data/config/config.ini</p>
+<p>With docker -&gt; ./.env</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Even if using docker you still need to create the config.ini file by copying config.ini.example -&gt; config.ini</p>
+</div>
+<p>Apache Airflow settings can be configured with the following syntax:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.basic_auth</span>
+</pre></div>
+</div>
+<p>PhenomeDB settings can be set in the same format:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">PHENOMEDB__GROUP__SETTING=example</span>
+</pre></div>
+</div>
+<p>The .env-example file contains the recommended Airflow and ChemSpider settings, but they can be adjusted as required.</p>
+<p>The config.ini file contains the following groups and settings:</p>
+<section id="test">
+<h2>TEST<a class="headerlink" href="#test" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">username = admin # The user account used during unit tests</span>
+</pre></div>
+</div>
+</section>
+<section id="db">
+<h2>DB<a class="headerlink" href="#db" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">dir = /Library/PostgreSQL/12/data/ # The directory used for storing Postgres data</span>
+<span class="go">rdbms = postgresql # The RDBMS to use (only supports Postgres currently)</span>
+<span class="go">user = postgres # The production database username</span>
+<span class="go">password = testpass # The database password</span>
+<span class="go">host = 127.0.0.1 # The database host</span>
+<span class="go">name = phenomedb # The database name</span>
+<span class="go">test = phenomedb_test # The test database name</span>
+<span class="go">port = 5433 # The database port</span>
+<span class="go">pool_size = 10 # The database pool size (SQLAlchemy)</span>
+<span class="go">max_overflow = 20 # The database max overflow</span>
+<span class="go">create_script = ./sql/phenomedb_v0.9.5_postgres.sql # The database create script</span>
+</pre></div>
+</div>
+</section>
+<section id="webserver">
+<h2>WEBSERVER<a class="headerlink" href="#webserver" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">url = http://localhost:8080/ # The URL of the webserver</span>
+</pre></div>
+</div>
+</section>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">custom_root = custom # The url root of the custom API</span>
+</pre></div>
+</div>
+</section>
+<section id="redis">
+<h2>REDIS<a class="headerlink" href="#redis" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">port = 6380 # The port of the Redis server</span>
+<span class="go">host = 127.0.0.1 # The host of the Redis server</span>
+<span class="go">user = default # The user of the Redis server</span>
+<span class="go">password = password # The password of the Redis server</span>
+<span class="go">memory_expired_seconds = 86400 # The time to expire cache objects from Redis</span>
+</pre></div>
+</div>
+</section>
+<section id="r">
+<h2>R<a class="headerlink" href="#r" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">exec_path = /usr/local/bin/R # The R executable path</span>
+<span class="go">script_directory = /full/path/to/appdata/r_scripts/ # The R script directory</span>
+</pre></div>
+</div>
+</section>
+<section id="smtp">
+<h2>SMTP<a class="headerlink" href="#smtp" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">enabled = true # Whether SMTP is configured</span>
+<span class="go">host = host # SMTP host</span>
+<span class="go">port = 25 # SMTP port</span>
+<span class="go">user = user # SMTP user</span>
+<span class="go">password = password # SMTP password</span>
+<span class="go">from = Name &lt;emailaddress&gt; # SMTP from address</span>
+</pre></div>
+</div>
+</section>
+<section id="data">
+<h2>DATA<a class="headerlink" href="#data" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">project_data_base_path = /path/to/projectdata/ # The base path to the project related data (if used)</span>
+<span class="go">app_data = /full/path/to/appdata/ # The directory to store the application data</span>
+<span class="go">test_data = /full/path/to/data/test/ # The directory containing the test data</span>
+<span class="go">compounds = /full/path/to/data/compounds/ # The directory containing the compound data</span>
+<span class="go">config = /full/path/to/data/config/ # The directory containing the configs</span>
+<span class="go">cache = /full/path/to/appdata/cache/ # The cache directory</span>
+</pre></div>
+</div>
+</section>
+<section id="api-keys">
+<h2>API_KEYS<a class="headerlink" href="#api-keys" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">chemspider = api_key # The ChemSpider API key</span>
+</pre></div>
+</div>
+</section>
+<section id="logging">
+<h2>LOGGING<a class="headerlink" href="#logging" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">dir = /tmp/phenomelog/ # The logging directory</span>
+</pre></div>
+</div>
+</section>
+<section id="pipelines">
+<h2>PIPELINES<a class="headerlink" href="#pipelines" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pipeline_manager = apache-airflow # Only Apache-Airflow currently supported</span>
+<span class="go">pipeline_folder = /full/path/to/dags # The path to the Airflow DAGs folder</span>
+<span class="go">pipeline_manager_user = admin # The Airflow user to trigger pipelines</span>
+<span class="go">pipeline_manager_password = testpass # The Airflow user password for triggering pipelines</span>
+<span class="go">pipeline_manager_api_host = localhost:8080 # The Airflow API host URL</span>
+<span class="go">task_spec_file = /full/path/to/data/config/task_typespec.json # The task_typespec.json file</span>
+<span class="go">docker = false # Whether using docker or not</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to PhenomeDB’s documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral float-right" title="Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Imperial College London.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
