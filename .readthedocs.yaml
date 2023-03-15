@@ -14,9 +14,9 @@ build:
   #  - redis-server
   tools:
     python: "3.9"
-  #jobs:
-  #  pre_build:
-  #    - bash utils/setup_environment.sh
+  jobs:
+    pre_build:
+      - bash utils/setup_environment.sh
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
