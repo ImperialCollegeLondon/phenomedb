@@ -2,7 +2,7 @@ from distutils.core import setup
 #requires = open('./requirements.txt').read().strip().split('\n')
 setup(
     name='phenomedb',
-    version='0.9.6',
+    version='0.9.7',
     packages=['phenomedb','phenomedb.views'],
     license='',
     long_description='PhenomeDB is a platform for harmonisation and integration of multi-study metabolomics data.',
