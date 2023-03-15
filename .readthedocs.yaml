@@ -16,7 +16,7 @@ build:
     python: "3.9"
   jobs:
     pre_build:
-      - bash utils/pre_install.sh
+      - bash utils/setup_environment.sh
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
