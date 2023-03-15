@@ -19,6 +19,7 @@ setup(
         'nPYc',
         'redis',
         'chemspipy',
+        'flask-appbuilder'
         'psycopg2',
         'deepdiff',
         'xlrd',
