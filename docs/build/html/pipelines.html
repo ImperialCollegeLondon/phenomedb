@@ -97,9 +97,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-phenomedb.pipelines">
-<span id="phenomedb-pipelines"></span><h1>phenomedb.pipelines<a class="headerlink" href="#module-phenomedb.pipelines" title="Permalink to this heading"></a></h1>
-<dl class="py class">
+  <section id="phenomedb-pipelines">
+<h1>phenomedb.pipelines<a class="headerlink" href="#phenomedb-pipelines" title="Permalink to this heading"></a></h1>
+<p>The pipelines module contains tasks that are pipeline generators. These tasks are executed to create dynamically generated pipelines.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="_images/backfill-annotations-pipeline-overview.png"><img alt="PhenomeB Pipeline Example" src="_images/backfill-annotations-pipeline-overview.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of using a task to create a Pipeline, using the PipelineFactory to chain tasks together and register it with Airflow</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<span class="target" id="module-phenomedb.pipelines"></span><dl class="py class">
 <dt class="sig sig-object py" id="phenomedb.pipelines.BasicSetup">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.pipelines.</span></span><span class="sig-name descname"><span class="pre">BasicSetup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_pipelines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.pipelines.BasicSetup" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>

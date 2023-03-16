@@ -128,9 +128,91 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-phenomedb.query_factory">
-<span id="phenomedb-query-factory"></span><h1>phenomedb.query_factory<a class="headerlink" href="#module-phenomedb.query_factory" title="Permalink to this heading"></a></h1>
-<dl class="py class">
+  <section id="phenomedb-query-factory">
+<h1>phenomedb.query_factory<a class="headerlink" href="#phenomedb-query-factory" title="Permalink to this heading"></a></h1>
+<p>Creating queries can be done either via the Query Factory view or the QueryFactory Python API. In PhenomeDB Queries are created by chaining QueryFilter objects containing boolean operators and QueryMatches, which specifying the fields and comparison operators and values. An overview of this can be seen below. With the collection of QueryFilters and QueryMatches, the QueryFactory then calculates/transpiles the query definition into an SQLAlchemy query, and executes the query. The QueryFactory can then construct a combined-format and 3-file format dataset of the results, and store them in the PhenomeDB Cache, an extended version of Redis that enables file-system persistency of objects. Generating the dataframes can currently take a long time depending on the number of records the query returns, for this reason once the query has been defined the user should run the CreateSavedQueryDataframeCache task to execute the query and set it into the cache. This can be run manually via the interface or via the QueryFactory UI.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="_images/query-filters-overview.png"><img alt="PhenomeDB QueryFactory QueryFilters and QueryMatches" src="_images/query-filters-overview.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The QueryFilter and QueryMatch architecture. Multiple QueryFilters can be added, each with AND or OR boolean operators. Each QueryFilter can have multiple QueryMatches, targeting a specific Model.property, with a specific comparison operator and value.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>An example of using these to construct a query is shown below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate the QueryFactory</span>
+<span class="n">query_factory</span> <span class="o">=</span> <span class="n">QueryFactory</span><span class="p">(</span><span class="n">query_name</span><span class="o">=</span><span class="s1">&#39;Users under 40&#39;</span><span class="p">,</span> <span class="n">query_description</span><span class="o">=</span><span class="s1">&#39;test description&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add a filter with the match properties added in the constructor (default &#39;AND&#39;)</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;My Project&#39;</span><span class="p">)</span>
+
+<span class="c1"># Create another filter with the match properties added in the constructor</span>
+<span class="nb">filter</span> <span class="o">=</span> <span class="n">QueryFilter</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;HarmonisedMetadataField&#39;</span><span class="p">,</span><span class="nb">property</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="n">operator</span><span class="o">=</span><span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;Age&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add another match to the filter</span>
+<span class="nb">filter</span><span class="o">.</span><span class="n">add_match</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;MetadataValue&#39;</span><span class="p">,</span><span class="nb">property</span><span class="o">=</span><span class="s1">&#39;harmonised numeric value&#39;</span><span class="p">,</span><span class="n">operator</span><span class="o">=</span><span class="s1">&#39;lt&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+
+<span class="c1"># Add the filter to the query factory (default &#39;AND&#39;)</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">query_filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">)</span>
+
+<span class="c1">#4. Save the query in the SavedQuery data model</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">save_query</span><span class="p">()</span>
+
+<span class="c1">#5. Generate the summary statistics</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">calculate_summary_statistics</span><span class="p">()</span>
+
+<span class="c1">#6. Execute the query, build the 3-file format, load into cache, and return dataframes</span>
+<span class="n">intensity_data</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;intensity_data&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sample_metadata</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;sample_metadata&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">feature_metadata</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;feature_metadata&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To simplify querying HarmonisedMetadataFields, the following MetadataFilter can be used</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate the QueryFactory</span>
+<span class="n">query</span> <span class="n">factory</span> <span class="o">=</span> <span class="n">QueryFactory</span><span class="p">(</span><span class="n">query_name</span><span class="o">=</span><span class="s1">&#39;Users under 40&#39;</span><span class="p">,</span> <span class="n">query_description</span><span class="o">=</span><span class="s1">&#39;test description&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add a filter with the match properties added in the constructor (default &#39;AND&#39;)</span>
+<span class="n">query</span> <span class="n">factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">QueryFilter</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="nb">property</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="n">operator</span><span class="o">=</span><span class="s1">&#39;eq&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;My Project&#39;</span><span class="p">))</span>
+
+<span class="c1"># Add a Metadata filter with the match properties added in the constructor (default &#39;AND&#39;)</span>
+<span class="n">query</span> <span class="n">factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">MetadataFilter</span><span class="p">(</span><span class="s1">&#39;Age&#39;</span><span class="p">,</span><span class="s1">&#39;lt&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="mi">40</span><span class="p">))</span>
+
+<span class="c1">#4. Save the query in the SavedQuery data model</span>
+<span class="n">query</span> <span class="n">factory</span><span class="o">.</span><span class="n">save_query</span><span class="p">()</span>
+
+<span class="c1">#5. Generate the summary statistics</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">calculate_summary_statistics</span><span class="p">()</span>
+
+<span class="c1">#6. Execute the query, build the 3-file format, load into cache, and return dataframes</span>
+<span class="n">intensity_data</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;intensity_data&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sample_metadata</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;sample_metadata&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">feature_metadata</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">load_dataframe</span><span class="p">(</span><span class="s1">&#39;feature_metadata&#39;</span><span class="p">,</span><span class="n">harmonise_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>SavedQueries can be created and explored using the QueryFactory user interface. Through the interface the summary statistics for the query can be visually explored to assess the composition of the generated cohort. Once you are happy with the composition you should then execute the CreateSavedQueryDataframeCache task for the SavedQuery to build the query dataframes and store them in the Cache.</p>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="_images/query-ui-create.png"><img alt="PhenomeDB QueryFactory UI create" src="_images/query-ui-create.png" style="width: 650px;" /></a>
+<figcaption>
+<p><span class="caption-text">Creating a SavedQuery using the UI.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id3">
+<a class="reference internal image-reference" href="_images/query-summary-stats-example.png"><img alt="PhenomeDB QueryFactory summary stats" src="_images/query-summary-stats-example.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">The QueryFactory summary stats output.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id4">
+<a class="reference internal image-reference" href="_images/query-ui-generate-cache-buttons.png"><img alt="PhenomeDB generate cache" src="_images/query-ui-generate-cache-buttons.png" style="width: 650px;" /></a>
+<figcaption>
+<p><span class="caption-text">Buttons to trigger a CreateSavedQueryDataframe task via the QueryFactory UI</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id5">
+<a class="reference internal image-reference" href="_images/query-ui-download-dataframe.png"><img alt="PhenomeDB QueryFactory download options" src="_images/query-ui-download-dataframe.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">QueryFactory options for downloading a dataframe. Options include the ability to bin harmonised metadata fields, include or exclude specific columns, and specify the output format.</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<span class="target" id="module-phenomedb.query_factory"></span><dl class="py class">
 <dt class="sig sig-object py" id="phenomedb.query_factory.MetadataFilter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.query_factory.</span></span><span class="sig-name descname"><span class="pre">MetadataFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">harmonised_metadata_field_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.query_factory.MetadataFilter" title="Permalink to this definition"></a></dt>
 <dd><p>MetadataFilter class. Creates a sub_filter with 2 matches.</p>

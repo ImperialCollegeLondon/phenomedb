@@ -14,7 +14,7 @@ PhenomeDB is a database, data processing, and analysis and visualisation platfor
 Tasks
 -----
 
-PhenomeDB is structured around the concept of a :ref:`task`. Tasks are units of work that execute a specific function, such as importing annotations, harmonising metadata, or generating datasets on the basis of defined Queries. Tasks can be executed independently, or chained together into Pipelines using the PipelineFactory python API or UI. A full list of included Tasks is shown below, and guides to implementing new tasks can be in :ref:`development`.
+PhenomeDB is structured around the concept of a :ref:`phenomedb.task`. Tasks are units of work that execute a specific function, such as importing annotations, harmonising metadata, or generating datasets on the basis of defined Queries. Tasks can be executed independently, or chained together into Pipelines using the PipelineFactory python API or UI. A full list of included Tasks is shown below, and guides to implementing new tasks can be in :ref:`development`.
 
 The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follow the links to the relevant documentation page:
 

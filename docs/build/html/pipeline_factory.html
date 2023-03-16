@@ -94,9 +94,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-phenomedb.pipeline_factory">
-<span id="phenomedb-pipeline-factory"></span><h1>phenomedb.pipeline_factory<a class="headerlink" href="#module-phenomedb.pipeline_factory" title="Permalink to this heading"></a></h1>
-<dl class="py class">
+  <section id="phenomedb-pipeline-factory">
+<h1>phenomedb.pipeline_factory<a class="headerlink" href="#phenomedb-pipeline-factory" title="Permalink to this heading"></a></h1>
+<p>Pipelines can be created, registered with Airflow, and executed via the PipelineFactory. Using this approach removes the requirements for manually writing Airflow DAG files.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="_images/pipeline-factory-overview.png"><img alt="PhenomeB PipelineFactory Overview" src="_images/pipeline-factory-overview.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Overview of how the PipelineFactory can be used to create Apache Airflow pipelines</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="_images/pipeline-factory-ui-example.png"><img alt="PhenomeB PipelineFactory UI Example" src="_images/pipeline-factory-ui-example.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of using a the PipelineFactory UI to create a parameterised pipeline</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<span class="target" id="module-phenomedb.pipeline_factory"></span><dl class="py class">
 <dt class="sig sig-object py" id="phenomedb.pipeline_factory.BasePipelineManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.pipeline_factory.</span></span><span class="sig-name descname"><span class="pre">BasePipelineManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.pipeline_factory.BasePipelineManager" title="Permalink to this definition"></a></dt>
 <dd><p>Abstract BasePipeline class. Extend this class to use another offline worker system, ie RedisQueue.</p>
