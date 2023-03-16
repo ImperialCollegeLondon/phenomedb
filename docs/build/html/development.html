@@ -46,6 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html#settings">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core-platform-architecture">Core platform architecture</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#adding-tasks">Adding tasks</a></li>
 </ul>
 </li>
@@ -92,6 +93,23 @@
   <section id="development">
 <span id="id1"></span><h1>Development<a class="headerlink" href="#development" title="Permalink to this heading"></a></h1>
 <p>PhenomeDB is designed to be highly extensible to new methods.</p>
+<section id="core-platform-architecture">
+<h2>Core platform architecture<a class="headerlink" href="#core-platform-architecture" title="Permalink to this heading"></a></h2>
+<p>PhenomeDB is a relatively complex application consisting of the following sub-systems:</p>
+<ol class="upperalpha simple">
+<li><p>Postgres database</p></li>
+<li><p>Python library with modules for importing, harmonising, querying, normalising, and analysing the data. The code in these modules is organised into ‘tasks’ that can be chained together into pipelines using the PipelineFactory.</p></li>
+<li><p>Redis cache (with a file-system backend extension) for storing query sets and analysis results</p></li>
+<li><p>Apache-Airflow for running pipelines</p></li>
+<li><p>Flask plugins for exploring the data, building queries, running analyses, and visualising results</p></li>
+</ol>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="_images/phenomedb-software-main-components.png"><img alt="PhenomeDB core architecture" src="_images/phenomedb-software-main-components.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">PhenomeDB core architectural components (note that important components Redis and the file-system are not shown here)</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
 <section id="adding-tasks">
 <h2>Adding tasks<a class="headerlink" href="#adding-tasks" title="Permalink to this heading"></a></h2>
 <p>Tasks are added to the CLI and UI via the ./data/config/task_spec.json file.</p>

@@ -53,17 +53,20 @@
 <li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">phenomedb.metadata</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.check_functions"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.check_functions()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.load_dataset"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.load_dataset()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.map_and_add_dataset_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.process"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.process()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview-of-the-curatemetadata-task">Overview of the CurateMetadata task</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.check_functions"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.check_functions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.load_dataset"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.load_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.map_and_add_dataset_data"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.map_and_add_dataset_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.process"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.process()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#phenomedb.metadata.getrandbits"><code class="docutils literal notranslate"><span class="pre">getrandbits()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#phenomedb.metadata.random"><code class="docutils literal notranslate"><span class="pre">random()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#phenomedb.metadata.simple_assignment"><code class="docutils literal notranslate"><span class="pre">simple_assignment()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#phenomedb.metadata.transform_dob_and_sampling_date_to_age"><code class="docutils literal notranslate"><span class="pre">transform_dob_and_sampling_date_to_age()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.getrandbits"><code class="docutils literal notranslate"><span class="pre">getrandbits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.random"><code class="docutils literal notranslate"><span class="pre">random()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.simple_assignment"><code class="docutils literal notranslate"><span class="pre">simple_assignment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.transform_dob_and_sampling_date_to_age"><code class="docutils literal notranslate"><span class="pre">transform_dob_and_sampling_date_to_age()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
@@ -99,9 +102,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-phenomedb.metadata">
-<span id="phenomedb-metadata"></span><h1>phenomedb.metadata<a class="headerlink" href="#module-phenomedb.metadata" title="Permalink to this heading"></a></h1>
-<dl class="py class">
+  <section id="phenomedb-metadata">
+<span id="metadata"></span><h1>phenomedb.metadata<a class="headerlink" href="#phenomedb-metadata" title="Permalink to this heading"></a></h1>
+<p>Metadata in PhenomeDB generally refers to clinical or sample-level variables, such as age, sex, BMI, etc.</p>
+<p>As the purpose of PhenomeDB is to be able to integrate and stratify data across multiple projects or studies, this metadata must be harmonised prior to it usage.</p>
+<p>The process for harmonisation of metadata is:</p>
+<ol class="arabic simple">
+<li><p>Import the metadata using the ImportMetadata task, specifying any columns you wish to ignore (for example sensitive data).</p></li>
+<li><p>The ImportMetadata task imports the data to the metadata_field and metadata_value tables.</p></li>
+<li><p>Create or identity existing Harmonised Metadata Fields for the fields you wish to harmonise.</p></li>
+<li><p>For each metadata field, run the CurateMetadata task, selecting either an in-built metadata curation function, or define a python lambda that will curate the raw value to the required curated/harmonised value.</p></li>
+</ol>
+<p>Once harmonised, the fields can then be used in integration and stratification queries via the QueryFactory.</p>
+<section id="overview-of-the-curatemetadata-task">
+<h2>Overview of the CurateMetadata task<a class="headerlink" href="#overview-of-the-curatemetadata-task" title="Permalink to this heading"></a></h2>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="_images/curate-metadata-task.png"><img alt="PhenomeDB CurateMetadata task" src="_images/curate-metadata-task.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The CurateMetadataTask architecture, with methods for harmonising types, names, and values</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<span class="target" id="module-phenomedb.metadata"></span><dl class="py class">
 <dt class="sig sig-object py" id="phenomedb.metadata.HarmoniseMetadataField">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.metadata.</span></span><span class="sig-name descname"><span class="pre">HarmoniseMetadataField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_field_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">harmonised_metadata_field_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inbuilt_transform_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_function_string</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lambda</span> <span class="pre">x</span> <span class="pre">:</span> <span class="pre">x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_decimal_places</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_data_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.metadata.HarmoniseMetadataField" title="Permalink to this definition"></a></dt>
 <dd><p>AutoHarmoniseMetadataField Class. Takes a project metadata field and harmonised metadata field, and applies a lambda
@@ -191,6 +212,7 @@ function to transform the raw data into the harmonised one.</p>
 </dl>
 </dd></dl>
 
+</section>
 </section>
 
 
