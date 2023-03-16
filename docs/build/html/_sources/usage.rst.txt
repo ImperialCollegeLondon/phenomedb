@@ -24,13 +24,6 @@ The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follo
 
    * - Task class
      - Task description
-   * - Row 1, column 1
-     -
-     - Row 1, column 3
-   * - Row 2, column 1
-     - Row 2, column 2
-     - Row 2, column 3
-
    * - :func:`phenomedb.compounds.ExportCompoundsToCSV`
      - Export all compounds to CSV
    * - :func:`phenomedb.compounds.ParseKEGGtoPubchemCIDTask`
@@ -38,81 +31,81 @@ The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follo
    * - :func:`phenomedb.compounds.ParseHMDBXMLtoCSV`
      - Parse HMDB XML to a lookup CSV file
    * - :func:`phenomedb.compounds.UpdateCompoundRefs`
-   -
+     - Look for and update the external database refs for existing compounds
    * - :func:`phenomedb.compounds.AddMissingClassyFireClasses`
-     -
+     - Look for and update the ClassyFire classes for existing compounds
    * - :func:`phenomedb.compounds.CleanROIFile`
-     -
+     - Clean an ROI file by checking the data matches online databases
    * - :func:`phenomedb.compounds.ImportROICompounds`
-     -
+     - Import compounds from a PeakPantheR ROI file
    * - :func:`phenomedb.compounds.ImportBrukerBILISACompounds`
-     -
+     - Import Bruker BI-LISA lipoprotein and lipid fractions from a source file
    * - :func:`phenomedb.compounds.ImportBrukerBiQuantCompounds`
-     -
+     - Import Bruker Bi-Quant-P compounds from a source file
    * - :func:`phenomedb.imports.ImportSampleManifest`
-     -
+     - Import a Sample Manifest file
    * - :func:`phenomedb.imports.ImportDataLocations`
-     -
+     - Import a data locations file (deprecated)
    * - :func:`phenomedb.imports.ImportBrukerIVDRAnnotations`
-     -
+     - Import Bruker IVDr annotations
    * - :func:`phenomedb.imports.ImportPeakPantherAnnotations`
-     -
+     - Import PeakPantheR annotations
    * - :func:`phenomedb.imports.ImportTargetLynxAnnotations`
-     -
+     - Import TargetLynx annotations
    * - :func:`phenomedb.imports.XCMSFeatureImportTaskUnifiedCSV`
-     -
+     - Import XCMS features
    * - :func:`phenomedb.imports.ImportMetabolightsStudy`
-     -
+     - Import a Metabolights study
    * - :func:`phenomedb.imports.DownloadMetabolightsStudy`
-     -
+     - Download a Metabolights study
    * - :func:`phenomedb.analysis.RunXCMS`
-     -
+     - Run XCMS
    * - :func:`phenomedb.imports.ImportMetadata`
-     -
+     - Import a CSV sample metadata file
    * - :func:`phenomedb.metadata.HarmoniseMetadataField`
-     -
+     - Harmonise/curate a metadata field
    * - :func:`phenomedb.cache.CreateSavedQueryDataframeCache`
-     -
+     - Create a SavedQuery Combined dataframe cache
    * - :func:`phenomedb.cache.CreateSavedQuerySummaryStatsCache`
-     -
+     - Create a SavedQuery summary stats cache
    * - :func:`phenomedb.analysis.RunPCA`
-     -
+     - Run a PCA analysis
    * - :func:`phenomedb.analysis.RunPCPR2`
-     -
+     - Run a PCPR2 analysis
    * - :func:`phenomedb.analysis.RunMWAS`
-     -
+     - Run an MWAS analysis
    * - :func:`phenomedb.analysis.RunNPYCReport`
-     -
-   * - :func:`phenomedb.batch_correction.RunCombatCorrection
-     -
+     - Run an nPYc report
+   * - :func:`phenomedb.batch_correction.RunCombatCorrection`
+     - Run COMBAT correction
    * - :func:`phenomedb.batch_correction.RunNormResidualsMM`
-     -
+     - Run NormResidualsMixedModel correction
    * - :func:`phenomedb.batch_correction.RunNPYCBatchCorrection`
-     -
+     - Run LOWESS correction
    * - :func:`phenomedb.batch_correction.SaveBatchCorrection`
-     -
+     - Save a LOWESS corrected dataset
    * - :func:`phenomedb.pipelines.RebuildPipelinesFromDB`
-     -
+     - Rebuild the Airflow pipelines based on the DB entries
    * - :func:`phenomedb.pipelines.GenerateSingleTaskPipelines`
-     -
+     - Build the single-task pipelines for single-task execution
    * - :func:`phenomedb.pipelines.BasicSetup`
-     -
+     - Run the BasicSetup to populate the database with assays, projects, annotation methods etc
    * - :func:`phenomedb.pipelines.BatchCorrectionAssessmentPipelineGenerator`
-     -
+     - Build the BatchCorrectionAssessmentPipeline
    * - :func:`phenomedb.pipelines.RunBatchCorrectionAssessmentPipeline`
-     -
+     - Run the BatchCorrectionAssessmentPipeline
    * - :func:`phenomedb.pipelines.RunMWASMulti`
-     -
+     - Run multiple MWAS
    * - :func:`phenomedb.pipelines.ImportAllMetabolightsPipelineGenerator`
-     -
+     - Build a pipeline to import all data from Metabolights
    * - :func:`phenomedb.task.ManualSQL`
-     -
+     - Execute manual SQL
    * - :func:`phenomedb.cache.CreateTaskViewCache`
-     -
+     - Create the task-view cache (deprecated)
    * - :func:`phenomedb.cache.RemoveUntransformedDataFromCache`
-     -
+     - Remove untransformed data from the cache (clean up task)
    * - :func:`phenomedb.cache.MoveTaskOutputToCache`
-
+     - Move the task output from the db to cache (clean up task)
 
 The Apache-Airflow interface
 ----------------------------

@@ -101,16 +101,153 @@
   <section id="usage">
 <span id="id1"></span><h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h1>
 <p>PhenomeDB is a database, data processing, and analysis and visualisation platform for metabolomics data. The general usage of which is outlined below, where users import data, harmonise the data, build queries to integrate and stratify the data, scale, normalise, and batch correct the data, and run analyses and reports to analyse, visualise, and interpret the data. PhenomeDB provides python APIs and web-based UIs for these steps, including a novel QueryFactory for building and executing queries, and a novel PipelineFactory for building and executing pipelines via Apache-Airflow.</p>
-<figure class="align-default" id="id4">
+<figure class="align-default" id="id2">
 <a class="reference internal image-reference" href="_images/method-development-overview.png"><img alt="PhenomeDB usage overview" src="_images/method-development-overview.png" style="width: 400px;" /></a>
 <figcaption>
-<p><span class="caption-text">Overview of using PhenomeDB, including import, harmonisation, querying, scaling/normalisation, and analysis/visualisation.</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Overview of using PhenomeDB, including import, harmonisation, querying, scaling/normalisation, and analysis/visualisation.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <section id="tasks">
 <h2>Tasks<a class="headerlink" href="#tasks" title="Permalink to this heading"></a></h2>
 <p>PhenomeDB is structured around the concept of a <a class="reference internal" href="task.html#module-phenomedb.task"><span class="std std-ref">phenomedb.task</span></a>. Tasks are units of work that execute a specific function, such as importing annotations, harmonising metadata, or generating datasets on the basis of defined Queries. Tasks can be executed independently, or chained together into Pipelines using the PipelineFactory python API or UI. A full list of included Tasks is shown below, and guides to implementing new tasks can be in <a class="reference internal" href="development.html#development"><span class="std std-ref">Development</span></a>.</p>
 <p>The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follow the links to the relevant documentation page:</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Title</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Task class</p></th>
+<th class="head"><p>Task description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="compounds.html#phenomedb.compounds.ExportCompoundsToCSV" title="phenomedb.compounds.ExportCompoundsToCSV"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.compounds.ExportCompoundsToCSV()</span></code></a></p></td>
+<td><p>Export all compounds to CSV</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compounds.html#phenomedb.compounds.ParseKEGGtoPubchemCIDTask" title="phenomedb.compounds.ParseKEGGtoPubchemCIDTask"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.compounds.ParseKEGGtoPubchemCIDTask()</span></code></a></p></td>
+<td><p>Parse KEGG to a PubChem CID lookup CSV file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compounds.html#phenomedb.compounds.ParseHMDBXMLtoCSV" title="phenomedb.compounds.ParseHMDBXMLtoCSV"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.compounds.ParseHMDBXMLtoCSV()</span></code></a></p></td>
+<td><p>Parse HMDB XML to a lookup CSV file</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compounds.html#phenomedb.compounds.UpdateCompoundRefs" title="phenomedb.compounds.UpdateCompoundRefs"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.compounds.UpdateCompoundRefs()</span></code></a></p></td>
+<td><p>Look for and update the external database refs for existing compounds</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compounds.html#phenomedb.compounds.AddMissingClassyFireClasses" title="phenomedb.compounds.AddMissingClassyFireClasses"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.compounds.AddMissingClassyFireClasses()</span></code></a></p></td>
+<td><p>Look for and update the ClassyFire classes for existing compounds</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="compounds.html#phenomedb.compounds.CleanROIFile" title="phenomedb.compounds.CleanROIFile"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.compounds.CleanROIFile()</span></code></a></p></td>
+<td><p>Clean an ROI file by checking the data matches online databases</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compounds.html#phenomedb.compounds.ImportROICompounds" title="phenomedb.compounds.ImportROICompounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.compounds.ImportROICompounds()</span></code></a></p></td>
+<td><p>Import compounds from a PeakPantheR ROI file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.compounds.ImportBrukerBILISACompounds()</span></code></p></td>
+<td><p>Import Bruker BI-LISA lipoprotein and lipid fractions from a source file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="compounds.html#phenomedb.compounds.ImportBrukerBiQuantCompounds" title="phenomedb.compounds.ImportBrukerBiQuantCompounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.compounds.ImportBrukerBiQuantCompounds()</span></code></a></p></td>
+<td><p>Import Bruker Bi-Quant-P compounds from a source file</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="imports.html#phenomedb.imports.ImportSampleManifest" title="phenomedb.imports.ImportSampleManifest"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.ImportSampleManifest()</span></code></a></p></td>
+<td><p>Import a Sample Manifest file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="imports.html#phenomedb.imports.ImportDataLocations" title="phenomedb.imports.ImportDataLocations"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.ImportDataLocations()</span></code></a></p></td>
+<td><p>Import a data locations file (deprecated)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="imports.html#phenomedb.imports.ImportBrukerIVDRAnnotations" title="phenomedb.imports.ImportBrukerIVDRAnnotations"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.ImportBrukerIVDRAnnotations()</span></code></a></p></td>
+<td><p>Import Bruker IVDr annotations</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="imports.html#phenomedb.imports.ImportPeakPantherAnnotations" title="phenomedb.imports.ImportPeakPantherAnnotations"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.ImportPeakPantherAnnotations()</span></code></a></p></td>
+<td><p>Import PeakPantheR annotations</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="imports.html#phenomedb.imports.ImportTargetLynxAnnotations" title="phenomedb.imports.ImportTargetLynxAnnotations"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.ImportTargetLynxAnnotations()</span></code></a></p></td>
+<td><p>Import TargetLynx annotations</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.XCMSFeatureImportTaskUnifiedCSV()</span></code></p></td>
+<td><p>Import XCMS features</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="imports.html#phenomedb.imports.ImportMetabolightsStudy" title="phenomedb.imports.ImportMetabolightsStudy"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.ImportMetabolightsStudy()</span></code></a></p></td>
+<td><p>Import a Metabolights study</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="imports.html#phenomedb.imports.DownloadMetabolightsStudy" title="phenomedb.imports.DownloadMetabolightsStudy"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.DownloadMetabolightsStudy()</span></code></a></p></td>
+<td><p>Download a Metabolights study</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="analysis.html#phenomedb.analysis.RunXCMS" title="phenomedb.analysis.RunXCMS"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.analysis.RunXCMS()</span></code></a></p></td>
+<td><p>Run XCMS</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="imports.html#phenomedb.imports.ImportMetadata" title="phenomedb.imports.ImportMetadata"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.ImportMetadata()</span></code></a></p></td>
+<td><p>Import a CSV sample metadata file</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="metadata.html#phenomedb.metadata.HarmoniseMetadataField" title="phenomedb.metadata.HarmoniseMetadataField"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.metadata.HarmoniseMetadataField()</span></code></a></p></td>
+<td><p>Harmonise/curate a metadata field</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="cache.html#phenomedb.cache.CreateSavedQueryDataframeCache" title="phenomedb.cache.CreateSavedQueryDataframeCache"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.cache.CreateSavedQueryDataframeCache()</span></code></a></p></td>
+<td><p>Create a SavedQuery Combined dataframe cache</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="cache.html#phenomedb.cache.CreateSavedQuerySummaryStatsCache" title="phenomedb.cache.CreateSavedQuerySummaryStatsCache"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.cache.CreateSavedQuerySummaryStatsCache()</span></code></a></p></td>
+<td><p>Create a SavedQuery summary stats cache</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="analysis.html#phenomedb.analysis.RunPCA" title="phenomedb.analysis.RunPCA"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.analysis.RunPCA()</span></code></a></p></td>
+<td><p>Run a PCA analysis</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="analysis.html#phenomedb.analysis.RunPCPR2" title="phenomedb.analysis.RunPCPR2"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.analysis.RunPCPR2()</span></code></a></p></td>
+<td><p>Run a PCPR2 analysis</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="analysis.html#phenomedb.analysis.RunMWAS" title="phenomedb.analysis.RunMWAS"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.analysis.RunMWAS()</span></code></a></p></td>
+<td><p>Run an MWAS analysis</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="analysis.html#phenomedb.analysis.RunNPYCReport" title="phenomedb.analysis.RunNPYCReport"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.analysis.RunNPYCReport()</span></code></a></p></td>
+<td><p>Run an nPYc report</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="batch_correction.html#phenomedb.batch_correction.RunCombatCorrection" title="phenomedb.batch_correction.RunCombatCorrection"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.batch_correction.RunCombatCorrection()</span></code></a></p></td>
+<td><p>Run COMBAT correction</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="batch_correction.html#phenomedb.batch_correction.RunNormResidualsMM" title="phenomedb.batch_correction.RunNormResidualsMM"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.batch_correction.RunNormResidualsMM()</span></code></a></p></td>
+<td><p>Run NormResidualsMixedModel correction</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="batch_correction.html#phenomedb.batch_correction.RunNPYCBatchCorrection" title="phenomedb.batch_correction.RunNPYCBatchCorrection"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.batch_correction.RunNPYCBatchCorrection()</span></code></a></p></td>
+<td><p>Run LOWESS correction</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="batch_correction.html#phenomedb.batch_correction.SaveBatchCorrection" title="phenomedb.batch_correction.SaveBatchCorrection"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.batch_correction.SaveBatchCorrection()</span></code></a></p></td>
+<td><p>Save a LOWESS corrected dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pipelines.html#phenomedb.pipelines.RebuildPipelinesFromDB" title="phenomedb.pipelines.RebuildPipelinesFromDB"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.pipelines.RebuildPipelinesFromDB()</span></code></a></p></td>
+<td><p>Rebuild the Airflow pipelines based on the DB entries</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pipelines.html#phenomedb.pipelines.GenerateSingleTaskPipelines" title="phenomedb.pipelines.GenerateSingleTaskPipelines"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.pipelines.GenerateSingleTaskPipelines()</span></code></a></p></td>
+<td><p>Build the single-task pipelines for single-task execution</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pipelines.html#phenomedb.pipelines.BasicSetup" title="phenomedb.pipelines.BasicSetup"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.pipelines.BasicSetup()</span></code></a></p></td>
+<td><p>Run the BasicSetup to populate the database with assays, projects, annotation methods etc</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pipelines.html#phenomedb.pipelines.BatchCorrectionAssessmentPipelineGenerator" title="phenomedb.pipelines.BatchCorrectionAssessmentPipelineGenerator"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.pipelines.BatchCorrectionAssessmentPipelineGenerator()</span></code></a></p></td>
+<td><p>Build the BatchCorrectionAssessmentPipeline</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pipelines.html#phenomedb.pipelines.RunBatchCorrectionAssessmentPipeline" title="phenomedb.pipelines.RunBatchCorrectionAssessmentPipeline"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.pipelines.RunBatchCorrectionAssessmentPipeline()</span></code></a></p></td>
+<td><p>Run the BatchCorrectionAssessmentPipeline</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pipelines.html#phenomedb.pipelines.RunMWASMulti" title="phenomedb.pipelines.RunMWASMulti"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.pipelines.RunMWASMulti()</span></code></a></p></td>
+<td><p>Run multiple MWAS</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pipelines.html#phenomedb.pipelines.ImportAllMetabolightsPipelineGenerator" title="phenomedb.pipelines.ImportAllMetabolightsPipelineGenerator"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.pipelines.ImportAllMetabolightsPipelineGenerator()</span></code></a></p></td>
+<td><p>Build a pipeline to import all data from Metabolights</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="task.html#phenomedb.task.ManualSQL" title="phenomedb.task.ManualSQL"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.task.ManualSQL()</span></code></a></p></td>
+<td><p>Execute manual SQL</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="cache.html#phenomedb.cache.CreateTaskViewCache" title="phenomedb.cache.CreateTaskViewCache"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.cache.CreateTaskViewCache()</span></code></a></p></td>
+<td><p>Create the task-view cache (deprecated)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="cache.html#phenomedb.cache.RemoveUntransformedDataFromCache" title="phenomedb.cache.RemoveUntransformedDataFromCache"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.cache.RemoveUntransformedDataFromCache()</span></code></a></p></td>
+<td><p>Remove untransformed data from the cache (clean up task)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="cache.html#phenomedb.cache.MoveTaskOutputToCache" title="phenomedb.cache.MoveTaskOutputToCache"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.cache.MoveTaskOutputToCache()</span></code></a></p></td>
+<td><p>Move the task output from the db to cache (clean up task)</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="the-apache-airflow-interface">
 <h2>The Apache-Airflow interface<a class="headerlink" href="#the-apache-airflow-interface" title="Permalink to this heading"></a></h2>
@@ -118,28 +255,28 @@
 <p>From here, pipelines (‘DAGs’ in Airflow) for individual tasks can be parameterised, executed, and monitored, and the various PhenomeDB views can be accessed.</p>
 <p>Apache-Airflow is structured around the concepts of pipelines and pipeline runs (executions). You parameterise a pipeline run and then Airflow manages the execution. Output logs for each task in the pipeline can be inspected via the interface.</p>
 <p>For more information regarding the usage of Apache-Airflow, please see the Apache-Airflow documentation.</p>
-<figure class="align-default" id="id5">
+<figure class="align-default" id="id4">
 <a class="reference internal image-reference" href="_images/airflow-ui-1.png"><img alt="Airflow UI home" src="_images/airflow-ui-1.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">Airflow home page showing registered pipelines (DAGs)</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Airflow home page showing registered pipelines (DAGs)</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id5">
+<a class="reference internal image-reference" href="_images/airflow-ui-2.png"><img alt="Airflow Pipeline Overview" src="_images/airflow-ui-2.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Graphical view of the ImportPeakPantherAnnotations pipeline</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id6">
-<a class="reference internal image-reference" href="_images/airflow-ui-2.png"><img alt="Airflow Pipeline Overview" src="_images/airflow-ui-2.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/airflow-ui-3.png"><img alt="Airflow Run Pipeline" src="_images/airflow-ui-3.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">Graphical view of the ImportPeakPantherAnnotations pipeline</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+<p><span class="caption-text">View for running a pipeline, with example JSON for parameterising the import task.</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id7">
-<a class="reference internal image-reference" href="_images/airflow-ui-3.png"><img alt="Airflow Run Pipeline" src="_images/airflow-ui-3.png" style="width: 600px;" /></a>
-<figcaption>
-<p><span class="caption-text">View for running a pipeline, with example JSON for parameterising the import task.</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
-<figure class="align-default" id="id8">
 <a class="reference internal image-reference" href="_images/airflow-ui-4.png"><img alt="Airflow Logs example" src="_images/airflow-ui-4.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">Example output of the TaskRun logs, viewed from within the Airflow interface</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Example output of the TaskRun logs, viewed from within the Airflow interface</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
@@ -167,36 +304,36 @@
 <p>The minimum information required for import is compound name (as annotated) and InChI (if available). If the specificity of the annotation is low, multiple compounds and InChIs can be recorded per annotation. With this minimum information, PhenomeDB can lookup and record the following external references and classes and make them queryable and reportable.</p>
 <p>Databases: PubChem, ChEBI, ChEMBL, ChemSpider, LipidMAPS, HMDB</p>
 <p>Classes: LipidMAPS, HMDB, ClassyFIRE</p>
-<figure class="align-default" id="id9">
+<figure class="align-default" id="id8">
 <a class="reference internal image-reference" href="_images/compound-task-overview.png"><img alt="PhenomeDB ImportCompoundTask overview" src="_images/compound-task-overview.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">The ImportCompoundTask overview, which looks up compound metadata and populates the database</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
+<p><span class="caption-text">The ImportCompoundTask overview, which looks up compound metadata and populates the database</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <p>Compound metadata can be imported from PeakPantheR region-of-interest files (ROI) files for LC-MS annotations. Recent versions for these can be found in ./data/compounds/.</p>
 <p>To import the ROI compound data use the tasks ImportROICompounds and ImportROILipids</p>
 <p>IVDr annotation metadata can be imported using ImportBrukerBiLISACompounds and ImportBrukerBiQuantCompounds,. The source data are available in ./data/compounds/</p>
 <p>Once imported, compounds and compound classes can be explored using the Compound View UI.</p>
-<figure class="align-default" id="id10">
+<figure class="align-default" id="id9">
 <a class="reference internal image-reference" href="_images/compound-list-view.png"><img alt="PhenomeDB Compound List View" src="_images/compound-list-view.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">The Compound List View, showing a searchable, paginated table of imported compounds</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+<p><span class="caption-text">The Compound List View, showing a searchable, paginated table of imported compounds</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
-<figure class="align-default" id="id11">
+<figure class="align-default" id="id10">
 <a class="reference internal image-reference" href="_images/compound-view-example.png"><img alt="PhenomeDB Compound View" src="_images/compound-view-example.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">The Compound View, showing the imported information for one compound, with links to external databases</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
+<p><span class="caption-text">The Compound View, showing the imported information for one compound, with links to external databases</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="harmonising-annotation-metadata">
 <h2>Harmonising annotation metadata<a class="headerlink" href="#harmonising-annotation-metadata" title="Permalink to this heading"></a></h2>
 <p>In order to integrate annotations across projects, the annotations must be harmonised. PhenomeDB will attempt to do this automatically where possible, however in some cases it is necessary to manually harmonise annotations. To do this use the ‘Harmonise Annotations’ view.</p>
-<figure class="align-default" id="id12">
+<figure class="align-default" id="id11">
 <a class="reference internal image-reference" href="_images/manual-annotation-harmonisation-view.png"><img alt="PhenomeDB manual annotation harmonisation" src="_images/manual-annotation-harmonisation-view.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">The Harmonise Annotations View, where unharmonised annotations can be harmonised manually to enable cross-project comparisons</span><a class="headerlink" href="#id12" title="Permalink to this image"></a></p>
+<p><span class="caption-text">The Harmonise Annotations View, where unharmonised annotations can be harmonised manually to enable cross-project comparisons</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
@@ -217,42 +354,42 @@
 <li><p>nPYc reports via the RunNPYCReport task</p></li>
 </ol>
 <p>Individual analyses can be run via the AnalysisView page, where task runs can be parameterised and scheduled, and the results can be explored.</p>
-<figure class="align-default" id="id13">
+<figure class="align-default" id="id12">
 <a class="reference internal image-reference" href="_images/analysis-view-list.png"><img alt="PhenomeDB AnalysisView list" src="_images/analysis-view-list.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">Analyses can be executed against queries (and upstream task runs) using the AnalysisView. Parameters for the task run can be specified using the html form, including scaling and transformation steps and task-specific options. Previous task runs can be explored via a table.</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Analyses can be executed against queries (and upstream task runs) using the AnalysisView. Parameters for the task run can be specified using the html form, including scaling and transformation steps and task-specific options. Previous task runs can be explored via a table.</span><a class="headerlink" href="#id12" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <p>The results of each analysis can be explored via a dedicated UI, with panels common to all analysis tasks with options to rerun the task, and options to download the input and output datasets.</p>
-<figure class="align-default" id="id14">
+<figure class="align-default" id="id13">
 <a class="reference internal image-reference" href="_images/analysis-view-common.png"><img alt="PhenomeDB AnalysisView common" src="_images/analysis-view-common.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">Each task run output view has the ability to re-run the task with new parameters, and explore and download the input and output datasets.</span><a class="headerlink" href="#id14" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Each task run output view has the ability to re-run the task with new parameters, and explore and download the input and output datasets.</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <p>Each AnalysisTask also has specific charts and figures available to explore the results.</p>
-<figure class="align-default" id="id15">
+<figure class="align-default" id="id14">
 <a class="reference internal image-reference" href="_images/pca-view.png"><img alt="PhenomeDB RunPCA visualisation" src="_images/pca-view.png" style="width: 650px;" /></a>
 <figcaption>
-<p><span class="caption-text">Interactive visualisation of PCA outputs, including A: Scree plot, B: control panel to control the chart options, C: 2D scores plots, D, E, F: loadings plots.</span><a class="headerlink" href="#id15" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Interactive visualisation of PCA outputs, including A: Scree plot, B: control panel to control the chart options, C: 2D scores plots, D, E, F: loadings plots.</span><a class="headerlink" href="#id14" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id15">
+<a class="reference internal image-reference" href="_images/pcpr2-view-1.png"><img alt="PhenomeDB RunPCPr2 visualisation" src="_images/pcpr2-view-1.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Visualisation of PCPR2 results</span><a class="headerlink" href="#id15" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id16">
-<a class="reference internal image-reference" href="_images/pcpr2-view-1.png"><img alt="PhenomeDB RunPCPr2 visualisation" src="_images/pcpr2-view-1.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="_images/MWAS-view-example.png"><img alt="PhenomeDB RunMWAS visualisation" src="_images/MWAS-view-example.png" style="width: 650px;" /></a>
 <figcaption>
-<p><span class="caption-text">Visualisation of PCPR2 results</span><a class="headerlink" href="#id16" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Interactive visualisation of 1D MWAS outputs</span><a class="headerlink" href="#id16" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id17">
-<a class="reference internal image-reference" href="_images/MWAS-view-example.png"><img alt="PhenomeDB RunMWAS visualisation" src="_images/MWAS-view-example.png" style="width: 650px;" /></a>
-<figcaption>
-<p><span class="caption-text">Interactive visualisation of 1D MWAS outputs</span><a class="headerlink" href="#id17" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
-<figure class="align-default" id="id18">
 <a class="reference internal image-reference" href="_images/example-lneg-mwas-sex-comparison-consistent.png"><img alt="PhenomeDB RunMWAS compare visualisation" src="_images/example-lneg-mwas-sex-comparison-consistent.png" style="width: 650px;" /></a>
 <figcaption>
-<p><span class="caption-text">Interactive visualisation of MWAS comparison heatmaps, where the results of two MWAS analyses can be compared, in this case comparing the age-associated metabolites of males and females</span><a class="headerlink" href="#id18" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Interactive visualisation of MWAS comparison heatmaps, where the results of two MWAS analyses can be compared, in this case comparing the age-associated metabolites of males and females</span><a class="headerlink" href="#id17" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
