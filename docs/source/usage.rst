@@ -11,21 +11,6 @@ PhenomeDB is a database, data processing, and analysis and visualisation platfor
 
   Overview of using PhenomeDB, including import, harmonisation, querying, scaling/normalisation, and analysis/visualisation.
 
-Core platform architecture
---------------------------
-PhenomeDB is a relatively complex application consisting of the following sub-systems:
-
-A. Postgres database
-B. Python library with modules for importing, harmonising, querying, normalising, and analysing the data. The code in these modules is organised into 'tasks' that can be chained together into pipelines using the PipelineFactory.
-C. Redis cache (with a file-system backend extension) for storing query sets and analysis results
-D. Apache-Airflow for running pipelines
-E. Flask plugins for exploring the data, building queries, running analyses, and visualising results
-
-.. figure:: ./_images/phenomedb-software-main-components.png
-  :width: 500
-  :alt: PhenomeDB core architecture
-
-  PhenomeDB core architectural components (note that important components Redis and the file-system are not shown here)
 
 
 The Apache-Airflow interface
@@ -90,13 +75,8 @@ D. ImportMetabolights - import metabolite features and annotations from Metaboli
 Harmonising sample metadata
 ---------------------------
 
-In order to compare, integrate, and stratify data across multiple cohorts, the sample metadata must be harmonised. To do this, it is recommended to use the CurateMetadataTask, which enables the curation of unharmonised 'raw' metadata fields and values into harmonised 'curated' metadata fields and values.
+In order to compare, integrate, and stratify data across multiple cohorts, the sample metadata must be harmonised. To do this, it is recommended to use the CurateMetadataTask, which enables the curation of unharmonised 'raw' metadata fields and values into harmonised 'curated' metadata fields and values. Please see the :ref:`metadata` module for more information.
 
-.. figure:: ./_images/curate-metadata-task.png
-  :width: 600
-  :alt: PhenomeDB CurateMetadata task
-
-  The CurateMetadataTask architecture, with methods for harmonising types, names, and values
 
 Importing compound metadata
 ---------------------------

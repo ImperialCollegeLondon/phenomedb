@@ -27,6 +27,9 @@ Python installatiion
 
 Python installation is necessary for local IDE debugging of unit tests and building the docs.
 
+.. warning::
+  Mac Mx or other ARM-based chips are not currently supported for local installation due to dependency hell. If you are running a Mac Mx chip, use one of the phenomedb-airflow containers to run the tests and build the docs
+
 To install the phenomedb library locally:
 
 1. Checkout the repo
@@ -34,23 +37,37 @@ To install the phenomedb library locally:
 3. run setup.py install
 4. install apache-airflow from pip
 5. Either run the docker compose separately or install postgres and redis according to your OS instructions.
+6. Test the installation by running the phenomedb cli.py -h command
 
 .. code-block:: console
 
   $ python setup.py install # this will fail the first time, run it twice
   $ python setup.py install
   $ pip install 'apache-airflow[password]==2.5.1'
-  $ docker compose up postgres redis
+  $ docker compose up -d postgres redis
+  $ cd phenomedb
+  $ python cli.py -h
+
+If it the cli.py -h command shows you a list of available tasks, the installation is working.
 
 Running the tests
 -----------------
 
 The tests can be run using pytest.
 
+Using the local install:
 .. code-block:: console
 
   $ docker compose up postgres redis
   $ cd tests
+  $ pytest .
+
+Using a phenomedb-airflow docker container:
+.. code-block:: console
+
+  $ docker compose up postgres redis scheduler
+  $ docker exec -it phenomedb-scheduler-1 /bin/bash
+  $ cd /opt/phenomedb_app/phenomedb/tests
   $ pytest .
 
 Building the docs

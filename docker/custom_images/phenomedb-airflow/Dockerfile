@@ -2,9 +2,13 @@
 # docker build -t ghaggart/phenomedb-airflow .
 # docker push ghaggart/phenomedb-airflow
 
-# ap && cd docker/custom_images/phenomedb-airflow && docker build -t ghaggart/phenomedb-airflow . && docker push ghaggart/phenomedb-airflow
+# both arm64 and x86
+# docker buildx build --platform linux/amd64,linux/arm64 -t ghaggart/phenomedb-airflow:latest .
 
-FROM apache/airflow:latest-python3.9
+# from the root dir
+# docker buildx build --platform linux/amd64,linux/arm64 -t ghaggart/phenomedb-airflow:latest -f docker/custom_images/phenomedb-airflow .
+
+FROM apache/airflow:2.5.1-python3.9
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -20,15 +24,14 @@ RUN apt-get install -y vim git xml2 libxml2-dev openssl libcurl4-openssl-dev cur
 RUN chown -R airflow /usr/local/lib/R/
 RUN chmod -R 777 /usr/local/lib/R/
 USER airflow
-RUN pip install --upgrade nPYc
-RUN pip install --upgrade pip
-RUN pip install --upgrade pandas
-RUN pip install --upgrade isatools
-RUN pip install --upgrade markupsafe
-RUN pip install --upgrade jinja2
-RUN pip install --default-timeout=100 chemspipy xlrd redis pyarrow rdkit-pypi pytest azure-servicebus "pymzml[full]" libchebipy rdkit
-#COPY ../../../requirements.txt /opt/requirements.txt
-#RUN pip install -r /opt/requirements.txt
+
+#RUN pip install --upgrade nPYc
+#RUN pip install --upgrade pip
+#RUN pip install --upgrade pandas
+#RUN pip install --upgrade isatools
+#RUN pip install --upgrade markupsafe
+#RUN pip install --upgrade jinja2
+#RUN pip install --default-timeout=100 chemspipy xlrd redis pyarrow rdkit-pypi pytest azure-servicebus "pymzml[full]" libchebipy rdkit
 RUN R -e "install.packages('jsonlite',dependencies=TRUE, repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('remotes',dependencies=TRUE, repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('BiocManager',dependencies=TRUE, repos='http://cran.rstudio.com/')"
@@ -48,3 +51,5 @@ RUN R -e "install.packages('hglm',dependencies=TRUE, repos='http://cran.rstudio.
 RUN R -e "BiocManager::install('MWASTools')"
 RUN R -e "BiocManager::install('xcms')"
 RUN R -e "BiocManager::install('BiocParallel')"
+COPY phenomedb/requirements.txt /opt/requirements.txt
+RUN pip install -r /opt/requirements.txt

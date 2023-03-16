@@ -28,7 +28,6 @@ setup(
         'pytest',
         "pymzml[full]",
         'libchebipy',
-        #'apache-airflow[password]~=2.5.1'
     ],
     include_package_data=True,
     keywords=['phenomedb','metabolomics','LC-MS','NMR']
