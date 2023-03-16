@@ -25,6 +25,6 @@ E. Flask plugins for exploring the data, building queries, running analyses, and
 Adding tasks
 ------------
 
-Tasks are added to the CLI and UI via the ./data/config/task_spec.json file.
+Tasks are added to the CLI and UI via the ./phenomedb/data/config/task_spec.json file.
 
 To add new task...

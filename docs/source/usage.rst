@@ -11,6 +11,54 @@ PhenomeDB is a database, data processing, and analysis and visualisation platfor
 
   Overview of using PhenomeDB, including import, harmonisation, querying, scaling/normalisation, and analysis/visualisation.
 
+Tasks
+-----
+
+PhenomeDB is structured around the concept of a :ref:`task`. Tasks are units of work that execute a specific function, such as importing annotations, harmonising metadata, or generating datasets on the basis of defined Queries. Tasks can be executed independently, or chained together into Pipelines using the PipelineFactory python API or UI. A full list of included Tasks is shown below, and guides to implementing new tasks can be in :ref:`development`.
+
+The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follow the links to the relevant documentation page:
+
+:func:`phenomedb.compounds.ExportCompoundsToCSV`
+:func:`phenomedb.compounds.ParseKEGGtoPubchemCIDTask`
+:func:`phenomedb.compounds.ParseHMDBXMLtoCSV`
+:func:`phenomedb.compounds.UpdateCompoundRefs`
+:func:`phenomedb.compounds.AddMissingClassyFireClasses`
+:func:`phenomedb.compounds.CleanROIFile`
+:func:`phenomedb.compounds.ImportROICompounds`
+:func:`phenomedb.compounds.ImportBrukerBILISACompounds`
+:func:`phenomedb.compounds.ImportBrukerBiQuantCompounds`
+:func:`phenomedb.imports.ImportSampleManifest`
+:func:`phenomedb.imports.ImportDataLocations`
+:func:`phenomedb.imports.ImportBrukerIVDRAnnotations`
+:func:`phenomedb.imports.ImportPeakPantherAnnotations`
+:func:`phenomedb.imports.ImportTargetLynxAnnotations`
+:func:`phenomedb.imports.XCMSFeatureImportTaskUnifiedCSV`
+:func:`phenomedb.imports.ImportMetabolightsStudy`
+:func:`phenomedb.imports.DownloadMetabolightsStudy`
+:func:`phenomedb.analysis.RunXCMS`
+:func:`phenomedb.imports.ImportMetadata`
+:func:`phenomedb.metadata.HarmoniseMetadataField`
+:func:`phenomedb.cache.CreateSavedQueryDataframeCache`
+:func:`phenomedb.cache.CreateSavedQuerySummaryStatsCache`
+:func:`phenomedb.analysis.RunPCA`
+:func:`phenomedb.analysis.RunPCPR2`
+:func:`phenomedb.analysis.RunMWAS`
+:func:`phenomedb.analysis.RunNPYCReport`
+:func:`phenomedb.batch_correction.RunCombatCorrection`
+:func:`phenomedb.batch_correction.RunNormResidualsMM`
+:func:`phenomedb.batch_correction.RunNPYCBatchCorrection`
+:func:`phenomedb.batch_correction.SaveBatchCorrection`
+:func:`phenomedb.pipelines.RebuildPipelinesFromDB`
+:func:`phenomedb.pipelines.GenerateSingleTaskPipelines`
+:func:`phenomedb.pipelines.BasicSetup`
+:func:`phenomedb.pipelines.BatchCorrectionAssessmentPipelineGenerator`
+:func:`phenomedb.pipelines.RunBatchCorrectionAssessmentPipeline`
+:func:`phenomedb.pipelines.RunMWASMulti`
+:func:`phenomedb.pipelines.ImportAllMetabolightsPipelineGenerator`
+:func:`phenomedb.task.ManualSQL`
+:func:`phenomedb.cache.CreateTaskViewCache`
+:func:`phenomedb.cache.RemoveUntransformedDataFromCache`
+:func:`phenomedb.cache.MoveTaskOutputToCache`
 
 
 The Apache-Airflow interface
@@ -48,6 +96,12 @@ For more information regarding the usage of Apache-Airflow, please see the Apach
 
   Example output of the TaskRun logs, viewed from within the Airflow interface
 
+Tasks and Pipelines
+-------------------
+
+Pipelines can be created, registered with Airflow, and executed via the PipelineFactory. Using this approach removes the requirements for manually writing Airflow DAG files.
+
+See the :ref:`phenomedb.pipeline_factory` for more information, including how to build and execute pipelines via the python API and the UI.
 
 Importing analytical data and sample metadata
 ---------------------------------------------
@@ -58,18 +112,6 @@ A. Sample manifests: CSV files containing sample metadata subject as clinical fa
 B. Feature metadata: CSV files containing feature metadata such as RT, m/z, and other feature-specific analytical metadata.
 C. Study data files: CSV files containing analytical features (measurements) relating to the samples and features/annotated compounds.
 
-.. figure:: ./_images/source-to-model.png
-  :width: 600
-  :alt: Mappings between 3-file format at PhenomeDB
-
-  Mappings between a 3-file format metabolomics dataset and the PhenomeDB core data model
-
-Import Tasks:
-
-A. ImportMetadata - import sample metadata from a CSV where rows are samples and columns are metadata fields
-B. ImportBrukerIVDrAnnotations - import annotated metabolite measurements/abundances from a Bruker IVDr NMR dataset.
-C. ImportPeakPantheRAnnotation - import annotated metabolite measurements/abundances from a PeakPantheR LC-MS dataset.
-D. ImportMetabolights - import metabolite features and annotations from Metabolights format
 
 
 Harmonising sample metadata
@@ -131,94 +173,6 @@ In order to integrate annotations across projects, the annotations must be harmo
 Creating and executing queries
 ------------------------------
 
-Creating queries can be done either via the Query Factory view or the QueryFactory Python API. In PhenomeDB Queries are created by chaining QueryFilter objects containing boolean operators and QueryMatches, which specifying the fields and comparison operators and values. An overview of this can be seen below. With the collection of QueryFilters and QueryMatches, the QueryFactory then calculates/transpiles the query definition into an SQLAlchemy query, and executes the query. The QueryFactory can then construct a combined-format and 3-file format dataset of the results, and store them in the PhenomeDB Cache, an extended version of Redis that enables file-system persistency of objects. Generating the dataframes can currently take a long time depending on the number of records the query returns, for this reason once the query has been defined the user should run the CreateSavedQueryDataframeCache task to execute the query and set it into the cache. This can be run manually via the interface or via the QueryFactory UI.
-
-.. figure:: ./_images/query-filters-overview.png
-  :width: 600
-  :alt: PhenomeDB QueryFactory QueryFilters and QueryMatches
-
-  The QueryFilter and QueryMatch architecture. Multiple QueryFilters can be added, each with AND or OR boolean operators. Each QueryFilter can have multiple QueryMatches, targeting a specific Model.property, with a specific comparison operator and value.
-
-An example of using these to construct a query is shown below.
-
-.. code-block:: python
-
-    # Instantiate the QueryFactory
-    query_factory = QueryFactory(query_name='Users under 40', query_description='test description')
-
-    # Add a filter with the match properties added in the constructor (default 'AND')
-    query_factory.add_filter(model='Project', property='name', operator='eq', value='My Project')
-
-    # Create another filter with the match properties added in the constructor
-    filter = QueryFilter(model='HarmonisedMetadataField',property='name',operator='eq', value='Age')
-
-    # Add another match to the filter
-    filter.add_match(model='MetadataValue',property='harmonised numeric value',operator='lt', value=40)
-
-    # Add the filter to the query factory (default 'AND')
-    query_factory.add_filter(query_filter=filter)
-
-    #4. Save the query in the SavedQuery data model
-    query_factory.save_query()
-
-    #5. Generate the summary statistics
-    query_factory.calculate_summary_statistics()
-
-    #6. Execute the query, build the 3-file format, load into cache, and return dataframes
-    intensity_data = query_factory.load_dataframe('intensity_data',harmonise_annotations=True)
-    sample_metadata = query_factory.load_dataframe('sample_metadata',harmonise_annotations=True)
-    feature_metadata = query_factory.load_dataframe('feature_metadata',harmonise_annotations=True)
-
-To simplify querying HarmonisedMetadataFields, the following MetadataFilter can be used
-
-.. code-block:: python
-
-    # Instantiate the QueryFactory
-    query factory = QueryFactory(query_name='Users under 40', query_description='test description')
-
-    # Add a filter with the match properties added in the constructor (default 'AND')
-    query factory.add_filter(QueryFilter(model='Project',property='name',operator='eq',value='My Project'))
-
-    # Add a Metadata filter with the match properties added in the constructor (default 'AND')
-    query factory.add_filter(MetadataFilter('Age','lt',value=40))
-
-    #4. Save the query in the SavedQuery data model
-    query factory.save_query()
-
-    #5. Generate the summary statistics
-    query_factory.calculate_summary_statistics()
-
-    #6. Execute the query, build the 3-file format, load into cache, and return dataframes
-    intensity_data = query_factory.load_dataframe('intensity_data',harmonise_annotations=True)
-    sample_metadata = query_factory.load_dataframe('sample_metadata',harmonise_annotations=True)
-    feature_metadata = query_factory.load_dataframe('feature_metadata',harmonise_annotations=True)
-
-
-SavedQueries can be created and explored using the QueryFactory user interface. Through the interface the summary statistics for the query can be visually explored to assess the composition of the generated cohort. Once you are happy with the composition you should then execute the CreateSavedQueryDataframeCache task for the SavedQuery to build the query dataframes and store them in the Cache.
-
-.. figure:: ./_images/query-ui-create.png
-  :width: 650
-  :alt: PhenomeDB QueryFactory UI create
-
-  Creating a SavedQuery using the UI.
-
-.. figure:: ./_images/query-summary-stats-example.png
-  :width: 500
-  :alt: PhenomeDB QueryFactory summary stats
-
-  The QueryFactory summary stats output.
-
-.. figure:: ./_images/query-ui-generate-cache-buttons.png
-  :width: 650
-  :alt: PhenomeDB generate cache
-
-  Buttons to trigger a CreateSavedQueryDataframe task via the QueryFactory UI
-
-.. figure:: ./_images/query-ui-download-dataframe.png
-  :width: 500
-  :alt: PhenomeDB QueryFactory download options
-
-  QueryFactory options for downloading a dataframe. Options include the ability to bin harmonised metadata fields, include or exclude specific columns, and specify the output format.
 
 Scaling, normalisation, and batch correction
 --------------------------------------------
@@ -278,25 +232,3 @@ Each AnalysisTask also has specific charts and figures available to explore the 
 
   Interactive visualisation of MWAS comparison heatmaps, where the results of two MWAS analyses can be compared, in this case comparing the age-associated metabolites of males and females
 
-
-
-
-Tasks and Pipelines
--------------------
-
-Major processing steps including import, harmonisation, integration, analysis are structured into repeatable and reusable 'tasks'. These tasks can then be organised into 'pipelines' using the PipelineFactory and registered to and executed and monitored by Apace-Airflow. When a task is executed it records a TaskRun object in the database with information regarding the parameters used. Task outputs are stored in the persistent cache for later use.
-
-Pipelines can be created, registered with Airflow, and executed via the PipelineFactory. Using this approach removes the requirements for manually writing Airflow DAG files.
-
-.. figure:: ./_images/pipeline-factory-overview.png
-  :width: 500
-  :alt: PhenomeB PipelineFactory Overview
-
-  Overview of how the PipelineFactory can be used to create Apache Airflow pipelines
-
-
-.. figure:: ./_images/backfill-annotations-pipeline-overview.png
-  :width: 500
-  :alt: PhenomeB Pipeline Example
-
-  Example of using a task to create a Pipeline, using the PipelineFactory to chain tasks together and register it with Airflow
