@@ -18,47 +18,100 @@ PhenomeDB is structured around the concept of a :ref:`phenomedb.task`. Tasks are
 
 The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follow the links to the relevant documentation page:
 
-:func:`phenomedb.compounds.ExportCompoundsToCSV`
-:func:`phenomedb.compounds.ParseKEGGtoPubchemCIDTask`
-:func:`phenomedb.compounds.ParseHMDBXMLtoCSV`
-:func:`phenomedb.compounds.UpdateCompoundRefs`
-:func:`phenomedb.compounds.AddMissingClassyFireClasses`
-:func:`phenomedb.compounds.CleanROIFile`
-:func:`phenomedb.compounds.ImportROICompounds`
-:func:`phenomedb.compounds.ImportBrukerBILISACompounds`
-:func:`phenomedb.compounds.ImportBrukerBiQuantCompounds`
-:func:`phenomedb.imports.ImportSampleManifest`
-:func:`phenomedb.imports.ImportDataLocations`
-:func:`phenomedb.imports.ImportBrukerIVDRAnnotations`
-:func:`phenomedb.imports.ImportPeakPantherAnnotations`
-:func:`phenomedb.imports.ImportTargetLynxAnnotations`
-:func:`phenomedb.imports.XCMSFeatureImportTaskUnifiedCSV`
-:func:`phenomedb.imports.ImportMetabolightsStudy`
-:func:`phenomedb.imports.DownloadMetabolightsStudy`
-:func:`phenomedb.analysis.RunXCMS`
-:func:`phenomedb.imports.ImportMetadata`
-:func:`phenomedb.metadata.HarmoniseMetadataField`
-:func:`phenomedb.cache.CreateSavedQueryDataframeCache`
-:func:`phenomedb.cache.CreateSavedQuerySummaryStatsCache`
-:func:`phenomedb.analysis.RunPCA`
-:func:`phenomedb.analysis.RunPCPR2`
-:func:`phenomedb.analysis.RunMWAS`
-:func:`phenomedb.analysis.RunNPYCReport`
-:func:`phenomedb.batch_correction.RunCombatCorrection`
-:func:`phenomedb.batch_correction.RunNormResidualsMM`
-:func:`phenomedb.batch_correction.RunNPYCBatchCorrection`
-:func:`phenomedb.batch_correction.SaveBatchCorrection`
-:func:`phenomedb.pipelines.RebuildPipelinesFromDB`
-:func:`phenomedb.pipelines.GenerateSingleTaskPipelines`
-:func:`phenomedb.pipelines.BasicSetup`
-:func:`phenomedb.pipelines.BatchCorrectionAssessmentPipelineGenerator`
-:func:`phenomedb.pipelines.RunBatchCorrectionAssessmentPipeline`
-:func:`phenomedb.pipelines.RunMWASMulti`
-:func:`phenomedb.pipelines.ImportAllMetabolightsPipelineGenerator`
-:func:`phenomedb.task.ManualSQL`
-:func:`phenomedb.cache.CreateTaskViewCache`
-:func:`phenomedb.cache.RemoveUntransformedDataFromCache`
-:func:`phenomedb.cache.MoveTaskOutputToCache`
+.. list-table:: Title
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Task class
+     - Task description
+   * - Row 1, column 1
+     -
+     - Row 1, column 3
+   * - Row 2, column 1
+     - Row 2, column 2
+     - Row 2, column 3
+
+   * - :func:`phenomedb.compounds.ExportCompoundsToCSV`
+     - Export all compounds to CSV
+   * - :func:`phenomedb.compounds.ParseKEGGtoPubchemCIDTask`
+     - Parse KEGG to a PubChem CID lookup CSV file
+   * - :func:`phenomedb.compounds.ParseHMDBXMLtoCSV`
+     - Parse HMDB XML to a lookup CSV file
+   * - :func:`phenomedb.compounds.UpdateCompoundRefs`
+   -
+   * - :func:`phenomedb.compounds.AddMissingClassyFireClasses`
+     -
+   * - :func:`phenomedb.compounds.CleanROIFile`
+     -
+   * - :func:`phenomedb.compounds.ImportROICompounds`
+     -
+   * - :func:`phenomedb.compounds.ImportBrukerBILISACompounds`
+     -
+   * - :func:`phenomedb.compounds.ImportBrukerBiQuantCompounds`
+     -
+   * - :func:`phenomedb.imports.ImportSampleManifest`
+     -
+   * - :func:`phenomedb.imports.ImportDataLocations`
+     -
+   * - :func:`phenomedb.imports.ImportBrukerIVDRAnnotations`
+     -
+   * - :func:`phenomedb.imports.ImportPeakPantherAnnotations`
+     -
+   * - :func:`phenomedb.imports.ImportTargetLynxAnnotations`
+     -
+   * - :func:`phenomedb.imports.XCMSFeatureImportTaskUnifiedCSV`
+     -
+   * - :func:`phenomedb.imports.ImportMetabolightsStudy`
+     -
+   * - :func:`phenomedb.imports.DownloadMetabolightsStudy`
+     -
+   * - :func:`phenomedb.analysis.RunXCMS`
+     -
+   * - :func:`phenomedb.imports.ImportMetadata`
+     -
+   * - :func:`phenomedb.metadata.HarmoniseMetadataField`
+     -
+   * - :func:`phenomedb.cache.CreateSavedQueryDataframeCache`
+     -
+   * - :func:`phenomedb.cache.CreateSavedQuerySummaryStatsCache`
+     -
+   * - :func:`phenomedb.analysis.RunPCA`
+     -
+   * - :func:`phenomedb.analysis.RunPCPR2`
+     -
+   * - :func:`phenomedb.analysis.RunMWAS`
+     -
+   * - :func:`phenomedb.analysis.RunNPYCReport`
+     -
+   * - :func:`phenomedb.batch_correction.RunCombatCorrection
+     -
+   * - :func:`phenomedb.batch_correction.RunNormResidualsMM`
+     -
+   * - :func:`phenomedb.batch_correction.RunNPYCBatchCorrection`
+     -
+   * - :func:`phenomedb.batch_correction.SaveBatchCorrection`
+     -
+   * - :func:`phenomedb.pipelines.RebuildPipelinesFromDB`
+     -
+   * - :func:`phenomedb.pipelines.GenerateSingleTaskPipelines`
+     -
+   * - :func:`phenomedb.pipelines.BasicSetup`
+     -
+   * - :func:`phenomedb.pipelines.BatchCorrectionAssessmentPipelineGenerator`
+     -
+   * - :func:`phenomedb.pipelines.RunBatchCorrectionAssessmentPipeline`
+     -
+   * - :func:`phenomedb.pipelines.RunMWASMulti`
+     -
+   * - :func:`phenomedb.pipelines.ImportAllMetabolightsPipelineGenerator`
+     -
+   * - :func:`phenomedb.task.ManualSQL`
+     -
+   * - :func:`phenomedb.cache.CreateTaskViewCache`
+     -
+   * - :func:`phenomedb.cache.RemoveUntransformedDataFromCache`
+     -
+   * - :func:`phenomedb.cache.MoveTaskOutputToCache`
 
 
 The Apache-Airflow interface
