@@ -1,5 +1,3 @@
-.. _usage:
-
 Usage
 =====
 
@@ -24,24 +22,8 @@ The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follo
 
    * - Task class
      - Task description
-   * - :func:`phenomedb.compounds.ExportCompoundsToCSV`
-     - Export all compounds to CSV
-   * - :func:`phenomedb.compounds.ParseKEGGtoPubchemCIDTask`
-     - Parse KEGG to a PubChem CID lookup CSV file
-   * - :func:`phenomedb.compounds.ParseHMDBXMLtoCSV`
-     - Parse HMDB XML to a lookup CSV file
-   * - :func:`phenomedb.compounds.UpdateCompoundRefs`
-     - Look for and update the external database refs for existing compounds
-   * - :func:`phenomedb.compounds.AddMissingClassyFireClasses`
-     - Look for and update the ClassyFire classes for existing compounds
-   * - :func:`phenomedb.compounds.CleanROIFile`
-     - Clean an ROI file by checking the data matches online databases
-   * - :func:`phenomedb.compounds.ImportROICompounds`
-     - Import compounds from a PeakPantheR ROI file
-   * - :func:`phenomedb.compounds.ImportBrukerBILISACompounds`
-     - Import Bruker BI-LISA lipoprotein and lipid fractions from a source file
-   * - :func:`phenomedb.compounds.ImportBrukerBiQuantCompounds`
-     - Import Bruker Bi-Quant-P compounds from a source file
+   * - :func:`phenomedb.imports.ImportMetadata`
+     - Import a CSV sample metadata file
    * - :func:`phenomedb.imports.ImportSampleManifest`
      - Import a Sample Manifest file
    * - :func:`phenomedb.imports.ImportDataLocations`
@@ -58,16 +40,8 @@ The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follo
      - Import a Metabolights study
    * - :func:`phenomedb.imports.DownloadMetabolightsStudy`
      - Download a Metabolights study
-   * - :func:`phenomedb.analysis.RunXCMS`
-     - Run XCMS
-   * - :func:`phenomedb.imports.ImportMetadata`
-     - Import a CSV sample metadata file
    * - :func:`phenomedb.metadata.HarmoniseMetadataField`
      - Harmonise/curate a metadata field
-   * - :func:`phenomedb.cache.CreateSavedQueryDataframeCache`
-     - Create a SavedQuery Combined dataframe cache
-   * - :func:`phenomedb.cache.CreateSavedQuerySummaryStatsCache`
-     - Create a SavedQuery summary stats cache
    * - :func:`phenomedb.analysis.RunPCA`
      - Run a PCA analysis
    * - :func:`phenomedb.analysis.RunPCPR2`
@@ -76,6 +50,8 @@ The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follo
      - Run an MWAS analysis
    * - :func:`phenomedb.analysis.RunNPYCReport`
      - Run an nPYc report
+   * - :func:`phenomedb.analysis.RunXCMS`
+     - Run XCMS
    * - :func:`phenomedb.batch_correction.RunCombatCorrection`
      - Run COMBAT correction
    * - :func:`phenomedb.batch_correction.RunNormResidualsMM`
@@ -84,6 +60,24 @@ The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follo
      - Run LOWESS correction
    * - :func:`phenomedb.batch_correction.SaveBatchCorrection`
      - Save a LOWESS corrected dataset
+   * - :func:`phenomedb.compounds.ParseKEGGtoPubchemCIDTask`
+     - Parse KEGG to a PubChem CID lookup CSV file
+   * - :func:`phenomedb.compounds.ParseHMDBXMLtoCSV`
+     - Parse HMDB XML to a lookup CSV file
+   * - :func:`phenomedb.compounds.UpdateCompoundRefs`
+     - Look for and update the external database refs for existing compounds
+   * - :func:`phenomedb.compounds.AddMissingClassyFireClasses`
+     - Look for and update the ClassyFire classes for existing compounds
+   * - :func:`phenomedb.compounds.CleanROIFile`
+     - Clean an ROI file by checking the data matches online databases
+   * - :func:`phenomedb.compounds.ImportROICompounds`
+     - Import compounds from a PeakPantheR ROI file
+   * - :func:`phenomedb.compounds.ImportBrukerBILISACompounds`
+     - Import Bruker BI-LISA lipoprotein and lipid fractions from a source file
+   * - :func:`phenomedb.compounds.ImportBrukerBiQuantCompounds`
+     - Import Bruker Bi-Quant-P compounds from a source file
+   * - :func:`phenomedb.compounds.ExportCompoundsToCSV`
+     - Export all compounds to CSV
    * - :func:`phenomedb.pipelines.RebuildPipelinesFromDB`
      - Rebuild the Airflow pipelines based on the DB entries
    * - :func:`phenomedb.pipelines.GenerateSingleTaskPipelines`
@@ -100,12 +94,18 @@ The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follo
      - Build a pipeline to import all data from Metabolights
    * - :func:`phenomedb.task.ManualSQL`
      - Execute manual SQL
+   * - :func:`phenomedb.cache.CreateSavedQueryDataframeCache`
+     - Create a SavedQuery Combined dataframe cache
+   * - :func:`phenomedb.cache.CreateSavedQuerySummaryStatsCache`
+     - Create a SavedQuery summary stats cache
    * - :func:`phenomedb.cache.CreateTaskViewCache`
      - Create the task-view cache (deprecated)
    * - :func:`phenomedb.cache.RemoveUntransformedDataFromCache`
      - Remove untransformed data from the cache (clean up task)
    * - :func:`phenomedb.cache.MoveTaskOutputToCache`
      - Move the task output from the db to cache (clean up task)
+
+For more information on tasks, including implementing your own, please head over to the :ref:`_development` page.
 
 The Apache-Airflow interface
 ----------------------------
@@ -158,13 +158,44 @@ A. Sample manifests: CSV files containing sample metadata subject as clinical fa
 B. Feature metadata: CSV files containing feature metadata such as RT, m/z, and other feature-specific analytical metadata.
 C. Study data files: CSV files containing analytical features (measurements) relating to the samples and features/annotated compounds.
 
+.. list-table:: Title
+   :widths: 50 50
+   :header-rows: 1
 
+   * - Task class
+     - Task description
+   * - :func:`phenomedb.imports.ImportMetadata`
+     - Import a CSV sample metadata file
+   * - :func:`phenomedb.imports.ImportSampleManifest`
+     - Import a Sample Manifest file
+   * - :func:`phenomedb.imports.ImportDataLocations`
+     - Import a data locations file (deprecated)
+   * - :func:`phenomedb.imports.ImportBrukerIVDRAnnotations`
+     - Import Bruker IVDr annotations
+   * - :func:`phenomedb.imports.ImportPeakPantherAnnotations`
+     - Import PeakPantheR annotations
+   * - :func:`phenomedb.imports.ImportTargetLynxAnnotations`
+     - Import TargetLynx annotations
+   * - :func:`phenomedb.imports.XCMSFeatureImportTaskUnifiedCSV`
+     - Import XCMS features
+   * - :func:`phenomedb.imports.ImportMetabolightsStudy`
+     - Import a Metabolights study
+   * - :func:`phenomedb.imports.DownloadMetabolightsStudy`
+     - Download a Metabolights study
 
 Harmonising sample metadata
 ---------------------------
 
 In order to compare, integrate, and stratify data across multiple cohorts, the sample metadata must be harmonised. To do this, it is recommended to use the CurateMetadataTask, which enables the curation of unharmonised 'raw' metadata fields and values into harmonised 'curated' metadata fields and values. Please see the :ref:`metadata` module for more information.
 
+.. list-table:: Title
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Task class
+     - Task description
+     * - :func:`phenomedb.metadata.HarmoniseMetadataField`
+     - Harmonise/curate a metadata field
 
 Importing compound metadata
 ---------------------------
@@ -203,6 +234,31 @@ Once imported, compounds and compound classes can be explored using the Compound
 
   The Compound View, showing the imported information for one compound, with links to external databases
 
+.. list-table:: Title
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Task class
+     - Task description
+   * - :func:`phenomedb.compounds.ParseKEGGtoPubchemCIDTask`
+     - Parse KEGG to a PubChem CID lookup CSV file
+   * - :func:`phenomedb.compounds.ParseHMDBXMLtoCSV`
+     - Parse HMDB XML to a lookup CSV file
+   * - :func:`phenomedb.compounds.UpdateCompoundRefs`
+     - Look for and update the external database refs for existing compounds
+   * - :func:`phenomedb.compounds.AddMissingClassyFireClasses`
+     - Look for and update the ClassyFire classes for existing compounds
+   * - :func:`phenomedb.compounds.CleanROIFile`
+     - Clean an ROI file by checking the data matches online databases
+   * - :func:`phenomedb.compounds.ImportROICompounds`
+     - Import compounds from a PeakPantheR ROI file
+   * - :func:`phenomedb.compounds.ImportBrukerBILISACompounds`
+     - Import Bruker BI-LISA lipoprotein and lipid fractions from a source file
+   * - :func:`phenomedb.compounds.ImportBrukerBiQuantCompounds`
+     - Import Bruker Bi-Quant-P compounds from a source file
+   * - :func:`phenomedb.compounds.ExportCompoundsToCSV`
+     - Export all compounds to CSV
+
 Harmonising annotation metadata
 -------------------------------
 
@@ -214,10 +270,12 @@ In order to integrate annotations across projects, the annotations must be harmo
 
   The Harmonise Annotations View, where unharmonised annotations can be harmonised manually to enable cross-project comparisons
 
-
-
 Creating and executing queries
 ------------------------------
+
+PhenomeDB has a complex and rich querying system that enables users to define queries as a collection of filters and the conversion of the results of those filters to a dataset, enabling cross-project integration and stratification. For more information on the QueryFactory, including its Python API and UI, please head over to :ref:`imports`.
+
+In short, users define queries, build the dataframe cache, and then that cache can be used in downstream analyses/tasks.
 
 
 Scaling, normalisation, and batch correction
@@ -225,15 +283,62 @@ Scaling, normalisation, and batch correction
 
 In order to compare metabolite levels across different batches, projects, or assays, scaling/normalisation, transformation, and batch correction must be undertaken. The aim of these methods is to minimise inter-batch technical variation while maintaining inter-sample biological variation.
 
+Two kinds of intensity values are stored in the database, raw, and SR-corrected. Raw are the 'raw', peak-picked intensities from the instruments. 'SR-corrected' is data that has been run-order corrected using study-reference QC-based LOWESS correction. Typically LC-MS data will need to be run-order corrected so it is advisable to use this SR-corrected data for LC-MS datasets.
+
+Batch correction can be undertaken using the following tasks:
+
+.. list-table:: Title
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Task class
+     - Task description
+   * - :func:`phenomedb.batch_correction.RunCombatCorrection`
+     - Run COMBAT correction
+   * - :func:`phenomedb.batch_correction.RunNormResidualsMM`
+     - Run NormResidualsMixedModel correction
+   * - :func:`phenomedb.batch_correction.RunNPYCBatchCorrection`
+     - Run LOWESS correction
+   * - :func:`phenomedb.batch_correction.SaveBatchCorrection`
+     - Save a LOWESS corrected dataset
+
+When running analyses, the following scaling and transformations can be executed as options to the analysis methods.
+
+.. list-table:: Title
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Scaling methods
+     - Transform methods
+   * - Mean-centred (mc)
+     - Log10 (log)
+   * - Unit-variance (uv)
+     - Square root (sqrt)
+   * - Median
+     -
+
+
 Running analyses
 ----------------
 
 Implemented analysis functions include:
 
-A. PCA via the RunPCA task
-B. PCPR2 via the RunPCPR2 task
-C. MWAS via the RunMWAS task
-D. nPYc reports via the RunNPYCReport task
+.. list-table:: Title
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Task class
+     - Task description
+   * - :func:`phenomedb.analysis.RunPCA`
+     - Run a PCA analysis
+   * - :func:`phenomedb.analysis.RunPCPR2`
+     - Run a PCPR2 analysis
+   * - :func:`phenomedb.analysis.RunMWAS`
+     - Run an MWAS analysis
+   * - :func:`phenomedb.analysis.RunNPYCReport`
+     - Run an nPYc report
+   * - :func:`phenomedb.analysis.RunXCMS`
+     - Run XCMS
 
 Individual analyses can be run via the AnalysisView page, where task runs can be parameterised and scheduled, and the results can be explored.
 
@@ -264,7 +369,6 @@ Each AnalysisTask also has specific charts and figures available to explore the 
   :alt: PhenomeDB RunPCPr2 visualisation
 
   Visualisation of PCPR2 results
-
 
 .. figure:: ./_images/MWAS-view-example.png
   :width: 650
