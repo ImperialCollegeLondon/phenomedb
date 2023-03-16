@@ -2,7 +2,7 @@ from distutils.core import setup
 #requires = open('./requirements.txt').read().strip().split('\n')
 setup(
     name='phenomedb',
-    version='0.9.8',
+    version='0.9.5',
     packages=['phenomedb','phenomedb.views'],
     license='GPL-3.0-or-later',
     description='PhenomeDB is a platform for harmonisation and integration of multi-study metabolomics data, that uses Postgres, Apache-Airflow, and Redis.',
@@ -19,7 +19,7 @@ setup(
         'nPYc',
         'redis',
         'chemspipy',
-        'flask-appbuilder'
+        'flask-appbuilder',
         'psycopg2',
         'deepdiff',
         'xlrd',
@@ -27,7 +27,8 @@ setup(
         'rdkit',
         'pytest',
         "pymzml[full]",
-        'libchebipy'
+        'libchebipy',
+        #'apache-airflow[password]~=2.5.1'
     ],
     include_package_data=True,
     keywords=['phenomedb','metabolomics','LC-MS','NMR']

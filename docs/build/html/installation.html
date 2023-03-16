@@ -43,13 +43,15 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#local-desktop-installation">Local/desktop installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#local-desktop-docker-installation">Local/desktop Docker installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#python-installatiion">Python installatiion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#running-the-tests">Running the tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-the-docs">Building the docs</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#settings">Settings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#id2">Settings</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="#settings">Settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#local-python-installation">Local Python Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-installation">Docker installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#test">TEST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#db">DB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#webserver">WEBSERVER</a></li>
@@ -108,45 +110,84 @@
   <section id="installation">
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
 <p>The various PhenomeDB components can be installed separately, however to simplify the usage of these interacting components, they have been docker-ised.</p>
-<section id="local-desktop-installation">
-<h2>Local/desktop installation<a class="headerlink" href="#local-desktop-installation" title="Permalink to this heading"></a></h2>
+<section id="local-desktop-docker-installation">
+<h2>Local/desktop Docker installation<a class="headerlink" href="#local-desktop-docker-installation" title="Permalink to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p>Install docker</p></li>
 <li><p>Download the repo</p></li>
 <li><p>cd into the repo directory</p></li>
-<li><p>Copy the ./data/config/config.ini.example to ./data/config/config.ini</p></li>
 <li><p>Copy the .env-example file to a file called .env, and edit the parameters as required (see settings)</p></li>
 <li><p>cd into the directory and run docker-compose up</p></li>
 </ol>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:ghaggart/phenomedb.git
 <span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>phenomedb
-<span class="gp">$ </span>cp<span class="w"> </span>./data/config/config.ini.example<span class="w"> </span>./data/config/config.ini
 <span class="gp">$ </span>cp<span class="w"> </span>.env-example<span class="w"> </span>.env
+<span class="gp">$ </span>vim<span class="w"> </span>.env<span class="w"> </span><span class="c1"># or whichever text editor</span>
 <span class="gp">$ </span>docker<span class="w"> </span>compose<span class="w"> </span>up
 </pre></div>
 </div>
 </section>
 <section id="python-installatiion">
 <h2>Python installatiion<a class="headerlink" href="#python-installatiion" title="Permalink to this heading"></a></h2>
-<p>Python installation is necessary for local IDE debugging of unit tests,running unit tests and building the docs.</p>
+<p>Python installation is necessary for local IDE debugging of unit tests and building the docs.</p>
 <p>To install the phenomedb library locally:</p>
 <ol class="arabic simple">
 <li><p>Checkout the repo</p></li>
 <li><p>install the pip requirements (inside a virtualenv or conda env)</p></li>
-<li><p>run setup.py sdist</p></li>
+<li><p>run setup.py install</p></li>
+<li><p>install apache-airflow from pip</p></li>
+<li><p>Either run the docker compose separately or install postgres and redis according to your OS instructions.</p></li>
 </ol>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-<span class="gp">$ </span>python<span class="w"> </span>setup.py<span class="w"> </span>sdist
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span><span class="c1"># this will fail the first time, run it twice</span>
+<span class="gp">$ </span>python<span class="w"> </span>setup.py<span class="w"> </span>install
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;apache-airflow[password]==2.5.1&#39;</span>
+<span class="gp">$ </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>postgres<span class="w"> </span>redis
 </pre></div>
 </div>
 </section>
 <section id="running-the-tests">
 <h2>Running the tests<a class="headerlink" href="#running-the-tests" title="Permalink to this heading"></a></h2>
 <p>The tests can be run using pytest.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>postgres<span class="w"> </span>redis
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>tests
+<span class="gp">$ </span>pytest<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<section id="building-the-docs">
+<h2>Building the docs<a class="headerlink" href="#building-the-docs" title="Permalink to this heading"></a></h2>
+<p>The docs are hosted on readthedocs, but must be built locally before upload (due to the postgres and redis dependencies). The sphinx and sphinx-rtd-theme pip packages are required to build the docs. To upload them to readthedocs, simply push them to the repo.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>docs
+<span class="gp">$ </span>make<span class="w"> </span>clean
+<span class="gp">$ </span>make<span class="w"> </span>html
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>..
+<span class="gp">$ </span>git<span class="w"> </span>add<span class="w"> </span>.<span class="w"> </span>-A
+<span class="gp">$ </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s1">&#39;updated docs&#39;</span>
+<span class="gp">$ </span>git<span class="w"> </span>push
+</pre></div>
+</div>
 </section>
 </section>
 <section id="settings">
 <h1>Settings<a class="headerlink" href="#settings" title="Permalink to this heading"></a></h1>
+<p>Settings in PhenomeDB are configured in different ways depending if PhenomeDB is being run via docker compose or not.</p>
+<section id="local-python-installation">
+<h2>Local Python Installation<a class="headerlink" href="#local-python-installation" title="Permalink to this heading"></a></h2>
+<p>When running the phenomedb python library from a local host (instead of Docker), the configuration is controlled by the ./data/config/default-config.ini file. The configuration can be overriden by either copying this file to the same directory with the name config.ini, or by copying it a location on your machine and specifying the PHENOMEDB_CONFIG environment variable.</p>
+</section>
+<section id="docker-installation">
+<h2>Docker installation<a class="headerlink" href="#docker-installation" title="Permalink to this heading"></a></h2>
+<p>When running PhenomeDB from docker compose, you can edit the user-copied (during installation) env file ./.env. This file defines the environment variables inside the docker containers, and overrides the values in config.ini and default-config.ini..</p>
+<p>Apache Airflow settings can be configured with the following syntax:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.basic_auth</span>
+</pre></div>
+</div>
+<p>PhenomeDB settings can be set in the same format:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">PHENOMEDB__GROUP__SETTING=example</span>
+</pre></div>
+</div>
+<p>The .env-example file contains the recommended Airflow and ChemSpider settings, but they can be adjusted as required.</p>
+<p>The config.ini file contains the following groups and settings:</p>
 <p>To use the ImportCompoundTask compound lookup functionality the following setting must be configured to use chemspider by obtaining a chemspider api key:</p>
 <p>PHENOMEDB__API_KEYS__CHEMSPIDER</p>
 <p>The following settings are recommended to be changed however the defaults will work.</p>
@@ -161,25 +202,6 @@
 <p>AIRFLOW__DATABASE__SQL_ALCHEMY_CONN</p>
 <p>AIRFLOW__CORE__FERNET_KEY</p>
 </section>
-<section id="id2">
-<h1>Settings<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h1>
-<p>Settings in PhenomeDB are configured in different ways depending if PhenomeDB is being run via docker compose or not.</p>
-<p>No docker -&gt; ./data/config/config.ini</p>
-<p>With docker -&gt; ./.env</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Even if using docker you still need to create the config.ini file by copying config.ini.example -&gt; config.ini</p>
-</div>
-<p>Apache Airflow settings can be configured with the following syntax:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.basic_auth</span>
-</pre></div>
-</div>
-<p>PhenomeDB settings can be set in the same format:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">PHENOMEDB__GROUP__SETTING=example</span>
-</pre></div>
-</div>
-<p>The .env-example file contains the recommended Airflow and ChemSpider settings, but they can be adjusted as required.</p>
-<p>The config.ini file contains the following groups and settings:</p>
 <section id="test">
 <h2>TEST<a class="headerlink" href="#test" title="Permalink to this heading"></a></h2>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">username = admin # The user account used during unit tests</span>

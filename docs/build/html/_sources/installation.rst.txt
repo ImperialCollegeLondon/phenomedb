@@ -5,48 +5,110 @@ Installation
 
 The various PhenomeDB components can be installed separately, however to simplify the usage of these interacting components, they have been docker-ised.
 
-Local/desktop installation
+Local/desktop Docker installation
 --------------------------
 
 1. Install docker
 2. Download the repo
 3. cd into the repo directory
-4. Copy the ./data/config/config.ini.example to ./data/config/config.ini
-5. Copy the .env-example file to a file called .env, and edit the parameters as required (see settings)
-6. cd into the directory and run docker-compose up
+4. Copy the .env-example file to a file called .env, and edit the parameters as required (see settings)
+5. cd into the directory and run docker-compose up
 
 .. code-block:: console
 
    $ git clone git@github.com:ghaggart/phenomedb.git
    $ cd phenomedb
-   $ cp ./data/config/config.ini.example ./data/config/config.ini
    $ cp .env-example .env
+   $ vim .env # or whichever text editor
    $ docker compose up
-
 
 Python installatiion
 --------------------
 
-Python installation is necessary for local IDE debugging of unit tests,running unit tests and building the docs.
+Python installation is necessary for local IDE debugging of unit tests and building the docs.
 
 To install the phenomedb library locally:
 
 1. Checkout the repo
 2. install the pip requirements (inside a virtualenv or conda env)
-3. run setup.py sdist
+3. run setup.py install
+4. install apache-airflow from pip
+5. Either run the docker compose separately or install postgres and redis according to your OS instructions.
 
 .. code-block:: console
 
-  $ pip install -r requirements.txt
-  $ python setup.py sdist
+  $ python setup.py install # this will fail the first time, run it twice
+  $ python setup.py install
+  $ pip install 'apache-airflow[password]==2.5.1'
+  $ docker compose up postgres redis
 
 Running the tests
 -----------------
 
 The tests can be run using pytest.
 
+.. code-block:: console
+
+  $ docker compose up postgres redis
+  $ cd tests
+  $ pytest .
+
+Building the docs
+-----------------
+
+The docs are hosted on readthedocs, but must be built locally before upload (due to the postgres and redis dependencies). The sphinx and sphinx-rtd-theme pip packages are required to build the docs. To upload them to readthedocs, simply push them to the repo.
+
+.. code-block:: console
+
+  $ cd docs
+  $ make clean
+  $ make html
+  $ cd ..
+  $ git add . -A
+  $ git commit -m 'updated docs'
+  $ git push
+
 Settings
 ========
+
+Settings in PhenomeDB are configured in different ways depending if PhenomeDB is being run via docker compose or not.
+
+Local Python Installation
+-------------------------
+
+When running the phenomedb python library from a local host (instead of Docker), the configuration is controlled by the ./data/config/default-config.ini file. The configuration can be overriden by either copying this file to the same directory with the name config.ini, or by copying it a location on your machine and specifying the PHENOMEDB_CONFIG environment variable.
+
+.. code-block::bash
+
+  $ cp ./data/config/default-config.ini ./data/config/config.ini
+  $ vim ./data/config/config.ini # or whichever text editor
+
+.. code-block::bash
+
+  $ cp ./data/config/default-config.ini /opt/phenomedb/config.ini
+  $ vim /opt/phenomedb/config.ini # or whichever text editor
+  $ PHENOMEDB_CONFIG=/opt/phenomedb/config.ini
+
+Docker installation
+-------------------
+When running PhenomeDB from docker compose, you can edit the user-copied (during installation) env file ./.env. This file defines the environment variables inside the docker containers, and overrides the values in config.ini and default-config.ini..
+
+Apache Airflow settings can be configured with the following syntax:
+
+.. code-block:: console
+
+    AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.basic_auth
+
+PhenomeDB settings can be set in the same format:
+
+.. code-block:: console
+
+    PHENOMEDB__GROUP__SETTING=example
+
+The .env-example file contains the recommended Airflow and ChemSpider settings, but they can be adjusted as required.
+
+The config.ini file contains the following groups and settings:
+
 
 To use the ImportCompoundTask compound lookup functionality the following setting must be configured to use chemspider by obtaining a chemspider api key:
 
@@ -75,33 +137,6 @@ AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
 AIRFLOW__CORE__FERNET_KEY
 
 
-Settings
-========
-
-Settings in PhenomeDB are configured in different ways depending if PhenomeDB is being run via docker compose or not.
-
-No docker -> ./data/config/config.ini
-
-With docker -> ./.env
-
-.. warning::
-    Even if using docker you still need to create the config.ini file by copying config.ini.example -> config.ini
-
-Apache Airflow settings can be configured with the following syntax:
-
-.. code-block:: console
-
-    AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.basic_auth
-
-PhenomeDB settings can be set in the same format:
-
-.. code-block:: console
-
-    PHENOMEDB__GROUP__SETTING=example
-
-The .env-example file contains the recommended Airflow and ChemSpider settings, but they can be adjusted as required.
-
-The config.ini file contains the following groups and settings:
 
 TEST
 ----

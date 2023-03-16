@@ -1,11 +1,19 @@
 import configparser, os
 
 config = configparser.ConfigParser()
-#
-if os.path.exists(os.path.join(os.path.dirname(__file__), "./data/config/config.ini")):
-     config_file = os.path.join(os.path.dirname(__file__), "./data/config/config.ini")
-elif os.path.join(os.path.dirname(__file__), "./data/config/config-pypi.ini"):
-     config_file = os.path.join(os.path.dirname(__file__), "./data/config/config-pypi.ini")
+
+# Either manually create a config.ini file in the data/config/ directory
+# OR set the path in PHENOMEDB_CONFIG
+# OR use the default data/config/default-config.py
+
+default_config_overide_file = os.path.join(os.path.dirname(__file__), "./data/config/config.ini")
+
+if 'PHENOMEDB_CONFIG' in os.environ:
+     config_file = os.environ['PHENOMEDB_CONFIG']
+elif os.path.exists(default_config_overide_file):
+     config_file = default_config_overide_file
+else:
+     config_file = os.path.join(os.path.dirname(__file__), "./data/config/default-config.ini")
 
 config.read(config_file)
 print(config.sections())
