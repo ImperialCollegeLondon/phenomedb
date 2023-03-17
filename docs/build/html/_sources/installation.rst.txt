@@ -54,6 +54,7 @@ Running the tests
 The tests can be run using pytest.
 
 Using the local install:
+
 .. code-block:: console
 
   $ docker compose up postgres redis
@@ -61,6 +62,7 @@ Using the local install:
   $ pytest .
 
 Using a phenomedb-airflow docker container:
+
 .. code-block:: console
 
   $ docker compose up postgres redis scheduler
