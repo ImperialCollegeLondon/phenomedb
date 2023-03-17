@@ -402,7 +402,24 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="phenomedb.models.SavedQuery">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.models.</span></span><span class="sig-name descname"><span class="pre">SavedQuery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.models.SavedQuery" title="Permalink to this definition"></a></dt>
-<dd><dl class="py class">
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>int</em>) – Primary Key</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The name of the SavedQuery</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – The description of the SavedQuery</p></li>
+<li><p><strong>json</strong> (<em>dict</em>) – The definition of the SavedQuery in JSON format</p></li>
+<li><p><strong>project_short_label</strong> (<em>str</em>) – A short label that will be displayed in downstream analyses</p></li>
+<li><p><strong>code_string</strong> (<em>str</em>) – The SQLAlchemy representation of the query</p></li>
+<li><p><strong>created_by</strong> (<em>str</em>) – The user who created the query</p></li>
+<li><p><strong>date_added</strong> (<cite>datetime.datetime</cite>) – The data the query was added</p></li>
+<li><p><strong>type</strong> (<a class="reference internal" href="#phenomedb.models.SavedQuery.Type" title="phenomedb.models.SavedQuery.Type"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.SavedQuery.Type</span></code></a>) – The Type, whether ‘custom’ or ‘preset’, only used by the UI</p></li>
+<li><p><strong>cache_state</strong> (<em>dict</em>) – The current cache state of the query result dataframes</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
 <dt class="sig sig-object py" id="phenomedb.models.SavedQuery.Type">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.models.SavedQuery.Type" title="Permalink to this definition"></a></dt>
 <dd><p>An enumeration.</p>
