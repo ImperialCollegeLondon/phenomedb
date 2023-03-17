@@ -59,7 +59,7 @@ services:
             - ./docker/wait-for-scheduler.py:/opt/wait-for-scheduler.py
             - ./dags:/opt/airflow/dags
             - ./logs:/opt/airflow/logs
-            - ./phenomedb//plugins:/opt/airflow/plugins
+            - ./phenomedb/views:/opt/airflow/plugins/phenomedb_views
             - .:/opt/phenomedb_app
             - ./docker/webserver/webserver_config.py:/opt/airflow/webserver_config.py
             - ./docker/webserver/entrypoint.sh:/opt/airflow/entrypoint.sh

@@ -3,10 +3,8 @@
 # docker push ghaggart/phenomedb-airflow
 
 # both arm64 and x86
-# docker buildx build --platform linux/amd64,linux/arm64 -t ghaggart/phenomedb-airflow:latest .
-
-# from the root dir
-# docker buildx build --platform linux/amd64,linux/arm64 -t ghaggart/phenomedb-airflow:latest -f docker/custom_images/phenomedb-airflow .
+# cp requirements.txt ./docker/custom_images/phenomedb-airflow/
+# docker buildx build --platform linux/amd64,linux/arm64 -t ghaggart/phenomedb-airflow:latest ./docker/custom_images/phenomedb-airflow/
 
 FROM apache/airflow:2.5.1-python3.9
 
@@ -24,7 +22,8 @@ RUN apt-get install -y vim git xml2 libxml2-dev openssl libcurl4-openssl-dev cur
 RUN chown -R airflow /usr/local/lib/R/
 RUN chmod -R 777 /usr/local/lib/R/
 USER airflow
-
+COPY requirements.txt /opt/requirements.txt
+RUN pip install -r /opt/requirements.txt
 #RUN pip install --upgrade nPYc
 #RUN pip install --upgrade pip
 #RUN pip install --upgrade pandas
@@ -51,5 +50,4 @@ RUN R -e "install.packages('hglm',dependencies=TRUE, repos='http://cran.rstudio.
 RUN R -e "BiocManager::install('MWASTools')"
 RUN R -e "BiocManager::install('xcms')"
 RUN R -e "BiocManager::install('BiocParallel')"
-COPY phenomedb/requirements.txt /opt/requirements.txt
-RUN pip install -r /opt/requirements.txt
+
