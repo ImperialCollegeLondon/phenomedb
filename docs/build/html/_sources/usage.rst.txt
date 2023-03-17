@@ -105,7 +105,7 @@ The inbuilt tasks for PhenomeDB are shown below. To view their parameters, follo
    * - :func:`phenomedb.cache.MoveTaskOutputToCache`
      - Move the task output from the db to cache (clean up task)
 
-For more information on tasks, including implementing your own, please head over to the :ref:`_development` page.
+For more information on tasks, including implementing your own, please head over to the :ref:`development` page.
 
 The Apache-Airflow interface
 ----------------------------
@@ -194,7 +194,7 @@ In order to compare, integrate, and stratify data across multiple cohorts, the s
 
    * - Task class
      - Task description
-     * - :func:`phenomedb.metadata.HarmoniseMetadataField`
+   * - :func:`phenomedb.metadata.HarmoniseMetadataField`
      - Harmonise/curate a metadata field
 
 Importing compound metadata
@@ -273,7 +273,7 @@ In order to integrate annotations across projects, the annotations must be harmo
 Creating and executing queries
 ------------------------------
 
-PhenomeDB has a complex and rich querying system that enables users to define queries as a collection of filters and the conversion of the results of those filters to a dataset, enabling cross-project integration and stratification. For more information on the QueryFactory, including its Python API and UI, please head over to :ref:`imports`.
+PhenomeDB has a complex and rich querying system that enables users to define queries as a collection of filters and the conversion of the results of those filters to a dataset, enabling cross-project integration and stratification. For more information on the QueryFactory, including its Python API and UI, please head over to :ref:`phenomedb.imports`.
 
 In short, users define queries, build the dataframe cache, and then that cache can be used in downstream analyses/tasks.
 

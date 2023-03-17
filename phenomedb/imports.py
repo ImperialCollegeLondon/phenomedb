@@ -4079,7 +4079,7 @@ class ImportNPYC(ImportTask):
     annotations = {}
     already_mapped_fields = ['Sample File Name','Sample Base Name','expno','Path','Acquired Time','Run Order','Correction Batch','Exclusion Details','Batch','Metadata Available','Assay data name','Assay data location','Sample position','Sample batch','Assay protocol','Instrument','Acquisition','batch','Sampling ID','Sample ID','Status','AssayRole','SampleType','Dilution']
 
-    def __init__(self,project_name=None,assay_name=None,sample_matrix=None,dataset_path=None,sop=None,sample_metadata_path=None,sample_metadata_format=None,task_run_id=None,username=None,db_env=None,db_session=None,task_run_id=None,pipeline_run_id=None,execution_date=None):
+    def __init__(self,project_name=None,assay_name=None,sample_matrix=None,dataset_path=None,sop=None,sample_metadata_path=None,sample_metadata_format=None,task_run_id=None,username=None,db_env=None,db_session=None,pipeline_run_id=None,execution_date=None):
         """_summary_
 
         :param dataset_path: The path to the dataset folder, defaults to None.
