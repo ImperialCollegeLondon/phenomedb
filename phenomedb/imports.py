@@ -470,45 +470,34 @@ class ImportTask(Task):
         return value
 
 class ImportSampleManifest(ImportTask):
-    """Constructor method. Once initialised as task, run using task.run()
+    """Import a Sample Manifest XLS file. The format of which is an excel file with 2 sheets, one called 'samples' with sample-level metadata, another called 'subjects', with subject-level metadata. Both sample-level and subject-level metadata are imported at the sample-level.
 
-        :param project_name: The project name, defaults to None
-        :type project_name: str, optional
-        :param username: The username of the person running the task, defaults to None
-        :type username: str, optional
-        :param sample_manifest_path: The path to the sample manifest file, defaults to None
-        :type sample_manifest_path: str, optional
-        :param columns_to_ignore: Columns to ignore in the sample manifest file, defaults to None
-        :type columns_to_ignore: array, optional
-        """
+    :param sample_manifest_path: _description_, defaults to None
+    :type sample_manifest_path: str, optional
+    :param columns_to_ignore: _description_, defaults to None
+    :type columns_to_ignore: str, optional
+    :param project_name: The name of the project, defaults to None
+    :type project_name: str, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+    """
 
     already_mapped_fields = ['Subject ID','Original Sampling ID','Sampling ID','Sample Type', 'Sampling Date', 'Box location','Comment']
 
     def __init__(self,project_name=None,sample_manifest_path=None,columns_to_ignore=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True,pipeline_run_id=None):
-        """Import a Sample Manifest XLS file. The format of which is an excel file with 2 sheets, one called 'samples' with sample-level metadata, another called 'subjects', with subject-level metadata. Both sample-level and subject-level metadata are imported at the sample-level.
-
-        :param sample_manifest_path: _description_, defaults to None
-        :type sample_manifest_path: str, optional
-        :param columns_to_ignore: _description_, defaults to None
-        :type columns_to_ignore: str, optional
-        :param project_name: The name of the project, defaults to None
-        :type project_name: str, optional
-        :param task_run_id: The TaskRun ID
-        :type task_run_id: float, optional
-        :param username: The username of the user running the job, defaults to None
-        :type username: str, optional
-        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
-        :type db_env: str, optional
-        :param db_session: The db_session to use
-        :type db_session: object, optional
-        :param execution_date: The date of execution, str format.
-        :type execution_date: str, optional
-        :param validate: Whether to run validation, default True
-        :type validate: boolean
-        :param pipeline_run_id: The Pipeline run ID
-        :type pipeline_run_id: str, optional
-        """
-
+    
         super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate,pipeline_run_id=pipeline_run_id)
 
         self.sample_manifest_path = sample_manifest_path
@@ -1311,6 +1300,25 @@ class ImportDataLocations(ImportTask):
             sample_row_index = sample_row_index + 1
 
 class AnnotationImportTask(ImportTask):
+     """The AnnotationImportTask class. Used as the base class for the major annotation import methods.
+
+    :param project_name: The name of the project, defaults to None
+    :type project_name: str, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+    """
    
     first_feature_column_index = None
     dataset = None
@@ -1325,25 +1333,6 @@ class AnnotationImportTask(ImportTask):
     feature_metadata = None
 
     def __init__(self,project_name=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True,pipeline_run_id=None):
-        """The AnnotationImportTask class. Used as the base class for the major annotation import methods.
-
-        :param project_name: The name of the project, defaults to None
-        :type project_name: str, optional
-        :param task_run_id: The TaskRun ID
-        :type task_run_id: float, optional
-        :param username: The username of the user running the job, defaults to None
-        :type username: str, optional
-        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
-        :type db_env: str, optional
-        :param db_session: The db_session to use
-        :type db_session: object, optional
-        :param execution_date: The date of execution, str format.
-        :type execution_date: str, optional
-        :param validate: Whether to run validation, default True
-        :type validate: boolean
-        :param pipeline_run_id: The Pipeline run ID
-        :type pipeline_run_id: str, optional
-        """
         
         super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate,pipeline_run_id=pipeline_run_id)
 
@@ -1751,7 +1740,33 @@ class AnnotationImportTask(ImportTask):
 
 
 class ImportBrukerIVDRAnnotations(AnnotationImportTask):
+    """Import Bruker IVDr Annotations
+
+    :param annotation_method: name of the annotation method, BI-QUANT or BI-LISA
+    :type annotation_method: str, required
+    :param unified_csv_path: the path to the unified csv file
+    :type unified_csv_path: str, required
+    :param sample_matrix: the sample matrix, ie plasma, urine, serum, etc
+    :type sample_matrix: str, required
+    :param project_name: The name of the project, defaults to None
+    :type project_name: str, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
     
+        """        
+
     assay_name = 'NOESY'
     already_mapped_fields = ['Sample File Name','Sample Base Name','expno','Path','Acquired Time','Run Order','Correction Batch','Exclusion Details','Batch','Metadata Available','Assay data name','Assay data location','Sample position','Sample batch','Assay protocol','Instrument','Acquisition','batch','Sampling ID','Sample ID','Status','AssayRole','SampleType','Dilution']
     units = {}
@@ -1759,32 +1774,7 @@ class ImportBrukerIVDRAnnotations(AnnotationImportTask):
 
     def __init__(self,project_name=None,annotation_method=None,version=None,is_latest=True,unified_csv_path=None,
                  sample_matrix=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True):
-        """Import Bruker IVDr Annotations
-
-        :param annotation_method: name of the annotation method, BI-QUANT or BI-LISA
-        :type annotation_method: str, required
-        :param unified_csv_path: the path to the unified csv file
-        :type unified_csv_path: str, required
-        :param sample_matrix: the sample matrix, ie plasma, urine, serum, etc
-        :type sample_matrix: str, required
-        :param project_name: The name of the project, defaults to None
-        :type project_name: str, optional
-        :param task_run_id: The TaskRun ID
-        :type task_run_id: float, optional
-        :param username: The username of the user running the job, defaults to None
-        :type username: str, optional
-        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
-        :type db_env: str, optional
-        :param db_session: The db_session to use
-        :type db_session: object, optional
-        :param execution_date: The date of execution, str format.
-        :type execution_date: str, optional
-        :param validate: Whether to run validation, default True
-        :type validate: boolean
-        :param pipeline_run_id: The Pipeline run ID
-        :type pipeline_run_id: str, optional
-        """        
-
+        
         super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate)
 
         if version:
@@ -2440,6 +2430,47 @@ class ImportBrukerIVDRAnnotations(AnnotationImportTask):
             sample_row_index = sample_row_index + 1
 
 class ImportPeakPantherAnnotations(AnnotationImportTask):
+    """ImportPeakPantherAnnotations Class. Using the Basic CSV format, imports a peakPantheR Dataset, maps to phenomeDB.models, and commits to DB.
+
+    :param feature_metadata_csv_path: The path to the feature metadata csv file, defaults to None
+    :type feature_metadata_csv_path: str, optional
+    :param sample_metadata_csv_path: The path to the sample metadata csv file, defaults to None
+    :type sample_metadata_csv_path: str, optional
+    :param intensity_data_csv_path: The path to the intensity file, defaults to None
+    :type intensity_data_csv_path: str, optional
+    :param ppr_annotation_parameters_csv_path: The path to the PPR annotation parameters file, defaults to None
+    :type ppr_annotation_parameters_csv_path: str, optional
+    :param sample_matrix: The sample_matrix being imported, defaults to None
+    :type sample_matrix: str, optional
+    :param assay_name: The assay name being imported, defaults to None
+    :type assay_name: str, optional
+    :param roi_version: The version of the ROI file used for annotations, defaults to None
+    :type roi_version: str, optional
+    :param batch_corrected_data_csv_path: The path to the batch corrected intensity data, defaults to None
+    :type batch_corrected_data_csv_path: str, optional
+    :param all_features_feature_metadata_csv_path: The path to the file containing all the searched features, defaults to None
+    :type all_features_feature_metadata_csv_path: str, optional
+    :param ppr_mz_csv_path: The PPR MZ csv file path, defaults to None
+    :type ppr_mz_csv_path: str, optional
+    :param ppr_rt_csv_path: The PPR RT csv file path, defaults to None
+    :type ppr_rt_csv_path: str, optional
+    :param project_name: The name of the project, defaults to None
+    :type project_name: str, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+    """        
 
     annotation_name = 'peakPantheR'
     annotation_method_name = 'PPR'
@@ -2461,48 +2492,7 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
                  all_features_feature_metadata_csv_path=None,ppr_mz_csv_path=None,ppr_rt_csv_path=None,is_latest=True,
                  task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True,
                  run_batch_correction=False):
-        """ImportPeakPantherAnnotations Class. Using the Basic CSV format, imports a peakPantheR Dataset, maps to phenomeDB.models, and commits to DB.
-
-        :param feature_metadata_csv_path: The path to the feature metadata csv file, defaults to None
-        :type feature_metadata_csv_path: str, optional
-        :param sample_metadata_csv_path: The path to the sample metadata csv file, defaults to None
-        :type sample_metadata_csv_path: str, optional
-        :param intensity_data_csv_path: The path to the intensity file, defaults to None
-        :type intensity_data_csv_path: str, optional
-        :param ppr_annotation_parameters_csv_path: The path to the PPR annotation parameters file, defaults to None
-        :type ppr_annotation_parameters_csv_path: str, optional
-        :param sample_matrix: The sample_matrix being imported, defaults to None
-        :type sample_matrix: str, optional
-        :param assay_name: The assay name being imported, defaults to None
-        :type assay_name: str, optional
-        :param roi_version: The version of the ROI file used for annotations, defaults to None
-        :type roi_version: str, optional
-        :param batch_corrected_data_csv_path: The path to the batch corrected intensity data, defaults to None
-        :type batch_corrected_data_csv_path: str, optional
-        :param all_features_feature_metadata_csv_path: The path to the file containing all the searched features, defaults to None
-        :type all_features_feature_metadata_csv_path: str, optional
-        :param ppr_mz_csv_path: The PPR MZ csv file path, defaults to None
-        :type ppr_mz_csv_path: str, optional
-        :param ppr_rt_csv_path: The PPR RT csv file path, defaults to None
-        :type ppr_rt_csv_path: str, optional
-        :param project_name: The name of the project, defaults to None
-        :type project_name: str, optional
-        :param task_run_id: The TaskRun ID
-        :type task_run_id: float, optional
-        :param username: The username of the user running the job, defaults to None
-        :type username: str, optional
-        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
-        :type db_env: str, optional
-        :param db_session: The db_session to use
-        :type db_session: object, optional
-        :param execution_date: The date of execution, str format.
-        :type execution_date: str, optional
-        :param validate: Whether to run validation, default True
-        :type validate: boolean
-        :param pipeline_run_id: The Pipeline run ID
-        :type pipeline_run_id: str, optional
-        """        
-
+        
         super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate)
 
         self.is_latest = is_latest
@@ -3430,6 +3420,37 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
 
 
 class ImportTargetLynxAnnotations(AnnotationImportTask):
+    """TargetLynx Task Class. Imports an nPYc TargetLynx Targeted Dataset, maps to phenomeDB.models, and commits to DB.
+
+    :param unified_csv_path: The path to the unified csv file, defaults to None.
+    :type sample_manifest_path: str, optional
+    :param sop: The SOP to use, defaults to None.
+    :type sop: str, optional
+    :param sop_version: The version of the SOP used, defaults to None.
+    :type sop_version: str, optional
+    :param assay_name: The name of the assay (ie LC-QQQ Bile Acids), defaults to None.
+    :type assay_name: str, optional
+    :param sample_matrix:  The sample matrix (ie urine, plasma), defaults to None.
+    :type sample_matrix: str, optional
+    :param sop_file_path: The path to the SOP file used, defaults to "".
+    :type sop_file_path: str, optional
+        :param project_name: The name of the project, defaults to None
+    :type project_name: str, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+    """        
 
     assay_platform = AnalyticalPlatform.MS
     assay_targeted = 'Y'
@@ -3437,38 +3458,7 @@ class ImportTargetLynxAnnotations(AnnotationImportTask):
     minimum_columns = ['Sample File Name']
 
     def __init__(self,project_name=None,unified_csv_path=None,sop=None,sop_version=None,assay_name=None,sample_matrix=None,sop_file_path="",is_latest=True,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True):
-        """TargetLynx Task Class. Imports an nPYc TargetLynx Targeted Dataset, maps to phenomeDB.models, and commits to DB.
-
-        :param unified_csv_path: The path to the unified csv file, defaults to None.
-        :type sample_manifest_path: str, optional
-        :param sop: The SOP to use, defaults to None.
-        :type sop: str, optional
-        :param sop_version: The version of the SOP used, defaults to None.
-        :type sop_version: str, optional
-        :param assay_name: The name of the assay (ie LC-QQQ Bile Acids), defaults to None.
-        :type assay_name: str, optional
-        :param sample_matrix:  The sample matrix (ie urine, plasma), defaults to None.
-        :type sample_matrix: str, optional
-        :param sop_file_path: The path to the SOP file used, defaults to "".
-        :type sop_file_path: str, optional
-         :param project_name: The name of the project, defaults to None
-        :type project_name: str, optional
-        :param task_run_id: The TaskRun ID
-        :type task_run_id: float, optional
-        :param username: The username of the user running the job, defaults to None
-        :type username: str, optional
-        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
-        :type db_env: str, optional
-        :param db_session: The db_session to use
-        :type db_session: object, optional
-        :param execution_date: The date of execution, str format.
-        :type execution_date: str, optional
-        :param validate: Whether to run validation, default True
-        :type validate: boolean
-        :param pipeline_run_id: The Pipeline run ID
-        :type pipeline_run_id: str, optional
-        """        
-
+        
         super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate,pipeline_run_id=pipeline_run_id)
 
         self.is_latest = is_latest
@@ -3880,21 +3870,6 @@ class ImportTargetLynxAnnotations(AnnotationImportTask):
 class ImportXCMSFeatures(ImportTask):
     """XCMSFeatureImportTaskUnifiedCSV Class. Using the Unified CSV format, imports an XCMS Dataset, maps to phenomeDB.models, and commits to DB.
 
-    :param task_options: A dictionary containing the task options
-    :type task_options: dict
-
-    """
-
-    assay_platform = AnalyticalPlatform.MS
-    #assay_platform = 'MS'
-    assay_targeted = 'N'
-
-    already_mapped_fields = ['Sample File Name', 'Run Order', 'AssayRole', 'SampleType','Sample ID']
-
-    def __init__(self,project_name=None,unified_csv_path=None,sample_matrix=None,assay_name=None,task_run_id=None,
-                 username=None,db_env=None):
-        """XCMSFeatureImportTaskUnifiedCSV Class. Using the Unified CSV format, imports an XCMS Dataset, maps to phenomeDB.models, and commits to DB.
-
         TO DO: Finish the import code
 
         :param unified_csv_path: The path to the unified csv file, defaults to None.
@@ -3920,6 +3895,15 @@ class ImportXCMSFeatures(ImportTask):
         :param pipeline_run_id: The Pipeline run ID
         :type pipeline_run_id: str, optional
         """
+
+    assay_platform = AnalyticalPlatform.MS
+    #assay_platform = 'MS'
+    assay_targeted = 'N'
+
+    already_mapped_fields = ['Sample File Name', 'Run Order', 'AssayRole', 'SampleType','Sample ID']
+
+    def __init__(self,project_name=None,unified_csv_path=None,sample_matrix=None,assay_name=None,task_run_id=None,
+                 username=None,db_env=None):
         
         super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate,pipeline_run_id=pipeline_run_id)
 
@@ -4075,13 +4059,7 @@ class ImportXCMSFeatures(ImportTask):
         return feature
 
 class ImportNPYC(ImportTask):
-
-    npyc_dataset = None
-    annotations = {}
-    already_mapped_fields = ['Sample File Name','Sample Base Name','expno','Path','Acquired Time','Run Order','Correction Batch','Exclusion Details','Batch','Metadata Available','Assay data name','Assay data location','Sample position','Sample batch','Assay protocol','Instrument','Acquisition','batch','Sampling ID','Sample ID','Status','AssayRole','SampleType','Dilution']
-
-    def __init__(self,project_name=None,assay_name=None,sample_matrix=None,dataset_path=None,sop=None,sample_metadata_path=None,sample_metadata_format=None,task_run_id=None,username=None,db_env=None,db_session=None,pipeline_run_id=None,execution_date=None):
-        """_summary_
+    """_summary_
 
         :param dataset_path: The path to the dataset folder, defaults to None.
         :type dataset_path_path: str, optional
@@ -4115,6 +4093,12 @@ class ImportNPYC(ImportTask):
         :type pipeline_run_id: str, optional
         """
 
+    npyc_dataset = None
+    annotations = {}
+    already_mapped_fields = ['Sample File Name','Sample Base Name','expno','Path','Acquired Time','Run Order','Correction Batch','Exclusion Details','Batch','Metadata Available','Assay data name','Assay data location','Sample position','Sample batch','Assay protocol','Instrument','Acquisition','batch','Sampling ID','Sample ID','Status','AssayRole','SampleType','Dilution']
+
+    def __init__(self,project_name=None,assay_name=None,sample_matrix=None,dataset_path=None,sop=None,sample_metadata_path=None,sample_metadata_format=None,task_run_id=None,username=None,db_env=None,db_session=None,pipeline_run_id=None,execution_date=None):
+        
         super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate,pipeline_run_id=pipeline_run_id)
 
         self.assay_name = assay_name
@@ -4328,36 +4312,31 @@ class ImportNPYC(ImportTask):
 
 
 class DownloadMetabolightsStudy(Task):
-    """Import Metabolights Study Task
+    """Download a Metabolights Study. If only study_id set, will download the study as well
 
-    :param ImportTask: Base ImportTask
-    :type ImportTask: `phenomedb.imports.ImportTask`
+    :param study_folder_path: Path to the study folder, defaults to None
+    :type study_folder_path: str, optional
+    :param study_id: ID of the Study, defaults to None
+    :type study_id: int, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
     """
 
     def __init__(self, study_folder_path=None, study_id=None, task_run_id=None, username=None, db_env=None,
                  execution_date=None, db_session=None, pipeline_run_id=None):
-        """Constructor. If only study_id set, will download the study as well
-
-        :param study_folder_path: Path to the study folder, defaults to None
-        :type study_folder_path: str, optional
-        :param study_id: ID of the Study, defaults to None
-        :type study_id: int, optional
-        :param task_run_id: The TaskRun ID
-        :type task_run_id: float, optional
-        :param username: The username of the user running the job, defaults to None
-        :type username: str, optional
-        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
-        :type db_env: str, optional
-        :param db_session: The db_session to use
-        :type db_session: object, optional
-        :param execution_date: The date of execution, str format.
-        :type execution_date: str, optional
-        :param validate: Whether to run validation, default True
-        :type validate: boolean
-        :param pipeline_run_id: The Pipeline run ID
-        :type pipeline_run_id: str, optional
-        """
-
+        
         self.study_folder_path = study_folder_path
         self.study_id = study_id
 
@@ -4372,31 +4351,31 @@ class DownloadMetabolightsStudy(Task):
             self.download_files_from_metabolights(self.study_id,prefixes=['a', 'i', 's', 'm'], suffixes='mzml')
 
 class ImportMetabolightsXCMSAnnotations(ImportTask):
+    """Import MetabolightsXCMSAnnotations, e.g. to be run after DownloadMetabolightStudy and RunXCMS"
+
+    :param study_folder_path: Path to the study folder, defaults to None
+    :type study_folder_path: str, optional
+    :param study_id: ID of the Study, defaults to None
+    :type study_id: int, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+    
+    """
 
     def __init__(self,study_id=None,xcms_file=None,assay_name=None,assay_name_order=None,sample_matrix=None,task_run_id=None,username=None,db_env=None,execution_date=None,db_session=None,pipeline_run_id=None):
-        """Import MetabolightsXCMSAnnotations, e.g. to be run after DownloadMetabolightStudy and RunXCMS"
-
-        :param study_folder_path: Path to the study folder, defaults to None
-        :type study_folder_path: str, optional
-        :param study_id: ID of the Study, defaults to None
-        :type study_id: int, optional
-        :param task_run_id: The TaskRun ID
-        :type task_run_id: float, optional
-        :param username: The username of the user running the job, defaults to None
-        :type username: str, optional
-        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
-        :type db_env: str, optional
-        :param db_session: The db_session to use
-        :type db_session: object, optional
-        :param execution_date: The date of execution, str format.
-        :type execution_date: str, optional
-        :param validate: Whether to run validation, default True
-        :type validate: boolean
-        :param pipeline_run_id: The Pipeline run ID
-        :type pipeline_run_id: str, optional
         
-        """
-
         self.study_id = study_id
         self.xcms_file = xcms_file
         self.assay_name = assay_name
@@ -5394,35 +5373,31 @@ class ImportMetabolightsXCMSAnnotations(ImportTask):
             i = i + 1
 
 class ImportMetabolightsStudy(ImportTask):
-    """Import Metabolights Study Task
+    """Import a Metabolights Study. If only study_id set, will download the study as well
 
-    :param ImportTask: Base ImportTask
-    :type ImportTask: `phenomedb.imports.ImportTask`
-    """    
+    :param study_folder_path: Path to the study folder, defaults to None
+    :type study_folder_path: str, optional
+    :param study_id: ID of the Study, defaults to None
+    :type study_id: int, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+    """        
+   
 
     def __init__(self,study_id=None,task_run_id=None,username=None,db_env=None,execution_date=None,db_session=None,pipeline_run_id=None):
-        """Constructor. If only study_id set, will download the study as well
-
-        :param study_folder_path: Path to the study folder, defaults to None
-        :type study_folder_path: str, optional
-        :param study_id: ID of the Study, defaults to None
-        :type study_id: int, optional
-        :param task_run_id: The TaskRun ID
-        :type task_run_id: float, optional
-        :param username: The username of the user running the job, defaults to None
-        :type username: str, optional
-        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
-        :type db_env: str, optional
-        :param db_session: The db_session to use
-        :type db_session: object, optional
-        :param execution_date: The date of execution, str format.
-        :type execution_date: str, optional
-        :param validate: Whether to run validation, default True
-        :type validate: boolean
-        :param pipeline_run_id: The Pipeline run ID
-        :type pipeline_run_id: str, optional
-        """        
-
+        
         self.study_id = study_id
 
         super().__init__(username=username,task_run_id=task_run_id,db_env=db_env,db_session=db_session,execution_date=execution_date,pipeline_run_id=pipeline_run_id)
@@ -6334,37 +6309,37 @@ class ImportMetabolightsStudy(ImportTask):
             i = i + 1
 
 class ImportMetadata(ImportTask):
+    """Import Metadata from a CSV file where rows are samples and columns are metadata fields.
+
+    :param project_name: The name of the Project, defaults to None
+    :type project_name: str, optional
+    :param filepath: The path to the CSV file, defaults to None
+    :type filepath: str, optional
+    :param id_column: The column name of the ID field, defaults to None
+    :type id_column: str, optional
+    :param id_type: Are the IDs for Subject or Sample?, defaults to 'Sample'
+    :type id_type: str, optional
+    :param columns_to_import: Which columns to import, defaults to None
+    :type columns_to_import: list, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+    """
 
     def __init__(self,project_name=None,filepath=None,id_column=None,id_type='Sample',columns_to_import=None,
                     username=None,task_run_id=None,db_env=None,db_session=None,execution_date=None,pipeline_run_id=None):
-        """Import Metadata from a CSV file where rows are samples and columns are metadata fields.
-
-        :param project_name: The name of the Project, defaults to None
-        :type project_name: str, optional
-        :param filepath: The path to the CSV file, defaults to None
-        :type filepath: str, optional
-        :param id_column: The column name of the ID field, defaults to None
-        :type id_column: str, optional
-        :param id_type: Are the IDs for Subject or Sample?, defaults to 'Sample'
-        :type id_type: str, optional
-        :param columns_to_import: Which columns to import, defaults to None
-        :type columns_to_import: list, optional
-        :param task_run_id: The TaskRun ID
-        :type task_run_id: float, optional
-        :param username: The username of the user running the job, defaults to None
-        :type username: str, optional
-        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
-        :type db_env: str, optional
-        :param db_session: The db_session to use
-        :type db_session: object, optional
-        :param execution_date: The date of execution, str format.
-        :type execution_date: str, optional
-        :param validate: Whether to run validation, default True
-        :type validate: boolean
-        :param pipeline_run_id: The Pipeline run ID
-        :type pipeline_run_id: str, optional
-        """
-
+        
         super().__init__(project_name=project_name,username=username,task_run_id=task_run_id,db_env=db_env,db_session=db_session,execution_date=execution_date,pipeline_run_id=pipeline_run_id)
 
         self.filepath = filepath

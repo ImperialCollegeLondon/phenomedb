@@ -49,6 +49,30 @@ COMPOUND_ASSAY_HEADINGS = ['RPOS','LPOS','LNEG','RNEG','HPOS','LC-QqQ Bile Acids
 
 
 class SavedQuery(Base):
+    """_summary_
+
+    :param id: Primary Key
+    :type id: int
+    :param name: The name of the SavedQuery
+    :type name: str
+    :param description: The description of the SavedQuery
+    :type description: str
+    :param json: The definition of the SavedQuery in JSON format
+    :type json: dict
+    :param project_short_label: A short label that will be displayed in downstream analyses
+    :type project_short_label: str
+    :param code_string: The SQLAlchemy representation of the query
+    :type code_string: str
+    :param created_by: The user who created the query
+    :type created_by: str
+    :param date_added: The data the query was added
+    :type date_added: `datetime.datetime`
+    :param type: The Type, whether 'custom' or 'preset', only used by the UI
+    :type type: :class:`phenomedb.models.SavedQuery.Type`
+    :param cache_state: The current cache state of the query result dataframes
+    :type cache_state: dict
+
+    """
 
     __tablename__ = 'saved_query'
 
