@@ -424,14 +424,21 @@
 <h2>Creating and executing queries<a class="headerlink" href="#creating-and-executing-queries" title="Permalink to this heading"></a></h2>
 <p>PhenomeDB has a complex and rich querying system that enables users to define queries as a collection of filters and the conversion of the results of those filters to a dataset, enabling cross-project integration and stratification. For more information on the QueryFactory, including its Python API and UI, please head over to <span class="xref std std-ref">imports</span>.</p>
 <p>In short, users define queries, build the dataframe cache, and then that cache can be used in downstream analyses/tasks.</p>
+<p>Creating queries can be done either via the Query Factory view or the QueryFactory Python API. In PhenomeDB Queries are created by chaining QueryFilter objects containing boolean operators and QueryMatches, which specifying the fields and comparison operators and values. An overview of this can be seen below. With the collection of QueryFilters and QueryMatches, the QueryFactory then calculates/transpiles the query definition into an SQLAlchemy query, and executes the query. The QueryFactory can then construct a combined-format and 3-file format dataset of the results, and store them in the PhenomeDB Cache, an extended version of Redis that enables file-system persistency of objects. Generating the dataframes can currently take a long time depending on the number of records the query returns, for this reason once the query has been defined the user should run the CreateSavedQueryDataframeCache task to execute the query and set it into the cache. This can be run manually via the interface or via the QueryFactory UI.</p>
+<figure class="align-default" id="id13">
+<a class="reference internal image-reference" href="_images/query-filters-overview.png"><img alt="PhenomeDB QueryFactory QueryFilters and QueryMatches" src="_images/query-filters-overview.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The QueryFilter and QueryMatch architecture. Multiple QueryFilters can be added, each with AND or OR boolean operators. Each QueryFilter can have multiple QueryMatches, targeting a specific Model.property, with a specific comparison operator and value.</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 </section>
 <section id="scaling-normalisation-and-batch-correction">
 <h2>Scaling, normalisation, and batch correction<a class="headerlink" href="#scaling-normalisation-and-batch-correction" title="Permalink to this heading"></a></h2>
 <p>In order to compare metabolite levels across different batches, projects, or assays, scaling/normalisation, transformation, and batch correction must be undertaken. The aim of these methods is to minimise inter-batch technical variation while maintaining inter-sample biological variation.</p>
 <p>Two kinds of intensity values are stored in the database, raw, and SR-corrected. Raw are the ‘raw’, peak-picked intensities from the instruments. ‘SR-corrected’ is data that has been run-order corrected using study-reference QC-based LOWESS correction. Typically LC-MS data will need to be run-order corrected so it is advisable to use this SR-corrected data for LC-MS datasets.</p>
 <p>Batch correction can be undertaken using the following tasks:</p>
-<table class="docutils align-default" id="id13">
-<caption><span class="caption-text">Title</span><a class="headerlink" href="#id13" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id14">
+<caption><span class="caption-text">Title</span><a class="headerlink" href="#id14" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -457,8 +464,8 @@
 </tbody>
 </table>
 <p>When running analyses, the following scaling and transformations can be executed as options to the analysis methods.</p>
-<table class="docutils align-default" id="id14">
-<caption><span class="caption-text">Title</span><a class="headerlink" href="#id14" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id15">
+<caption><span class="caption-text">Title</span><a class="headerlink" href="#id15" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -484,8 +491,8 @@
 <section id="running-analyses">
 <h2>Running analyses<a class="headerlink" href="#running-analyses" title="Permalink to this heading"></a></h2>
 <p>Implemented analysis functions include:</p>
-<table class="docutils align-default" id="id15">
-<caption><span class="caption-text">Title</span><a class="headerlink" href="#id15" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id16">
+<caption><span class="caption-text">Title</span><a class="headerlink" href="#id16" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -514,42 +521,42 @@
 </tbody>
 </table>
 <p>Individual analyses can be run via the AnalysisView page, where task runs can be parameterised and scheduled, and the results can be explored.</p>
-<figure class="align-default" id="id16">
+<figure class="align-default" id="id17">
 <a class="reference internal image-reference" href="_images/analysis-view-list.png"><img alt="PhenomeDB AnalysisView list" src="_images/analysis-view-list.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">Analyses can be executed against queries (and upstream task runs) using the AnalysisView. Parameters for the task run can be specified using the html form, including scaling and transformation steps and task-specific options. Previous task runs can be explored via a table.</span><a class="headerlink" href="#id16" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Analyses can be executed against queries (and upstream task runs) using the AnalysisView. Parameters for the task run can be specified using the html form, including scaling and transformation steps and task-specific options. Previous task runs can be explored via a table.</span><a class="headerlink" href="#id17" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <p>The results of each analysis can be explored via a dedicated UI, with panels common to all analysis tasks with options to rerun the task, and options to download the input and output datasets.</p>
-<figure class="align-default" id="id17">
+<figure class="align-default" id="id18">
 <a class="reference internal image-reference" href="_images/analysis-view-common.png"><img alt="PhenomeDB AnalysisView common" src="_images/analysis-view-common.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">Each task run output view has the ability to re-run the task with new parameters, and explore and download the input and output datasets.</span><a class="headerlink" href="#id17" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Each task run output view has the ability to re-run the task with new parameters, and explore and download the input and output datasets.</span><a class="headerlink" href="#id18" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <p>Each AnalysisTask also has specific charts and figures available to explore the results.</p>
-<figure class="align-default" id="id18">
+<figure class="align-default" id="id19">
 <a class="reference internal image-reference" href="_images/pca-view.png"><img alt="PhenomeDB RunPCA visualisation" src="_images/pca-view.png" style="width: 650px;" /></a>
 <figcaption>
-<p><span class="caption-text">Interactive visualisation of PCA outputs, including A: Scree plot, B: control panel to control the chart options, C: 2D scores plots, D, E, F: loadings plots.</span><a class="headerlink" href="#id18" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
-<figure class="align-default" id="id19">
-<a class="reference internal image-reference" href="_images/pcpr2-view-1.png"><img alt="PhenomeDB RunPCPr2 visualisation" src="_images/pcpr2-view-1.png" style="width: 500px;" /></a>
-<figcaption>
-<p><span class="caption-text">Visualisation of PCPR2 results</span><a class="headerlink" href="#id19" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Interactive visualisation of PCA outputs, including A: Scree plot, B: control panel to control the chart options, C: 2D scores plots, D, E, F: loadings plots.</span><a class="headerlink" href="#id19" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id20">
-<a class="reference internal image-reference" href="_images/MWAS-view-example.png"><img alt="PhenomeDB RunMWAS visualisation" src="_images/MWAS-view-example.png" style="width: 650px;" /></a>
+<a class="reference internal image-reference" href="_images/pcpr2-view-1.png"><img alt="PhenomeDB RunPCPr2 visualisation" src="_images/pcpr2-view-1.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">Interactive visualisation of 1D MWAS outputs</span><a class="headerlink" href="#id20" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Visualisation of PCPR2 results</span><a class="headerlink" href="#id20" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id21">
+<a class="reference internal image-reference" href="_images/MWAS-view-example.png"><img alt="PhenomeDB RunMWAS visualisation" src="_images/MWAS-view-example.png" style="width: 650px;" /></a>
+<figcaption>
+<p><span class="caption-text">Interactive visualisation of 1D MWAS outputs</span><a class="headerlink" href="#id21" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id22">
 <a class="reference internal image-reference" href="_images/example-lneg-mwas-sex-comparison-consistent.png"><img alt="PhenomeDB RunMWAS compare visualisation" src="_images/example-lneg-mwas-sex-comparison-consistent.png" style="width: 650px;" /></a>
 <figcaption>
-<p><span class="caption-text">Interactive visualisation of MWAS comparison heatmaps, where the results of two MWAS analyses can be compared, in this case comparing the age-associated metabolites of males and females</span><a class="headerlink" href="#id21" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Interactive visualisation of MWAS comparison heatmaps, where the results of two MWAS analyses can be compared, in this case comparing the age-associated metabolites of males and females</span><a class="headerlink" href="#id22" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
