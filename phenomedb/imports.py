@@ -34,12 +34,24 @@ class ImportTask(Task):
     annotation_method = None
 
     def __init__(self,project_name=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True,pipeline_run_id=None):
-        """The ImportTask class. Used as the base class for the major import methods. Not used for compounds.
+        """The ImportTask class. Used as the base class for the major import methods. Not used for compounds. Should not be instantiated itself, only from a child class.
 
         :param project_name: The name of the project, defaults to None
         :type project_name: str, optional
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
         :param username: The username of the user running the job, defaults to None
         :type username: str, optional
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
         """
 
         self.project_name = project_name
@@ -51,6 +63,12 @@ class ImportTask(Task):
         #self.logger = configure_logging(self.get_class_name() + " " + str(project_name), "phenomedb-tasks.log")
 
     def send_user_failure_email(self,err):
+        """Send a TaskRun failure email to the user
+
+        :param err: The error message
+        :type err: str
+        """
+
 
         if self.username and self.db_env != 'TEST':
 
@@ -64,6 +82,11 @@ class ImportTask(Task):
                 self.logger.warning("Email failed")
 
     def send_user_success_email(self):
+        """Send a TaskRun success email to the user
+
+        :param err: The error message
+        :type err: str
+        """
 
         if self.username and self.db_env != 'TEST':
 
@@ -80,6 +103,8 @@ class ImportTask(Task):
         """Gets a project to the database (by project_name)
 
         :raises Exception: If no project by that name exists
+        :return: sample_assay object :class:`phenomedb.models.Project`
+        :rtype: class:`phenomedb.models.Project`
         """
         self.project = self.db_session.query(Project).filter(func.lower(Project.name)==self.project_name.lower()).first()
 
@@ -136,8 +161,6 @@ class ImportTask(Task):
 
         :param cpd_name: The name of the compound as seen seen in the annotation datasets
         :type cpd_name: str
-        :param version: The version of the method, defaults to None
-        :type version: float, optional
         :return: The found AnnotationCompound
         :rtype: :class:`phenomedb.models.AnnotationCompound`
         """
@@ -218,12 +241,12 @@ class ImportTask(Task):
 
         :param sample_row_index: The row index of the sample metadata
         :type sample_row_index: int
+        :param column: The column name to use, default None
+        :type sample_row_index: str, optional
         :raises Exception: Sample ID not found
         :return: The sample name
         :rtype: str
         """
-
-
 
         if column and column in self.dataset.loc[sample_row_index]:
             sample_id_field = column
@@ -270,8 +293,8 @@ class ImportTask(Task):
         :type subject: :class:`phenomedb.models.subject`
         :param sample_row_index: The dataset row index the sample
         :type sample_row_index: in
-        :return: sample object :class:`phenomedb.models.sample`
-        :rtype: class:`phenomedb.models.sample`
+        :return: sample object :class:`phenomedb.models.Sample`
+        :rtype: class:`phenomedb.models.Sample`
         """
 
         sample_name = self.dataset.loc[sample_row_index,'Sample ID']
@@ -298,13 +321,15 @@ class ImportTask(Task):
         return sample
 
     def add_metadata_field_and_value(self,sample_id,field_name,field_value):
-        '''
-        Adds and flushes the metadata field and values
-        :param sample_id:
-        :param field_name:
-        :param field_value:
-        :return:
-        '''
+        """Adds and flushes the metadata field and values
+
+        :param sample_id: The :class:`phenomedb.model.Sample` ID
+        :type sample_id: int
+        :param field_name: The name of the metadata field
+        :type field_name: str
+        :param field_value: The value of the metadata field for the sample
+        :type field_value: str
+        """
 
         # Do not import if it's blank or nan or if the field name is 'Unnamed X'
         if str(field_value) == '' \
@@ -337,9 +362,13 @@ class ImportTask(Task):
             self.db_session.flush()
 
     def add_metadata_field(self,field_name):
-        '''
-        Adds and flushes a metadata field
-        '''
+        """Add a :class:`phenomedb.models.MetadataField`
+
+        :param field_name: The :class:`phenomedb.models.MetadataField` name
+        :type field_name: str
+        :return: The added :class:`phenomedb.models.MetadataField`
+        :rtype: :class:`phenomedb.models.MetadataField`
+        """
 
         metadata_field = MetadataField(project_id=self.project.id,
                                        name=str(field_name))
@@ -350,9 +379,16 @@ class ImportTask(Task):
 
 
     def add_metadata_value(self,metadata_field,sample_id,field_value):
-        '''
-        Add metadata value
-        '''
+        """Add a :class:`phenomedb.models.MetadataValue`.
+
+        :param metadata_field: The :class:`phenomedb.models.MetadataField`
+        :type metadata_field: :class:`phenomedb.models.MetadataField`
+        :param sample_id: The :class:`phenomedb.models.Sample` ID
+        :type sample_id: int
+        :param field_value: The value of the metadata field for the sample
+        :type field_value: str
+        """
+        
 
         metadata_value = MetadataValue(sample_id=sample_id,
                                        raw_value=str(field_value),
@@ -388,6 +424,8 @@ class ImportTask(Task):
         self.map_and_add_dataset_data()
 
     def task_validation(self):
+        """Validate the task - default method
+        """
 
         self.clear_saved_query_cache()
 
@@ -413,6 +451,13 @@ class ImportTask(Task):
         self.logger.info("Missing import data: " + str(self.missing_import_data))
 
     def parse_value(self,value):
+        """Parse a raw value to convert the necessary type
+
+        :param value: The raw value to convert
+        :type value: object
+        :return: The parsed, converted value
+        :rtype: float
+        """
 
         if value == '-':
             value = None
@@ -438,9 +483,32 @@ class ImportSampleManifest(ImportTask):
 
     already_mapped_fields = ['Subject ID','Original Sampling ID','Sampling ID','Sample Type', 'Sampling Date', 'Box location','Comment']
 
-    def __init__(self,project_name=None,sample_manifest_path=None,columns_to_ignore=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True):
+    def __init__(self,project_name=None,sample_manifest_path=None,columns_to_ignore=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True,pipeline_run_id=None):
+        """Import a Sample Manifest XLS file. The format of which is an excel file with 2 sheets, one called 'samples' with sample-level metadata, another called 'subjects', with subject-level metadata. Both sample-level and subject-level metadata are imported at the sample-level.
 
-        super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate)
+        :param sample_manifest_path: _description_, defaults to None
+        :type sample_manifest_path: str, optional
+        :param columns_to_ignore: _description_, defaults to None
+        :type columns_to_ignore: str, optional
+        :param project_name: The name of the project, defaults to None
+        :type project_name: str, optional
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
+        :param username: The username of the user running the job, defaults to None
+        :type username: str, optional
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
+        """
+
+        super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate,pipeline_run_id=pipeline_run_id)
 
         self.sample_manifest_path = sample_manifest_path
         if columns_to_ignore:
@@ -514,7 +582,7 @@ class ImportSampleManifest(ImportTask):
     def get_or_add_subject(self,subject_name):
         """Get or add the subject
 
-        :param subject_name: the name of the subject
+        :param subject_name: the :class:`phenomedb.models.Subject` name
         :type subject_name: str
         :return: the matching :class:`phenomedb.models.Subject`
         :rtype: :class:`phenomedb.models.subject`
@@ -674,6 +742,13 @@ class ImportSampleManifest(ImportTask):
             sample_row_index = sample_row_index + 1
 
     def task_validation(self):
+        """Task validation, checks every entry exists in the database, and the values match.
+
+        :raises ValidationError: MetadataField incorrectly added
+        :raises ValidationError: MetadataField missing
+        :raises ValidationError: MetadataValue incorrectly added
+        :raises ValidationError: MetadataValue missing
+        """
 
         super().task_validation()
 
@@ -782,7 +857,7 @@ class ImportSampleManifest(ImportTask):
                                                                                    MetadataValue.sample_id==sample.id,
                                                                                    MetadataValue.raw_value==str(sample_dataset.loc[sample_row_index,field_name])
                                                                                    ).count() != 1:
-                            raise ValidationError("MetadataValue not added %s %s" % (field_name,field_value))
+                            raise ValidationError("MetadataValue missing %s %s" % (field_name,field_value))
             subject_id = sample_dataset.loc[sample_row_index,'Subject ID']
             subject_row_index = np.where(subject_dataset.loc[:,'Subject ID'] == sample_dataset.loc[sample_row_index,'Subject ID'])[0][0]
 
@@ -797,7 +872,7 @@ class ImportSampleManifest(ImportTask):
                                                                                     MetadataValue.sample_id==sample.id,
                                                                                     MetadataValue.raw_value==str(subject_dataset.loc[subject_row_index,field_name])
                                                                                     ).count() != 1:
-                            raise ValidationError("MetadataValue not added %s %s" % (field_name,field_value))
+                            raise ValidationError("MetadataValue missing %s %s" % (field_name,field_value))
 
             sample_row_index = sample_row_index + 1
 
@@ -1235,11 +1310,7 @@ class ImportDataLocations(ImportTask):
             sample_row_index = sample_row_index + 1
 
 class AnnotationImportTask(ImportTask):
-    """Annotation Import Task is the Base task for importing AnnotatedFeatures and Annotations
-
-    :param ImportTask: The Base Import Task
-    :type ImportTask: `phenomedb.imports.ImportTask`
-    """
+   
     first_feature_column_index = None
     dataset = None
     feature_name_row_index = None
@@ -1252,15 +1323,28 @@ class AnnotationImportTask(ImportTask):
     version = None
     feature_metadata = None
 
-    def __init__(self,project_name=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True):
-        """Constructor
+    def __init__(self,project_name=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True,pipeline_run_id=None):
+        """The AnnotationImportTask class. Used as the base class for the major annotation import methods.
 
         :param project_name: The name of the project, defaults to None
         :type project_name: str, optional
-        :param username: The username of the user importing the data, defaults to None
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
+        :param username: The username of the user running the job, defaults to None
         :type username: str, optional
-        """        
-        super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate)
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
+        """
+        
+        super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate,pipeline_run_id=pipeline_run_id)
 
     def process(self):
         """The annotation import process method
@@ -1278,6 +1362,8 @@ class AnnotationImportTask(ImportTask):
         self.map_and_add_dataset_data()
 
     def create_saved_query(self):
+        """Create a SavedQuery for the dataset for downstream analysis
+        """
 
         query_name = "%s %s %s %s" % (self.project.name,self.sample_matrix,self.assay.name,self.annotation_method.name)
 
@@ -1301,6 +1387,13 @@ class AnnotationImportTask(ImportTask):
 
 
     def check_sample_columns(self, dataset):
+        """Check the sample columns in the dataset
+
+        :param dataset: The imported dataset/CSV file
+        :type dataset: :class:`pandas.DataFrame`
+        :raises Exception: No Sample ID or Sample ID column
+        :raises Exception: Minimum column missing
+        """
 
         if 'Sampling ID' in dataset.columns:
             self.sample_id_column = 'Sampling ID'
@@ -1327,6 +1420,13 @@ class AnnotationImportTask(ImportTask):
                 raise Exception("%s missing from columns %s" % (colname, dataset.columns))
 
     def get_or_add_annotation_not_unified(self,feature_row_index):
+        """Get or add an annotation from a 3-file dataset
+
+        :param feature_row_index: The feature metadata row index
+        :type feature_row_index: int
+        :return: A corresponding :class:`phenomedb.models.Annotation` object
+        :rtype: :class:`phenomedb.models.Annotation`
+        """
 
         feature_row = self.feature_metadata.iloc[feature_row_index, :]
         feature_row = feature_row.where(pd.notnull(feature_row), None)
@@ -1337,11 +1437,27 @@ class AnnotationImportTask(ImportTask):
         return self.get_or_add_annotation(cpd_name,cpd_id)
 
     def get_or_add_annotation_unified(self,feature_column_index):
+        """Get or add an annotation from a combined CSV file
+
+        :param feature_column_index: The feature column index
+        :type feature_column_index: int
+        :return: A corresponding :class:`phenomedb.models.Annotation` object
+        :rtype: :class:`phenomedb.models.Annotation`
+        """
 
         cpd_name = self.dataset.iloc[self.feature_name_row_index, feature_column_index].strip()
         return self.get_or_add_annotation(cpd_name)
 
     def get_or_add_annotation(self,cpd_name,cpd_id=None):
+        """_summary_
+
+        :param cpd_name: The cpd_name to add
+        :type cpd_name: str
+        :param cpd_id: The cpd_id to import, defaults to None
+        :type cpd_id: str, optional
+        :return: A corresponding :class:`phenomedb.models.Annotation` object
+        :rtype: :class:`phenomedb.models.Annotation`
+        """
         #Get or add annotation
         #    1. Try and find an existing Annotation with following matches:
         #        Annotation.cpd_name, Annotation.cpd_id, Annotation.version
@@ -1409,7 +1525,7 @@ class AnnotationImportTask(ImportTask):
         pass
 
     def get_or_add_feature_metadata_unified(self):
-        """Gets or adds the feature_metadata (where cpd_name == Feature Name)
+        """Gets or adds the :class:`phenomedb.models.FeatureMetadata` (where cpd_name == Feature Name)
         """
 
         self.feature_metadatas = {}
@@ -1427,6 +1543,8 @@ class AnnotationImportTask(ImportTask):
             feature_column_index = feature_column_index + 1
 
     def get_or_add_feature_dataset_unified(self):
+        """Get or add a :class:`phenomedb.models.FeatureDataset`
+        """
 
         dataset_name = FeatureDataset.get_dataset_name(self.project.name,self.assay.name,self.sample_matrix)
         self.feature_dataset = self.db_session.query(FeatureDataset).filter(FeatureDataset.name==dataset_name).first()
@@ -1465,7 +1583,7 @@ class AnnotationImportTask(ImportTask):
         """Add a annotated_feature
 
         :param sample_assay: The sample_assay of the annotation
-        :type sample_assay: :class:`phenomedb.models.sample_assay`
+        :type sample_assay: :class:`phenomedb.models.SampleAssay`
         :param feature_metadata_row: The row the feature_metadata
         :type feature_metadata_row: dict
         :param intensity: The intensity value
@@ -1523,11 +1641,13 @@ class AnnotationImportTask(ImportTask):
         """Get or add a new sample_assay
 
         :param sample: The sample of the sample_assay
-        :type sample: :class:`phenomedb.models.sample`
+        :type sample: :class:`phenomedb.models.Sample`
         :param sample_row_index: The dataset row index of the sample
         :type sample_row_index: int
+        :param sample_row_index: The dataset
+        :type sample_row_index: :class:`pd.DataFrame`
         :return: sample_assay object :class:`phenomedb.models.sample_assay`
-        :rtype: class:`phenomedb.models.sample_assay`
+        :rtype: class:`phenomedb.models.SampleAssay`
         """
 
         sample_assay = None
@@ -1630,12 +1750,7 @@ class AnnotationImportTask(ImportTask):
 
 
 class ImportBrukerIVDRAnnotations(AnnotationImportTask):
-    """Import Bruker IVDr Annotations
-
-    :param AnnotationImportTask: The AnnotationImportTask
-    :type AnnotationImportTask: `phenomedb.imports.AnnotationImportTask`
-    """
-
+    
     assay_name = 'NOESY'
     already_mapped_fields = ['Sample File Name','Sample Base Name','expno','Path','Acquired Time','Run Order','Correction Batch','Exclusion Details','Batch','Metadata Available','Assay data name','Assay data location','Sample position','Sample batch','Assay protocol','Instrument','Acquisition','batch','Sampling ID','Sample ID','Status','AssayRole','SampleType','Dilution']
     units = {}
@@ -1643,18 +1758,30 @@ class ImportBrukerIVDRAnnotations(AnnotationImportTask):
 
     def __init__(self,project_name=None,annotation_method=None,version=None,is_latest=True,unified_csv_path=None,
                  sample_matrix=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True):
-        """Constructor
+        """Import Bruker IVDr Annotations
 
-        :param project_name: Name of the project
-        :type project_name: str, required
-        :param username: Username of user
-        :type username: str, required
         :param annotation_method: name of the annotation method, BI-QUANT or BI-LISA
         :type annotation_method: str, required
         :param unified_csv_path: the path to the unified csv file
         :type unified_csv_path: str, required
         :param sample_matrix: the sample matrix, ie plasma, urine, serum, etc
         :type sample_matrix: str, required
+        :param project_name: The name of the project, defaults to None
+        :type project_name: str, optional
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
+        :param username: The username of the user running the job, defaults to None
+        :type username: str, optional
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
         """        
 
         super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate)
@@ -1847,6 +1974,11 @@ class ImportBrukerIVDRAnnotations(AnnotationImportTask):
 
     def get_or_add_unit(self,unit_name):
         """Gets or adds a unit to the database (by unit name)
+
+        :param unit_name: The :class:`phenomedb.models.Unit` name
+        :type unit_name: str
+        :return: The :class:`phenomedb.models.Unit`
+        :rtype: :class:`phenomedb.models.Unit`
         """
 
         if unit_name not in self.units.keys():
@@ -1872,7 +2004,6 @@ class ImportBrukerIVDRAnnotations(AnnotationImportTask):
         :type sample: :class:`phenomedb.models.sample`
         :param sample_row_index: The dataset row index of the sample
         :type sample_row_index: int
-        :return:
         """
 
         column_index = 0
@@ -2012,7 +2143,7 @@ class ImportBrukerIVDRAnnotations(AnnotationImportTask):
         bp = True
 
     def post_commit_actions(self):
-        """ Triggers the pipelines
+        """ Triggers the post-commit pipelines
         """
         from phenomedb.pipeline_factory import PipelineFactory
 
@@ -2070,6 +2201,16 @@ class ImportBrukerIVDRAnnotations(AnnotationImportTask):
         super().post_commit_actions()
 
     def task_validation(self):
+        """Run the task validation to check number and values of imported data
+
+        :raises ValidationError: FeatureDataset does not exist
+        :raises ValidationError: FeatureDataset.saved_query_id does not exist
+        :raises ValidationError: SampleAssay does not exist
+        :raises ValidationError: Annotation does not exist
+        :raises ValidationError: AnnotatedFeature does not exist
+        :raises ValidationError: Unit does not exist
+        :raises ValidationError: FeatureMetadata does not exist
+        """
         dataset = pd.read_csv(self.unified_csv_path,dtype={'Sample File Name':str,'Sample Base Name':str,'expno':str,'Path':str,'Acquired Time':str,'Run Order':object,'Correction Batch':str,'Exclusion Details':str,'Batch':str,'Metadata Available':str,'Assay data name':str,'Assay data location':str,'Sample position':str,'Sample batch':str,'Assay protocol':str,'Instrument':str,'Acquisition':str,'batch':str,'Sampling ID':str,'Sample ID':str,'Status':str,'AssayRole':str,'SampleType':str,'Dilution':str})
         dataset = dataset.where(pd.notnull(dataset), None)
         unit_row_index = np.where(dataset.iloc[:,0] == 'Unit')[0][0]
@@ -2298,12 +2439,6 @@ class ImportBrukerIVDRAnnotations(AnnotationImportTask):
             sample_row_index = sample_row_index + 1
 
 class ImportPeakPantherAnnotations(AnnotationImportTask):
-    """ImportPeakPantherAnnotations Class. Using the Basic CSV format, imports a peakPantheR Dataset, maps to phenomeDB.models, and commits to DB.
-
-    :param task_options: A dictionary containing the task options
-    :type task_options: dict
-
-    """
 
     annotation_name = 'peakPantheR'
     annotation_method_name = 'PPR'
@@ -2325,12 +2460,8 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
                  all_features_feature_metadata_csv_path=None,ppr_mz_csv_path=None,ppr_rt_csv_path=None,is_latest=True,
                  task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True,
                  run_batch_correction=False):
-        """Constructor
+        """ImportPeakPantherAnnotations Class. Using the Basic CSV format, imports a peakPantheR Dataset, maps to phenomeDB.models, and commits to DB.
 
-        :param project_name: The name of the Project, defaults to None
-        :type project_name: str, optional 
-        :param username: The username of the user running the task, defaults to None
-        :type username: str, optional
         :param feature_metadata_csv_path: The path to the feature metadata csv file, defaults to None
         :type feature_metadata_csv_path: str, optional
         :param sample_metadata_csv_path: The path to the sample metadata csv file, defaults to None
@@ -2353,6 +2484,22 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
         :type ppr_mz_csv_path: str, optional
         :param ppr_rt_csv_path: The PPR RT csv file path, defaults to None
         :type ppr_rt_csv_path: str, optional
+        :param project_name: The name of the project, defaults to None
+        :type project_name: str, optional
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
+        :param username: The username of the user running the job, defaults to None
+        :type username: str, optional
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
         """        
 
         super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate)
@@ -2411,6 +2558,8 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
         self.get_class_name(self)
 
     def get_or_add_feature_dataset(self):
+        """Get or add a :class:`phenomedb.models.FeatureDataset`
+        """
 
         dataset_name = FeatureDataset.get_dataset_name(self.project.name,self.assay.name,self.sample_matrix)
         self.feature_dataset = self.db_session.query(FeatureDataset).filter(FeatureDataset.name==dataset_name).first()
@@ -2455,7 +2604,7 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
 
 
     def get_or_add_unit(self):
-        """Get or add units
+        """Get or add :class:`phenomedb.models.Unit`
         """        
 
         self.rt_unit = self.db_session.query(Unit).filter(Unit.name==self.rt_unit_name).first()
@@ -2522,6 +2671,17 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
 
 
     def add_or_update_feature_metadata(self,annotation_id,feature_metadata_row,feature_name):
+        """Get or update a :class:`phenomedb.models.FeatureMetadata` object
+
+        :param annotation_id: The :class:`phenomedb.models.Annotation` ID
+        :type annotation_id: int
+        :param feature_metadata_row: The row of the feature metadata dataset
+        :type feature_metadata_row: :class:`pd.Series`
+        :param feature_name: The name of the feature
+        :type feature_name: str
+        :return: The :class:`phenomedb.models.FeatureMetadata` object
+        :rtype: :class:`phenomedb.models.FeatureMetadata`
+        """
 
         feature_metadata = self.db_session.query(FeatureMetadata) \
             .filter(FeatureMetadata.feature_name == feature_name,
@@ -2666,6 +2826,8 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
         return feature_metadata
 
     def get_or_add_feature_metadata(self):
+        """Get or add feature metadata
+        """
 
         self.feature_metadatas = {}
         self.annotations = {}
@@ -2694,8 +2856,7 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
             #feature_row_index = feature_row_index + 1
 
     def map_and_add_dataset_data(self):
-        """Map and add the intensity data
-
+        """Map and add the intensity/abundances/annotated_features
         """        
 
         # loop over the sample rows.
@@ -2814,7 +2975,7 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
         self.logger.info("All features imported!")
 
     def post_commit_actions(self):
-        """ Triggers the pipelines
+        """ Triggers the post-commit pipelines
         """
         from phenomedb.pipeline_factory import PipelineFactory
 
@@ -2966,6 +3127,20 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
         super().post_commit_actions()
 
     def add_or_update_annotated_feature_not_unified(self,sample_assay,sample_row_index,feature_index,feature_name):
+        """Add or update a :class:`phenomedb.models.AnnotatedFeature` from a 3-file format file.
+
+        :param sample_assay: The :class:`phenomedb.models.SampleAssay` object
+        :type sample_assay: :class:`phenomedb.models.SampleAssay`
+        :param sample_row_index: The row of the sample metadata dataset
+        :type sample_row_index: int
+        :param feature_index: The row of the feature metadata dataset
+        :type feature_index: int
+        :param feature_name: The name of the feature
+        :type feature_name: str
+        :raises Exception: Feature name not found
+        :return: The created/found :class:`phenomedb.models.AnnotatedFeature`
+        :rtype: :class:`phenomedb.models.AnnotatedFeature`
+        """
 
         if feature_name == 'LPC(20:2/0:0)':
             bp = True
@@ -3023,6 +3198,19 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
         return annotated_feature
 
     def task_validation(self):
+        """The task validation for the import, checking the number of entries and the values match.
+
+        :raises ValidationError: sample metadata file is not the same
+        :raises ValidationError: feature metadata file is not the same
+        :raises ValidationError: intensity data file is not the same 
+        :raises ValidationError: FeatureMetadata does not exist
+        :raises ValidationError: FeatureDataset does not exist
+        :raises ValidationError: AnnotatedFeature does not exist
+        :raises ValidationError: SR corrected intensity does not match expected
+        :raises ValidationError: Annotation does not exist
+        :raises ValidationError: Expected FeatureDataset.sr_correction_parameters does not exist
+        :raises ValidationError: FeatureDataset.saved_query_id does not exist
+        """
 
         self.logger.info("Validating...")
 
@@ -3241,11 +3429,6 @@ class ImportPeakPantherAnnotations(AnnotationImportTask):
 
 
 class ImportTargetLynxAnnotations(AnnotationImportTask):
-    """TargetLynx Task Class. Imports an nPYc TargetLynx Targeted Dataset, maps to phenomeDB.models, and commits to DB.
-
-    :param AnnotationImportTask: AnnotationImportTask
-    :type AnnotationImportTask: `phenomedb.imports.AnnotationImportTask`
-    """    
 
     assay_platform = AnalyticalPlatform.MS
     assay_targeted = 'Y'
@@ -3253,12 +3436,8 @@ class ImportTargetLynxAnnotations(AnnotationImportTask):
     minimum_columns = ['Sample File Name']
 
     def __init__(self,project_name=None,unified_csv_path=None,sop=None,sop_version=None,assay_name=None,sample_matrix=None,sop_file_path="",is_latest=True,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True):
-        """Constructor
+        """TargetLynx Task Class. Imports an nPYc TargetLynx Targeted Dataset, maps to phenomeDB.models, and commits to DB.
 
-        :param project_name: The project name, defaults to None.
-        :type project_name: str, optional
-        :param username: The username of the person running the task, defaults to None.
-        :type username: str, optional
         :param unified_csv_path: The path to the unified csv file, defaults to None.
         :type sample_manifest_path: str, optional
         :param sop: The SOP to use, defaults to None.
@@ -3271,9 +3450,25 @@ class ImportTargetLynxAnnotations(AnnotationImportTask):
         :type sample_matrix: str, optional
         :param sop_file_path: The path to the SOP file used, defaults to "".
         :type sop_file_path: str, optional
+         :param project_name: The name of the project, defaults to None
+        :type project_name: str, optional
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
+        :param username: The username of the user running the job, defaults to None
+        :type username: str, optional
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
         """        
 
-        super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate)
+        super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate,pipeline_run_id=pipeline_run_id)
 
         self.is_latest = is_latest
         self.unified_csv_path = unified_csv_path
@@ -3330,7 +3525,7 @@ class ImportTargetLynxAnnotations(AnnotationImportTask):
 
         :param feature_column_index: The column index from the feature file
         :type feature_column_index: int
-        :return: Annotation
+        :return: The `phenomedb.models.Annotation` object
         :rtype: `phenomedb.models.Annotation`
         """
 
@@ -3485,6 +3680,15 @@ class ImportTargetLynxAnnotations(AnnotationImportTask):
             sample_row_index = sample_row_index + 1
 
     def task_validation(self):
+        """The task validation, checks the counts and values of imported data
+
+        :raises ValidationError: FeatureDataset does not exist
+        :raises ValidationError: FeatureDataset.saved_query_id does not exist
+        :raises ValidationError: SampleAssay does not exist
+        :raises ValidationError: AnnotatedFeature does not exist
+        :raises ValidationError: FeatureMetadata does not exist
+        :raises ValidationError: Annotation does not exist
+        """
 
         dataset = pd.read_csv(self.unified_csv_path,
                               na_values=None,
@@ -3688,9 +3892,35 @@ class ImportXCMSFeatures(ImportTask):
 
     def __init__(self,project_name=None,unified_csv_path=None,sample_matrix=None,assay_name=None,task_run_id=None,
                  username=None,db_env=None):
-        """Constructor method
+        """XCMSFeatureImportTaskUnifiedCSV Class. Using the Unified CSV format, imports an XCMS Dataset, maps to phenomeDB.models, and commits to DB.
+
+        TO DO: Finish the import code
+
+        :param unified_csv_path: The path to the unified csv file, defaults to None.
+        :type unified_csv_path: str, optional
+        :param assay_name: The name of the assay (ie LC-QQQ Bile Acids), defaults to None.
+        :type assay_name: str, optional
+        :param sample_matrix:  The sample matrix (ie urine, plasma), defaults to None.
+        :type sample_matrix: str, optional
+        :param project_name: The name of the project, defaults to None
+        :type project_name: str, optional
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
+        :param username: The username of the user running the job, defaults to None
+        :type username: str, optional
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
         """
-        super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env)
+        
+        super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate,pipeline_run_id=pipeline_run_id)
 
         self.unified_csv_path = unified_csv_path
         self.sample_matrix = sample_matrix
@@ -3754,6 +3984,10 @@ class ImportXCMSFeatures(ImportTask):
 
     # Map and add the dataset to phenomedb
     def map_and_add_dataset_data(self):
+        """Map and add the dataset data
+
+        :raises Exception: No Sampling ID or Sample File Name in row
+        """
 
         # create the unique feature names
         feature_column_index = self.first_feature_column_index
@@ -3813,6 +4047,15 @@ class ImportXCMSFeatures(ImportTask):
             sample_row_index = sample_row_index + 1
 
     def build_feature_dict(self,sample_row_index,feature_column_index):
+        """Build a dictionary of features
+
+        :param sample_row_index: The row index of the sample metadata dataset
+        :type sample_row_index: int
+        :param feature_column_index: The column index of the feature metadata dataset
+        :type feature_column_index: int
+        :return: A dictionary of FeatureMetadata properties
+        :rtype: dict
+        """
 
         feature_name_index = feature_column_index - self.first_feature_column_index
         feature_name = self.feature_names[feature_name_index]
@@ -3836,9 +4079,42 @@ class ImportNPYC(ImportTask):
     annotations = {}
     already_mapped_fields = ['Sample File Name','Sample Base Name','expno','Path','Acquired Time','Run Order','Correction Batch','Exclusion Details','Batch','Metadata Available','Assay data name','Assay data location','Sample position','Sample batch','Assay protocol','Instrument','Acquisition','batch','Sampling ID','Sample ID','Status','AssayRole','SampleType','Dilution']
 
-    def __init__(self,project_name=None,assay_name=None,sample_matrix=None,dataset_path=None,sop=None,sample_metadata_path=None,sample_metadata_format=None,task_run_id=None,username=None,db_env=None):
+    def __init__(self,project_name=None,assay_name=None,sample_matrix=None,dataset_path=None,sop=None,sample_metadata_path=None,sample_metadata_format=None,task_run_id=None,username=None,db_env=None,db_session=None,task_run_id=None,pipeline_run_id=None,execution_date=None):
+        """_summary_
 
-        super().__init__(project_name=project_name,username=username,db_env=db_env)
+        :param dataset_path: The path to the dataset folder, defaults to None.
+        :type dataset_path_path: str, optional
+        :param sample_metadata_path: The path to the sample_metadata file, defaults to None.
+        :type sample_metadata_path: str, optional
+        :param sample_metadata_format: The sample_metadata format, defaults to None.
+        :type sample_metadata_format: str, optional
+        :param sop: The SOP to use, defaults to None.
+        :type sop: str, optional
+        :param assay_name: The name of the assay (ie LC-QQQ Bile Acids), defaults to None.
+        :type assay_name: str, optional
+        :param sample_matrix: The sample matrix (ie urine, plasma), defaults to None.
+        :type sample_matrix: str, optional
+        :param sop_file_path: The path to the SOP file used, defaults to "".
+        :type sop_file_path: str, optional
+        :param project_name: The name of the project, defaults to None
+        :type project_name: str, optional
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
+        :param username: The username of the user running the job, defaults to None
+        :type username: str, optional
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
+        """
+
+        super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate,pipeline_run_id=pipeline_run_id)
 
         self.assay_name = assay_name
         self.sample_matrix = sample_matrix
@@ -3857,6 +4133,9 @@ class ImportNPYC(ImportTask):
 
 
     def map_and_add_dataset_data(self):
+        """Map and add the data
+        """
+
 
         # 1. Get or add project, assay
         # 2. loop over the features and add the annotations + configs ?
@@ -3880,7 +4159,7 @@ class ImportNPYC(ImportTask):
 
         :param index: The row number of the sample_metadata
         :type index: int
-        :return: subject object :class:`phenomedb.models.subject`
+        :return: subject object :class:`phenomedb.models.Subject`
         :rtype: class:`phenomedb.models.subject`
         """
 
@@ -3906,11 +4185,11 @@ class ImportNPYC(ImportTask):
         """Get or add a new sample
 
         :param subject: The subject of the sample
-        :type subject: :class:`phenomedb.models.subject`
+        :type subject: :class:`phenomedb.models.Subject`
         :param sample_row_index: The dataset row index the sample
-        :type sample_row_index: in
-        :return: sample object :class:`phenomedb.models.sample`
-        :rtype: class:`phenomedb.models.sample`
+        :type sample_row_index: int
+        :return: sample object :class:`phenomedb.models.Sample`
+        :rtype: class:`phenomedb.models.Sample`
         """
 
         sample_name = self.npyc_dataset.sampleMetadata.loc[sample_row_index,'Sample ID']
@@ -3934,6 +4213,13 @@ class ImportNPYC(ImportTask):
         return sample
 
     def get_or_add_metadata(self,sample,sample_row_index):
+        """Get or add metadata
+
+        :param sample: The :class:`phenomedb.models.Sample`
+        :type sample: :class:`phenomedb.models.Sample`
+        :param sample_row_index: The sample metadata dataset row index
+        :type sample_row_index: int
+        """
 
         for field_name in self.npyc_dataset.sampleMetadata.columns:
             if field_name not in self.already_mapped_fields:
@@ -3968,12 +4254,12 @@ class ImportNPYC(ImportTask):
     def get_or_add_sample_assay(self,sample,sample_row_index):
         """Get or add a new sample
 
-        :param subject: The subject of the sample
-        :type subject: :class:`phenomedb.models.subject`
+        :param subject: The :class:`phenomedb.models.Subject` of the :class:`phenomedb.models.Sample`
+        :type subject: :class:`phenomedb.models.Subject`
         :param sample_row_index: The dataset row index the sample
-        :type sample_row_index: in
-        :return: sample object :class:`phenomedb.models.sample`
-        :rtype: class:`phenomedb.models.sample`
+        :type sample_row_index: int
+        :return: :class:`phenomedb.models.SampleAssay` object
+        :rtype: class:`phenomedb.models.SampleAssay`
         """
 
         sample_assay = self.db_session.query(Sample).filter(SampleAssay.sample_id==sample.id,
@@ -4010,6 +4296,13 @@ class ImportNPYC(ImportTask):
         return sample
 
     def get_or_add_annotated_features(self,sample_assay,sample_index):
+        """Get or add annotated features
+
+        :param sample_assay: The :class:`phenomedb.models.SampleAssay` object
+        :type sample_assay: :class:`phenomedb.models.SampleAssay`
+        :param sample_index: The sample metadata row index
+        :type sample_index: int
+        """
 
         for feature_index, feature_metadata_row in self.npyc_dataset.featureMetadata.iterrows():
 
@@ -4032,39 +4325,6 @@ class ImportNPYC(ImportTask):
 
 
 
-class ImportLCMSUntargeted(ImportNPYC):
-
-    def __init__(self,project_name=None,file_type='XCMS',assay_name=None,sample_matrix=None,dataset_path=None,sop_path=None,sop='GenericMS',sample_metadata_path=None,sample_metadata_format='Basic CSV',task_run_id=None,username=None,db_env=None):
-        """This module is used for importing peak-picked LC-MS data, using the npyc-toolbox
-
-        :param project_name:
-        :param username:
-        :param file_type:
-        :param assay_name:
-        :param sample_matrix:
-        :param dataset_path:
-        :param sop_path:
-        :param sop:
-        :param sample_metadata_path:
-        :param sample_metadata_format:
-        """
-
-        super().__init__(project_name=project_name,
-                        assay_name=assay_name,sample_matrix=sample_matrix,
-                         dataset_path=dataset_path,sop=sop,
-                         sample_metadata_path=sample_metadata_path,
-                         sample_metadata_format=sample_metadata_format,
-                         task_run_id=task_run_id,username=username,db_env=db_env)
-
-        self.file_type = file_type
-
-        self.args['file_type'] = file_type
-        self.get_class_name(self)
-
-    def load_dataset(self):
-
-        self.npyc_dataset = nPYc.MSDataset(self.dataset_path,fileType=self.file_type,sop=self.sop)
-        self.npyc_dataset.addSampleInfo(descriptionFormat=self.sample_metadata_format, filePath=self.sample_metadata_path)
 
 class DownloadMetabolightsStudy(Task):
     """Import Metabolights Study Task
@@ -4077,12 +4337,24 @@ class DownloadMetabolightsStudy(Task):
                  execution_date=None, db_session=None, pipeline_run_id=None):
         """Constructor. If only study_id set, will download the study as well
 
-        :param username: Username of the user running the task, defaults to None
-        :type username: str, optional
         :param study_folder_path: Path to the study folder, defaults to None
         :type study_folder_path: str, optional
         :param study_id: ID of the Study, defaults to None
         :type study_id: int, optional
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
+        :param username: The username of the user running the job, defaults to None
+        :type username: str, optional
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
         """
 
         self.study_folder_path = study_folder_path
@@ -4101,14 +4373,27 @@ class DownloadMetabolightsStudy(Task):
 class ImportMetabolightsXCMSAnnotations(ImportTask):
 
     def __init__(self,study_id=None,xcms_file=None,assay_name=None,assay_name_order=None,sample_matrix=None,task_run_id=None,username=None,db_env=None,execution_date=None,db_session=None,pipeline_run_id=None):
-        """Constructor. If only study_id set, will download the study as well
+        """Import MetabolightsXCMSAnnotations, e.g. to be run after DownloadMetabolightStudy and RunXCMS"
 
-        :param username: Username of the user running the task, defaults to None
-        :type username: str, optional
         :param study_folder_path: Path to the study folder, defaults to None
         :type study_folder_path: str, optional
         :param study_id: ID of the Study, defaults to None
         :type study_id: int, optional
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
+        :param username: The username of the user running the job, defaults to None
+        :type username: str, optional
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
+        
         """
 
         self.study_id = study_id
@@ -4287,6 +4572,13 @@ class ImportMetabolightsXCMSAnnotations(ImportTask):
                 self.annotation_assay_map[row[1]['Metabolite Assignment File']] = assay
 
     def generate_feature_jsonb(self,sample_assay,feature_metadatas):
+        """Build the features jsonb and add to SampleAssayFeatures
+
+        :param sample_assay: The :class:`phenomedb.models.SampleAssay` object
+        :type sample_assay: :class:`phenomedb.models.SampleAssay`
+        :param feature_metadatas: The list of added FeatureMetadatas
+        :type feature_metadatas: list
+        """
 
         if sample_assay.assay_parameters['Derived Spectral Data File'] in self.xcms_data.columns:
             sample_assay_features = []
@@ -4303,6 +4595,15 @@ class ImportMetabolightsXCMSAnnotations(ImportTask):
             self.db_session.flush()
 
     def add_feature_metadata(self,assay,assay_file):
+        """Add FeatureMetadata objects
+
+        :param assay: The assay to import
+        :type assay: str
+        :param assay_file: The name of the assay file
+        :type assay_file: str
+        :return: List of added FeatureMetadatas
+        :rtype: list
+        """
         if assay_file in self.feature_dataset_map.keys():
             feature_dataset = self.feature_dataset_map[assay_file]
         else:
@@ -4331,11 +4632,13 @@ class ImportMetabolightsXCMSAnnotations(ImportTask):
         """Add Annotations and AnnotatedFeatures
 
         :param assay: The Assay
-        :type assay: `phenomedb.models.Assay`
+        :type assay: :class:`phenomedb.models.Assay`
         :param metabolite_assignment_file: The maf file
         :type metabolite_assignment_file: str
         :param sample_assay: The SampleAssay
         :type sample_assay: `phenomedb.models.SampleAssay`
+        :param default_unit: The default unit to use
+        :type default_unit: :class:`phenomedb.models.Unit`
         """
 
         feature_dataset = self.feature_dataset_map[metabolite_assignment_file]
@@ -4428,6 +4731,8 @@ class ImportMetabolightsXCMSAnnotations(ImportTask):
         :type assay: `phenomedb.models.Assay`
         :param annotation_file: The annotation file
         :type annotation_file: str
+        :param assay_file: The name of the assay file
+        :type assay_file: str
         """
 
         if assay.id not in self.annotation_map.keys():
@@ -4482,20 +4787,12 @@ class ImportMetabolightsXCMSAnnotations(ImportTask):
     def get_or_add_metabolights_compound(self, assay, annotation_method, the_row):
         """Get or add Metabolights Compound
 
-        :param assay: Assay
-        :type assay: `phenomedb.models.Assay`
-        :param annotation_method: AnnotationMethod
-        :type annotation_method: `phenomedb.models.AnnotationMethod`
-        :param chebi_id: ChEBI ID
-        :type chebi_id: str
-        :param chemical_formula: Chemical formula
-        :type chemical_formula: str
-        :param smiles: SMILES
-        :type smiles: str
-        :param inchi: InChI
-        :type inchi: str
-        :param cpd_name: cpd_name
-        :type cpd_name: str
+        :param assay: The :class:`phenomedb.models.Assay`
+        :type assay: :class:`phenomedb.models.Assay`
+        :param annotation_method: The :class:`phenomedb.models.AnnotationMethod`
+        :type annotation_method: :class:`phenomedb.models.AnnotationMethod`
+        :param the_row: The row from the dataframe
+        :type the_row: :class:`pd.Series`
         :return: AnnotationCompound
         :rtype: `phenomedb.models.AnnotationCompound`
         """
@@ -4667,7 +4964,7 @@ class ImportMetabolightsXCMSAnnotations(ImportTask):
         :param sample_type_enum: Sample Type
         :type sample_type_enum: str
         :return: Subject
-        :rtype: `phenomedb.models.Subject`
+        :rtype: :class:`phenomedb.models.Subject`
         """
 
         if sample_type_enum == SampleType.StudySample:
@@ -4693,7 +4990,7 @@ class ImportMetabolightsXCMSAnnotations(ImportTask):
         """Get or add Sample
 
         :param subject: Subject
-        :type subject: `phenomedb.models.Subject`
+        :type subject: :class:`phenomedb.models.Subject`
         :param sample_name: Sample name
         :type sample_name: str
         :param sample_type_enum: SampleType enum
@@ -4701,7 +4998,7 @@ class ImportMetabolightsXCMSAnnotations(ImportTask):
         :param sample_matrix: Sample matrix
         :type sample_matrix: sample matrix
         :return: Sample
-        :rtype: `phenomedb.models.Sample`
+        :rtype: :class:`phenomedb.models.Sample`
         """
         # Need to check what the sample_names, plus types of QC samples, and what their assay roles are
 
@@ -4743,7 +5040,7 @@ class ImportMetabolightsXCMSAnnotations(ImportTask):
         :param field_value: The value of the metadata field
         :type field_value: str
         :param sample: Sample
-        :type sample: `phenomedb.models.Sample`
+        :type sample: :class:`phenomedb.models.Sample`
         """
 
         metadata_field = self.db_session.query(MetadataField).filter(MetadataField.project_id == self.project.id,
@@ -5105,12 +5402,24 @@ class ImportMetabolightsStudy(ImportTask):
     def __init__(self,study_id=None,task_run_id=None,username=None,db_env=None,execution_date=None,db_session=None,pipeline_run_id=None):
         """Constructor. If only study_id set, will download the study as well
 
-        :param username: Username of the user running the task, defaults to None
-        :type username: str, optional
         :param study_folder_path: Path to the study folder, defaults to None
         :type study_folder_path: str, optional
         :param study_id: ID of the Study, defaults to None
         :type study_id: int, optional
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
+        :param username: The username of the user running the job, defaults to None
+        :type username: str, optional
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
         """        
 
         self.study_id = study_id
@@ -5215,8 +5524,8 @@ class ImportMetabolightsStudy(ImportTask):
         :param assay_file: The name of the assay file
         :type assay_file: str
         :param data: The assay data
-        :type data: `pandas.Dataframe`
-        :raises NotImplementedError: [description]
+        :type data: :class:`pd.Dataframe`
+        :raises NotImplementedError: Assay platform not implemented
         """        
         if assay_file not in self.assays.keys():
             self.logger.error('Assay file not as expected %s %s' % (assay_file,self.assays))
@@ -5283,7 +5592,7 @@ class ImportMetabolightsStudy(ImportTask):
         :param metabolite_assignment_file: The maf file
         :type metabolite_assignment_file: str
         :param sample_assay: The SampleAssay
-        :type sample_assay: `phenomedb.models.SampleAssay`
+        :type sample_assay: :class:`phenomedb.models.SampleAssay`
         """
 
         feature_dataset = self.feature_dataset_map[metabolite_assignment_file]
@@ -5369,7 +5678,7 @@ class ImportMetabolightsStudy(ImportTask):
         4. Add the AnnotationCompound
 
         :param assay: the Assay
-        :type assay: `phenomedb.models.Assay`
+        :type assay: :class:`phenomedb.models.Assay`
         :param annotation_file: The annotation file
         :type annotation_file: str
         """        
@@ -5425,9 +5734,9 @@ class ImportMetabolightsStudy(ImportTask):
         """Get or add Metabolights Compound
 
         :param assay: Assay
-        :type assay: `phenomedb.models.Assay`
+        :type assay: :class:`phenomedb.models.Assay`
         :param annotation_method: AnnotationMethod
-        :type annotation_method: `phenomedb.models.AnnotationMethod`
+        :type annotation_method: :class:`phenomedb.models.AnnotationMethod`
         :param chebi_id: ChEBI ID
         :type chebi_id: str
         :param chemical_formula: Chemical formula
@@ -5439,7 +5748,7 @@ class ImportMetabolightsStudy(ImportTask):
         :param cpd_name: cpd_name
         :type cpd_name: str
         :return: AnnotationCompound
-        :rtype: `phenomedb.models.AnnotationCompound`
+        :rtype: :class:`phenomedb.models.AnnotationCompound`
         """
         chebi_id = the_row['database_identifier']
         if chebi_id is not None:
@@ -5608,7 +5917,7 @@ class ImportMetabolightsStudy(ImportTask):
         :param sample_type_enum: Sample Type
         :type sample_type_enum: str
         :return: Subject
-        :rtype: `phenomedb.models.Subject`
+        :rtype: :class:`phenomedb.models.Subject`
         """        
 
         if sample_type_enum == SampleType.StudySample:
@@ -5634,7 +5943,7 @@ class ImportMetabolightsStudy(ImportTask):
         """Get or add Sample
 
         :param subject: Subject
-        :type subject: `phenomedb.models.Subject`
+        :type subject: :class:`phenomedb.models.Subject`
         :param sample_name: Sample name
         :type sample_name: str
         :param sample_type_enum: SampleType enum
@@ -5642,7 +5951,7 @@ class ImportMetabolightsStudy(ImportTask):
         :param sample_matrix: Sample matrix
         :type sample_matrix: sample matrix
         :return: Sample
-        :rtype: `phenomedb.models.Sample`
+        :rtype: :class:`phenomedb.models.Sample`
         """        
         # Need to check what the sample_names, plus types of QC samples, and what their assay roles are
 
@@ -5684,7 +5993,7 @@ class ImportMetabolightsStudy(ImportTask):
         :param field_value: The value of the metadata field
         :type field_value: str
         :param sample: Sample
-        :type sample: `phenomedb.models.Sample`
+        :type sample: :class:`phenomedb.models.Sample`
         """        
 
         metadata_field = self.db_session.query(MetadataField).filter(MetadataField.project_id==self.project.id,
@@ -5774,7 +6083,7 @@ class ImportMetabolightsStudy(ImportTask):
         :param public_release_date: Date of release, defaults to None
         :type public_release_date: `datetime.datetime`, optional
         :return: DataRepository
-        :rtype: `phenomedb.models.DataRepository`
+        :rtype: :class:`phenomedb.models.DataRepository`
         """        
 
         data_repository = self.db_session.query(DataRepository).filter(DataRepository.name==name,
@@ -6027,6 +6336,33 @@ class ImportMetadata(ImportTask):
 
     def __init__(self,project_name=None,filepath=None,id_column=None,id_type='Sample',columns_to_import=None,
                     username=None,task_run_id=None,db_env=None,db_session=None,execution_date=None,pipeline_run_id=None):
+        """Import Metadata from a CSV file where rows are samples and columns are metadata fields.
+
+        :param project_name: The name of the Project, defaults to None
+        :type project_name: str, optional
+        :param filepath: The path to the CSV file, defaults to None
+        :type filepath: str, optional
+        :param id_column: The column name of the ID field, defaults to None
+        :type id_column: str, optional
+        :param id_type: Are the IDs for Subject or Sample?, defaults to 'Sample'
+        :type id_type: str, optional
+        :param columns_to_import: Which columns to import, defaults to None
+        :type columns_to_import: list, optional
+        :param task_run_id: The TaskRun ID
+        :type task_run_id: float, optional
+        :param username: The username of the user running the job, defaults to None
+        :type username: str, optional
+        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+        :type db_env: str, optional
+        :param db_session: The db_session to use
+        :type db_session: object, optional
+        :param execution_date: The date of execution, str format.
+        :type execution_date: str, optional
+        :param validate: Whether to run validation, default True
+        :type validate: boolean
+        :param pipeline_run_id: The Pipeline run ID
+        :type pipeline_run_id: str, optional
+        """
 
         super().__init__(project_name=project_name,username=username,task_run_id=task_run_id,db_env=db_env,db_session=db_session,execution_date=execution_date,pipeline_run_id=pipeline_run_id)
 
@@ -6055,10 +6391,16 @@ class ImportMetadata(ImportTask):
         self.get_class_name(self)
 
     def load_dataset(self):
+        """Load the dataset
+        """
 
         self.dataset = self.load_tabular_file(self.filepath)
 
     def map_and_add_dataset_data(self):
+        """Parse the dataset
+
+        :raises Exception: Unknown id_type (must be Sample or Subject)
+        """
 
         i=0
         while i < self.dataset.shape[0]:
