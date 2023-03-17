@@ -26,23 +26,23 @@ from libchebipy._chebi_entity import ChebiEntity
 class ImportTask(Task):
     """The ImportTask class. Used as the base class for the major import methods. Not used for compounds. Should not be instantiated itself, only from a child class.
 
-        :param project_name: The name of the project, defaults to None
-        :type project_name: str, optional
-        :param task_run_id: The TaskRun ID
-        :type task_run_id: float, optional
-        :param username: The username of the user running the job, defaults to None
-        :type username: str, optional
-        :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
-        :type db_env: str, optional
-        :param db_session: The db_session to use
-        :type db_session: object, optional
-        :param execution_date: The date of execution, str format.
-        :type execution_date: str, optional
-        :param validate: Whether to run validation, default True
-        :type validate: boolean
-        :param pipeline_run_id: The Pipeline run ID
-        :type pipeline_run_id: str, optional
-        """
+    :param project_name: The name of the project, defaults to None
+    :type project_name: str, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+    """
 
     feature_names_ignored = []
     assay_name = None
@@ -1300,7 +1300,7 @@ class ImportDataLocations(ImportTask):
             sample_row_index = sample_row_index + 1
 
 class AnnotationImportTask(ImportTask):
-     """The AnnotationImportTask class. Used as the base class for the major annotation import methods.
+    """The AnnotationImportTask class. Used as the base class for the major annotation import methods.
 
     :param project_name: The name of the project, defaults to None
     :type project_name: str, optional
