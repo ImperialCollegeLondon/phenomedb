@@ -2,7 +2,7 @@ Installation
 ============
 
 The various PhenomeDB components can be installed separately, however to simplify the usage of these interacting components, they have been docker-ised.
- 
+
 Local/desktop Docker installation
 ---------------------------------
 

@@ -1,6 +1,6 @@
 # cd docker/custom_images/phenomedb-api
-# docker build -t ghaggart/phenomedb-api .
-# docker push ghaggart/phenomedb-api
+# docker build -t phenomedb/phenomedb-api .
+# docker push phenomedb/phenomedb-api
 
 # ap && cd docker/custom_images/phenomedb-api && docker build -t ghaggart/phenomedb-api . && docker push ghaggart/phenomedb-api
 

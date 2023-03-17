@@ -22,7 +22,7 @@ services:
             - "5433:5432"
 
     scheduler:
-        image: ghaggart/phenomedb-airflow
+        image: phenomedb/phenomedb-airflow
         entrypoint: /opt/airflow/entrypoint.sh
         restart: on-failure
         depends_on:
@@ -46,7 +46,7 @@ services:
             - "25:25"
 
     webserver:
-        image: ghaggart/phenomedb-airflow
+        image: phenomedb/phenomedb-airflow
         entrypoint: /opt/airflow/entrypoint.sh
         restart: on-failure
         tty: true
@@ -72,7 +72,7 @@ services:
             - "8080:8080"
 
     api:
-        image: ghaggart/phenomedb-api
+        image: phenomedb/phenomedb-api
         entrypoint: /opt/phenomedb_app/entrypoint.sh
         restart: on-failure
         depends_on:

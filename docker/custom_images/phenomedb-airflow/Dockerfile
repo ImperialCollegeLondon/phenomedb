@@ -1,6 +1,6 @@
 # cd docker/custom_images/phenomedb-airflow
-# docker build -t ghaggart/phenomedb-airflow .
-# docker push ghaggart/phenomedb-airflow
+# docker build -t phenomedb/phenomedb-airflow .
+# docker push phenomedb/phenomedb-airflow
 
 # both arm64 and x86
 # cp requirements.txt ./docker/custom_images/phenomedb-airflow/
