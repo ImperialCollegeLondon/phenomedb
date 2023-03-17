@@ -24,17 +24,7 @@ from phenomedb.query_factory import *
 from libchebipy._chebi_entity import ChebiEntity
 
 class ImportTask(Task):
-
-    feature_names_ignored = []
-    assay_name = None
-    project_name = None
-    project = None
-    annotation_method_name = None
-    assay = None
-    annotation_method = None
-
-    def __init__(self,project_name=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True,pipeline_run_id=None):
-        """The ImportTask class. Used as the base class for the major import methods. Not used for compounds. Should not be instantiated itself, only from a child class.
+    """The ImportTask class. Used as the base class for the major import methods. Not used for compounds. Should not be instantiated itself, only from a child class.
 
         :param project_name: The name of the project, defaults to None
         :type project_name: str, optional
@@ -53,6 +43,17 @@ class ImportTask(Task):
         :param pipeline_run_id: The Pipeline run ID
         :type pipeline_run_id: str, optional
         """
+
+    feature_names_ignored = []
+    assay_name = None
+    project_name = None
+    project = None
+    annotation_method_name = None
+    assay = None
+    annotation_method = None
+
+    def __init__(self,project_name=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True,pipeline_run_id=None):
+
 
         self.project_name = project_name
         self.feature_dataset = None

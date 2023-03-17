@@ -1581,7 +1581,22 @@ study_description_dict[‘INVESTIGATION’][‘Investigation Identifier’] = �
 <dl class="py class">
 <dt class="sig sig-object py" id="phenomedb.imports.ImportTask">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.imports.</span></span><span class="sig-name descname"><span class="pre">ImportTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask" title="Permalink to this definition"></a></dt>
-<dd><dl class="py method">
+<dd><p>The ImportTask class. Used as the base class for the major import methods. Not used for compounds. Should not be instantiated itself, only from a child class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the project, defaults to None</p></li>
+<li><p><strong>task_run_id</strong> (<em>float</em><em>, </em><em>optional</em>) – The TaskRun ID</p></li>
+<li><p><strong>username</strong> (<em>str</em><em>, </em><em>optional</em>) – The username of the user running the job, defaults to None</p></li>
+<li><p><strong>db_env</strong> (<em>str</em><em>, </em><em>optional</em>) – The db_env to use, ‘PROD’ or ‘TEST’, default ‘PROD’</p></li>
+<li><p><strong>db_session</strong> (<em>object</em><em>, </em><em>optional</em>) – The db_session to use</p></li>
+<li><p><strong>execution_date</strong> (<em>str</em><em>, </em><em>optional</em>) – The date of execution, str format.</p></li>
+<li><p><strong>validate</strong> (<em>boolean</em>) – Whether to run validation, default True</p></li>
+<li><p><strong>pipeline_run_id</strong> (<em>str</em><em>, </em><em>optional</em>) – The Pipeline run ID</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="phenomedb.imports.ImportTask.add_metadata_field">
 <span class="sig-name descname"><span class="pre">add_metadata_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.imports.ImportTask.add_metadata_field" title="Permalink to this definition"></a></dt>
 <dd><p>Add a <a class="reference internal" href="models.html#phenomedb.models.MetadataField" title="phenomedb.models.MetadataField"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.MetadataField</span></code></a></p>
