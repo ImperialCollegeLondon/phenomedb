@@ -16,8 +16,29 @@ class CreateSavedQueryDataframeCache(Task):
     """Task to Create a SavedQuery Dataframe Cache.
     Takes a SavedQuery, and generates the cache for the dataframe
 
-    :param CacheTask: The Base CacheTask
-    :type CacheTask: `phenomedb.cache.CacheTask`
+    :param saved_query_id: The ID of the SavedQuery, defaults to None
+    :type saved_query_id: int, optional
+    :param master_unit: The master unit to harmonise units against, defaults to None
+    :type master_unit: str, optional
+    :param class_level: Query Aggregration class level (for Compounds), defaults to None
+    :type class_level: str, optional
+    :param class_type: Query Aggregration class type, defaults to None
+    :type class_type: str, optional
+    :param output_model: The output model of the query, defaults to 'AnnotatedFeature'
+    :type output_model: str, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+
     """
 
     reset_generate_cache_on_fail = True
@@ -25,16 +46,7 @@ class CreateSavedQueryDataframeCache(Task):
     def __init__(self,username=None,task_run_id=None,saved_query_id=None,class_level=None,class_type=None,
                 output_model='AnnotatedFeature',master_unit=None,correction_type=None,db_env=None,db_session=None,
                  execution_date=None,reload_cache=True,pipeline_run_id=None,upstream_task_run_id=None):
-        """Constructor for the Task.
-
-        :param username: The username of the user running the task, defaults to None
-        :type username: str, optional
-        :param saved_query_id: The ID of the SavedQuery, defaults to None
-        :type saved_query_id: int, optional
-        :param master_unit: The master unit to harmonise units against, defaults to None
-        :type master_unit: str, optional
-        """
-
+        
         super().__init__(task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,
                          execution_date=execution_date,pipeline_run_id=pipeline_run_id,upstream_task_run_id=upstream_task_run_id)
 
@@ -103,20 +115,25 @@ class CreateSavedQuerySummaryStatsCache(Task):
     """Task to Create a SavedQuery Summary Stats Cache.
     Takes a SavedQuery, and generates the cache for the summary stats
 
-    :param CacheTask: The Base CacheTask
-    :type CacheTask: `phenomedb.cache.CacheTask`
+    :param saved_query_id: The ID of the SavedQuery, defaults to None
+    :type saved_query_id: int, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+
     """    
 
     def __init__(self,username=None,task_run_id=None,saved_query_id=None,db_env=None,db_session=None,execution_date=None,pipeline_run_id=None,upstream_task_run_id=None):
-        """Constructor for Task
-
-        :param username: The username of the user running the task, defaults to None
-        :type username: str, optional
-        :param saved_query_id: The ID of the SavedQuery, defaults to None
-        :type saved_query_id: int, optional
-        """        
-
-
+ 
         self.saved_query_id = saved_query_id
 
         super().__init__(username=username,task_run_id=task_run_id,db_env=db_env,db_session=db_session,execution_date=execution_date,pipeline_run_id=pipeline_run_id,upstream_task_run_id=upstream_task_run_id)
@@ -148,6 +165,8 @@ class CreateTaskViewCache(Task):
         self.get_class_name(self)
 
     def process(self):
+        """Process method
+        """
 
         if utils.is_number(self.caching_task_run_id):
 
@@ -196,6 +215,8 @@ class Cache:
         #self.generate_file_cache_list()
 
     def delete_test_keys(self):
+        """Delete any key with TEST in the name
+        """
 
         self.logger.debug('Delete test keys called')
         keys_for_deletion = []
@@ -210,6 +231,11 @@ class Cache:
         self.logger.info("Deleted following cache keys: %s" % keys_for_deletion)
 
     def delete_keys_by_regex(self,regex):
+        """Delete any key that matches the regex
+
+        :param regex: The regex to match on
+        :type regex: str
+        """
 
         self.logger.debug('Delete keys by regex %s' % regex)
         keys_for_deletion = []
@@ -223,6 +249,15 @@ class Cache:
             self.delete(str(key))
 
     def get_keys_dict(self,include_task_cache=False,include_analysis_view_cache=False):
+        """Builds a dictionary of the keys in the cache
+
+        :param include_task_cache: Whether to include the task cache, defaults to False
+        :type include_task_cache: bool, optional
+        :param include_analysis_view_cache: Whether to include the analysis_view_cache, defaults to False
+        :type include_analysis_view_cache: bool, optional
+        :return: a dictionary of the keys in the cache
+        :rtype: dict
+        """
 
         all_keys = {}
         for key in self.redis_cache.keys():
@@ -258,6 +293,15 @@ class Cache:
         return all_keys
 
     def get_cache_keys_dataframe(self,include_task_cache=False,include_analysis_view_cache=False):
+        """Get a dataframe of the keys in the cache (used to store a persistent record on disk)
+
+        :param include_task_cache: Whether to include the task_cache, defaults to False
+        :type include_task_cache: bool, optional
+        :param include_analysis_view_cache: Whether to include the analysis_view_cache, defaults to False
+        :type include_analysis_view_cache: bool, optional
+        :return: a dataframe of the keys
+        :rtype: :class:`pandas.DataFrame`
+        """
 
         self.generate_file_cache_list()
 
@@ -282,6 +326,11 @@ class Cache:
         return df
 
     def flushall(self,include_task_cache=False):
+        """Flush/delete all the data
+
+        :param include_task_cache: Whether to flush the task cache, defaults to False
+        :type include_task_cache: bool, optional
+        """
 
         self.logger.debug('Flush all called')
 
@@ -512,8 +561,25 @@ class Cache:
         self.file_cache_list = file_keys
 
 class RemoveUntransformedDataFromCache(Task):
+    """Goes through all the task cache and removes the untransformed data from the output cache, which was causing bloat 
+
+    :param lowest_finished: The lowest :class:`phenomedb.models.TaskRun` ID to start from, defaults to None
+    :type lowest_finished: int, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param pipeline_run_id: The Pipeline run ID
+    """
 
     def __init__(self,username=None,task_run_id=None,lowest_finished=None,db_env=None,db_session=None,execution_date=None,pipeline_run_id=None,upstream_task_run_id=None):
+
         super().__init__(task_run_id=task_run_id, username=username, db_env=db_env, db_session=db_session,
                          execution_date=execution_date, pipeline_run_id=pipeline_run_id,
                          upstream_task_run_id=upstream_task_run_id)
@@ -566,6 +632,12 @@ class RemoveUntransformedDataFromCache(Task):
             time.sleep(0.4)
 
 class MoveTaskOutputToCache(Task):
+    """Move the task output to the cache. This was created to move the :class:`phenomedb.models.TaskRun` output to the cache, to free up database space and simplify data restore
+
+    :param Task: _description_
+    :type Task: _type_
+    :raises Exception: _description_
+    """
 
     task_output_sizes = {}
 

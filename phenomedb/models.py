@@ -49,7 +49,7 @@ COMPOUND_ASSAY_HEADINGS = ['RPOS','LPOS','LNEG','RNEG','HPOS','LC-QqQ Bile Acids
 
 
 class SavedQuery(Base):
-    """_summary_
+    """SavedQuery object
 
     :param id: Primary Key
     :type id: int

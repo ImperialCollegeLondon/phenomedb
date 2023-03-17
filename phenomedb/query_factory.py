@@ -23,348 +23,39 @@ import sqlalchemy.types
 import gc
 
 class QueryFactory:
-    """Class for building, executing, and saving SQLAlchemy queries that define 'SavedQueries'.
+    """Class for building, executing, and saving SQLAlchemy queries that define 'SavedQueries', and generating and caching result set dataframes, such as the nPYc format.
 
         A QueryFactory is simply a collection of filters that match on table properties.
 
         Generates an SQLAlchemy query object that allows for further filters to be added as required, or .all() or
-        .count() methods to be used.
+        .count() methods to be used. 
 
-        Query dict structure:
+        A join route calculator helps build the query by knowing the route between filter tables and the output model.
 
-            query_dict = { 'model': str
-                           'joins':[str,str],
-                           'filters': [{ 'filter_operator': str,
-                                         'matches': [{  'model': str,
-                                                         'property': str,
-                                                         "operator": str,
-                                                         'value': str, float, list
-                                                      }]
-                                       }]
-                         }
-
-            query_dict['model']: The model object to return
-            query_dict['joins']: The list of models to join
-            query_dict['filters'] : The list of 'filters'.
-            query_dict['filters']['filter_operator]: The type of filter - 'AND', 'OR'
-            query_dict['filters']['matches']: A list of 'matches'
-            query_dict['filters']['matches']['model']: The name of the model to match against.
-            query_dict['filters']['matches']['property']: The name of the property to match against.
-            query_dict['filters']['matches']['operator']: The operator to use - 'eq','not_eq','gt','lt','gte','lte','between','not_between','in','not_in','like','not_like','ilike','not_ilike'
-            query_dict['filters']['matches']['value']: The value to match on. Must be of expected type - ie str, float, [0,1] (for between) or [0,N] (for in or in)
-
-        Example usage:
-
-            Creating and saving new query with the following structure:
-
-                    query_dict = { 'model': 'Sample',
-                                   'joins':['Subject','Project','MetadataValue','MetadataField','HarmonisedMetadataField'],
-                                   'filters': [{
-                                       'filter_operator': 'OR',
-                                       'matches': [{
-                                               'model': 'Project',
-                                               'property':'name',
-                                               'operator': 'eq',
-                                               'value': 'PipelineTesting',
-                                       }]
-                                   },{
-                                   'filter_operator': 'AND',
-                                   'matches': [{
-                                           'model': 'HarmonisedMetadataField',
-                                           'property': 'name',
-                                           "operator": 'eq',
-                                           'value': 'Age',
-                                        },
-                                       {
-                                           'model': 'MetadataValue',
-                                           'property': 'harmonised_numeric_value',
-                                           "operator": 'in',
-                                           'value': ["30","35","40"]
-                                       }]
-                                    }]
-                                 }
-
-            query_factory = CohortQuery()
-
-            filter = QueryFilter(filter_operator='AND')
-            filter.add_match(model='Project',property='name',operator='eq',value='PipelineTesting')
-            query_factory.add_filter(query_filter=filter)
-
-            filter = QueryFilter(filter_operator='AND')
-            filter.add_match(model='HarmonisedMetadataField',property='name',operator='eq',value='Age')
-            filter.add_match(model='MetadataValue',property='harmonised_numeric_value',operator='in',value=[30,40,50])
-            query_factory.add_filter(query_filter=filter)
-
-            query = query_factory.save()
-
-            query_retrieved_from_db = db_session.query(CohortQuery).filter(CohortQuery.id==query.id).first()
-            query_factory_retrieved = CohortQuery(query=query_retrieved_from_db)
-            rows = query_factory_retrieved.get_query_rows()
-
-
-        Example queries and query_dicts:
-
-            All Samples from PipelineTesting project
-
-                query = db_session.query(Sample).join(Subject,Project).filter(Project.name=='PipelineTesting')
-
-                query_dict = {  'model': 'Sample',
-                                'joins':['Subject','Project'],
-                                'filters': [{
-                                               'filter_operator': 'AND',
-                                               'matches': [{
-                                                            'model': 'Project',
-                                                            'property': 'name',
-                                                            "operator": 'eq',
-                                                            'value': 'PipelineTesting',
-                                                        }]
-                                           }]
-                              }
-
-            All from every project NOT PipelineTesting
-
-                query = db_session.query(Sample).join(Subject,Project).filter(Project.name != 'PipelineTesting')
-
-                query_dict = {  'model': 'Sample',
-                                'joins':['Subject','Project'],
-                                'filters': [{
-                                               'filter_operator': 'AND',
-                                               'matches': [{
-                                                            'model': 'Project',
-                                                            'property': 'name',
-                                                            "operator": 'not_eq',
-                                                            'value': 'PipelineTesting',
-                                                        }]
-                                           }]
-                              }
-
-
-            All "Plasma" samples
-
-                query = db_session.query(Sample).filter(Sample.sample_type=='Plasma')
-
-                query_dict = { 'model': 'Sample',
-                                'joins':[],
-                               'filters': [{
-                                               'filter_operator': 'AND',
-                                               'matches': [{
-                                                            'model': 'Sample',
-                                                            'property': 'sample_type',
-                                                            "operator": 'eq',
-                                                            'value': 'Plasma',
-                                                        }]
-                                         }]
-                             }
-
-
-            All "HPOS" samples
-
-                query = db_session.query(Sample).join(SampleAssay,Assay).filter(Assay.name=='HPOS')
-
-                query_dict = {  'model': 'Sample',
-                                'joins':['SampleAssay','Assay'],
-                                'filters': [{
-                                               'filter_operator': 'AND',
-                                               'matches': [{
-                                                            'model': 'Assay',
-                                                            'property': 'name',
-                                                            "operator": 'eq',
-                                                            'value': 'HPOS',
-                                                        }]
-                                           }]
-                              }
-
-            All samples with subjects between ages 30 and 40
-
-                query = db_session.query(Sample).join(MetadataValue,MetadataField,HarmonisedMetadataField)\
-                    .filter(HarmonisedMetadataField.name=='Age')\
-                    .filter(MetadataValue.harmonised_numeric_value.between(30,40))
-
-                query_dict = {  'model': 'Sample',
-                                'joins':['MetadataValue','MetadataField','HarmonisedMetadataField'],
-                                'filters': [{
-                                               'filter_operator': 'AND',
-                                               'matches': [{
-                                                            'model': 'HarmonisedMetadataField',
-                                                            'property': 'name',
-                                                            "operator": 'eq',
-                                                            'value': 'Age',
-                                                        }]
-                                           },
-                                           {
-                                               'filter_operator': 'AND',
-                                               'matches': [{
-                                                            'model': 'MetadataValue',
-                                                            'property': 'harmonised_numeric_value',
-                                                            "operator": 'between',
-                                                            'value': [30,40]
-                                                        }]
-                                           }]
-                              }
-
-            All samples with 'Glucose' annotations, with intensity > 0.3
-
-                query = db_session.query(Sample)\
-                    .join(SampleAssay,AnnotatedFeature,Annotation,AnnotationCompound,Compound)\
-                    .filter(Compound.name=='Glucose')\
-                    .filter(AnnotatedFeature.intensity > 0.3)
-
-                query_dict = { 'model': 'Sample',
-                               'joins':['SampleAssay','AnnotatedFeature','Annotation','AnnotationCompound','Compound'],
-                               'filters': [{ 'filter_operator': 'AND',
-                                            'matches': [{
-                                                          'model': 'Compound',
-                                                          'property': 'name',
-                                                          "operator": 'eq',
-                                                          'value': 'Glucose',
-                                                      }]
-                                           },
-                                           { 'filter_operator': 'AND',
-                                              'matches': [{
-                                                            'model': 'AnnotatedFeature',
-                                                            'property': 'intensity',
-                                                           "operator": 'gt',
-                                                           'value': 0.3
-                                                          }]
-                                           },
-                                         ]}
-                              }
-
-            All samples with Pubchem CID 16217534 annotations, with intensity > 0.3
-
-                query = db_session.query(Sample)\
-                    .join(SampleAssay,AnnotatedFeature,Annotation,AnnotationCompound,Compound,CompoundExternalDB,ExternalDB)\
-                    .filter(ExternalDB.name=='PubChem CID')\
-                    .filter(CompoundExternalDB.database_ref=='16217534')\
-                    .filter(AnnotatedFeature.intensity > 0.3)
-
-
-                query_dict = { 'model': 'Sample',
-                               'joins':['SampleAssay','AnnotatedFeature','Annotation','AnnotationCompound','Compound'
-                                        'CompoundExternalDB','ExternalDB'],
-                              'filters': [{ 'filter_operator': 'AND',
-                                            'matches': [{
-                                                          'model': 'ExternalDB',
-                                                          'property': 'name',
-                                                          "operator": 'eq',
-                                                          'value': 'PubChem CID',
-                                                      }]
-                                           },
-                                           { 'filter_operator': 'AND',
-                                             'matches': [{
-                                                            'model': 'CompoundExternalDB',
-                                                            'property': 'database_ref',
-                                                            "operator": 'eq',
-                                                            'value': '16217534',
-                                                          }]
-
-                                           },
-                                           { 'filter_operator': 'AND',
-                                              'matches': [{
-                                                           'model': 'AnnotatedFeature',
-                                                            'property': 'intensity',
-                                                            "operator": 'gt',
-                                                            'value': 0.3,
-                                                          }]
-
-                                           },
-                                         ]}
-                              }
-
-
-            All samples from PipelineTesting project OR nPYc-toolbox-tutorials
-
-                query = db_session.query(Sample).join(Subject,Project).filter(Project.name=='PipelineTesting' | Project.name=='nPYc-toolbox-tutorials')
-
-                query_dict = { 'model': 'Sample',
-                               'joins':['Subject','Project'],
-                               'filters': [{
-                                               'filter_operator': 'OR',
-                                               'matches': [{
-                                                                'model': 'Project',
-                                                                'property': 'name',
-                                                                "operator": 'eq',
-                                                                'value': 'PipelineTesting',
-                                                             },
-                                                             {
-                                                                'model': 'Project',
-                                                                'property': 'name',
-                                                                "operator": 'eq',
-                                                                'value': 'nPYc-toolbox-tutorials',
-                                                             }]
-                                            }]
-                             }
-
-            All from PipelineTesting project OR nPYc-toolbox-tutorials and with annotations with Pubchem CID ref IN ('16217534', '3082637')
-
-                query = db_session.query(Sample).join(Subject,Project,SampleAssay,AnnotatedFeature,\
-                    Annotation,AnnotationCompound,Compound,CompoundExternalDB,ExternalDB)\
-                    .filter(Project.name=='PipelineTesting' | Project.name=='nPYc-toolbox-tutorials')\
-                    .filter(ExternalDB.name=='PubChem CID' & CompoundExternalDB.database_ref.in_(['16217534','3082637'])
-
-                query_dict = { 'model': 'Sample',
-                               'joins':['Subject','Project','SampleAssay','Annotation','AnnotatedFeature',\
-                                        'AnnotationCompound','Compound','CompoundExternalDB','ExternalDB'],
-                               'filters': [{
-                                               'filter_operator': 'OR',
-                                               'matches': [{
-                                                                'model': 'Project',
-                                                                'property':'name',
-                                                                "operator": 'eq',
-                                                                'value': 'PipelineTesting',
-                                                             },
-                                                             {
-                                                                'model': 'Project',
-                                                                'property': 'name',
-                                                                "operator": 'eq',
-                                                                'value': 'nPYc-toolbox-tutorials'
-                                                             }]
-                                            },{
-                                              'filter_operator': 'AND',
-                                               'matches': [{
-                                                                'model': 'ExternalDB'
-                                                                'property': 'name',
-                                                                "operator": 'eq',
-                                                                'value': 'PubChem CID',
-                                                             },
-                                                             {
-                                                                'model': 'CompoundExternalDB'
-                                                                'property': 'database_ref',
-                                                                "operator": 'in',
-                                                                'value': ['16217534','3082637']
-                                                             }]
-                                            }]
-                             }
-
-            All annotations that a not PubChem CID ('16217534', '3082637')
-
-                query = db_session.query(Sample).join(SampleAssay, Annotation,AnnotatedFeature,\
-                    AnnotationCompound,Compound,CompoundExternalDB,ExternalDB)\
-                    .filter(ExternalDB.name=='PubChem CID' & ~CompoundExternalDB.database_ref.in_(['16217534','3082637'])
-
-                query_dict = {
-                               'model': 'Sample',
-                               'joins':['SampleAssay','Annotation','AnnotatedFeature',\
-                                        'AnnotationCompound','Compound','CompoundExternalDB','ExternalDB'],
-                               'filters': [{
-                                               'matches': [{
-                                                                'model': 'ExternalDB'
-                                                                'property': 'name',
-                                                                "operator": 'eq',
-                                                                'value': 'PubChem CID',
-                                                             },
-                                                             {
-                                                                'model': 'CompoundExternalDB'
-                                                                'property': 'database_ref',
-                                                                "operator": 'not_in',
-                                                                'value': ['16217534','3082637']
-                                                             }]
-                                            }]
-                             }
-    :return: query_factory: The query factory object.
-    :rtype: :class:`phenomedb.query_factory.base_query_factory`
-    """
-
+        :param saved_query: A :class:`phenomedb.models.SavedQuery` object, defaults to None
+        :type saved_query: :class:`phenomedb.models.SavedQuery`, optional
+        :param saved_query_id: A :class:`phenomedb.models.SavedQuery` ID, defaults to None
+        :type saved_query_id: int, optional
+        :param filters: A dictionary of specifying the query filters, defaults to None
+        :type filters: dict, optional
+        :param query_dict: A dictionary specifying an entire query definition, defaults to None
+        :type query_dict: dict, optional
+        :param db_env: The db to use 'PROD' or 'TEST', defaults to None
+        :type db_env: str, optional
+        :param db_session: The db session to use, defaults to None
+        :type db_session: object, optional
+        :param project_short_label: A short label to add to a query for easier visualisation, defaults to None
+        :type project_short_label: str, optional
+        :param query_name: The name of the query, defaults to None
+        :type query_name: str, optional
+        :param query_description: The description of the query, defaults to None
+        :type query_description: _type_, optional
+        :param username: The username of the user who created the query, defaults to None
+        :type username: str, optional
+        :param output_model: The output model to use, defaults to 'SampleAssay', but typically might be 'AnnotatedFeature'
+        :type output_model: str, optional
+        :raises Exception: _description_
+    """    
     foreign_keys = {
         'SampleAssay-Sample':['SampleAssay.sample_id','Sample.id'],
         'Sample-Subject':['Sample.subject_id', 'Subject.id'],
@@ -544,6 +235,11 @@ class QueryFactory:
             self.generate_query(output_model=output_model)
 
     def get_code_string(self):
+        """Gets the SQLAlchemy code string
+
+        :return: The SQLAlchemy code string
+        :rtype: str
+        """
 
         return self.__code_string
 
@@ -572,6 +268,35 @@ class QueryFactory:
                           feature_orientation=None, feature_label=None,
                           metadata_bin_definition=None,convert_units=True, master_unit='mmol/L'
                           ):
+        """_summary_
+
+        :param type: The file type, for example 'combined','intensity_data','sample_metadata', 'feature_metadata','feature_id_matrix','feature_id_combined_dataframe', 'metaboanalyst_data','metaboanalyst_metadata'
+        :type type: str
+        :param model: The output model, for example 'AnnotatedFeature'
+        :type model: str
+        :param class_type: The class type (for CompoundClass aggregations), defaults to None
+        :type class_type: str, optional
+        :param class_level: The class level to aggregate by (for CompoundClass aggregations), defaults to None
+        :type class_level: str, optional
+        :param correction_type: The correction type to use. Typically you want to specificy None for NMR data and 'SR' for LC-MS data, defaults to None
+        :type correction_type: str, optional
+        :param aggregate_function: The aggregration function to use, mean, sum etc (for CompoundClass aggregations), defaults to None
+        :type aggregate_function: str, optional
+        :param annotation_version: The verison fo the annotation to use, will use latest if not specified, defaults to None
+        :type annotation_version: str, optional
+        :param db_env: The DB env, 'PROD' or 'TEST', defaults to None
+        :type db_env: str, optional
+        :param harmonise_annotations: Whether to harmonise the annotations or not, defaults to False
+        :type harmonise_annotations: bool, optional
+        :param convert_units: Whether to convert units, defaults to True
+        :type convert_units: bool, optional
+        :param master_unit: The master unit to convert to (for absolute quantified data), defaults to 'mmol/L'
+        :type master_unit: str, optional
+        :raises Exception: _description_
+        :raises Exception: _description_
+        :return: _description_
+        :rtype: _type_
+        """
 
         if type not in ['combined','intensity_data','sample_metadata',
                         'feature_metadata','feature_id_matrix','feature_id_combined_dataframe',
@@ -629,12 +354,12 @@ class QueryFactory:
 
 
     def calculate_joins(self, output_model='SampleAssay'):
-        """
-            Calculates the joins necessary to execute the query
+        """Calculates the joins necessary to execute the query
 
             Uses prior information of the join routes from the main model to the match model
 
-        :return:
+        :param output_model: The output model to calculate for, defaults to 'SampleAssay', but could be 'AnnotatedFeature'
+        :type output_model: str, optional
         """
 
         # if not self.query_dict['model']:
@@ -1971,6 +1696,42 @@ class QueryFactory:
                                                                   convert_units=True,
                                                                   master_unit='mmol/L'
                                                                   ):
+        """Takes a combined dataframe and build the 3-file format
+
+        :param output_dir: _description_, defaults to None
+        :type output_dir: _type_, optional
+        :param exclude_features_with_na_feature_values: _description_, defaults to False
+        :type exclude_features_with_na_feature_values: bool, optional
+        :param columns_to_exclude: _description_, defaults to None
+        :type columns_to_exclude: _type_, optional
+        :param columns_to_include: _description_, defaults to None
+        :type columns_to_include: _type_, optional
+        :param harmonise_annotations: _description_, defaults to False
+        :type harmonise_annotations: bool, optional
+        :param output_model: _description_, defaults to 'AnnotatedFeature'
+        :type output_model: str, optional
+        :param class_type: _description_, defaults to None
+        :type class_type: _type_, optional
+        :param class_level: _description_, defaults to None
+        :type class_level: _type_, optional
+        :param aggregate_function: _description_, defaults to None
+        :type aggregate_function: _type_, optional
+        :param correction_type: _description_, defaults to None
+        :type correction_type: _type_, optional
+        :param save_cache: _description_, defaults to True
+        :type save_cache: bool, optional
+        :param compound_fields_to_include: _description_, defaults to None
+        :type compound_fields_to_include: _type_, optional
+        :param compound_class_types_to_include: _description_, defaults to None
+        :type compound_class_types_to_include: _type_, optional
+        :param convert_units: _description_, defaults to True
+        :type convert_units: bool, optional
+        :param master_unit: _description_, defaults to 'mmol/L'
+        :type master_unit: str, optional
+        :raises Exception: _description_
+        :raises Exception: _description_
+        :raises Exception: _description_
+        """
 
         if compound_fields_to_include is None:
             compound_fields_to_include = ['Monoisotopic Mass',
@@ -2085,74 +1846,7 @@ class QueryFactory:
                 if colname not in sample_metadata.columns:
                     sample_metadata.insert(len(sample_metadata.columns), colname, colval.values)
 
-        #          if len(columns_to_exclude) > 0 and colname in columns_to_exclude:
-        #              # ignore these are they are specifically being ignored
-        #              pass
-        #
-        #          #elif exclude_one_factor_columns and self.is_unique(colval):
-        #              # ignore these as they have only 1 factor
-        #          #    pass
-        #
-        #          elif len(columns_to_include) > 0 and colname in columns_to_include:
-        #              # include these (unique will be excluded later)
-        #              sample_metadata.insert(len(sample_metadata.columns), colname, colval.values)
-        #
-        #          elif include_harmonised_metadata and re.search('h_metadata::', colname):
-        #              sample_metadata.insert(len(sample_metadata.columns), colname, colval.values)
-        #
-        #          elif include_metadata and re.search('metadata::', colname):
-        #              sample_metadata.insert(len(sample_metadata.columns), colname, colval.values)
-        #
-        #          elif len(columns_to_include) > 0 and colname not in columns_to_include:
-        #              # ignore these (unique will be excluded later)
-        #              pass
-        #
-        #          elif only_metadata and not re.search('metadata::', colname):
-        #              # ignore these as we do not want any non-metadata columns
-        #              pass
-        #
-        #          elif re.search('metadata::',colname) and only_harmonised_metadata and not re.search('h_metadata::', colname):
-        #              # ignore these as we only want the harmonised metadata (but keep any fields that not metadata::, ie sample_name)
-        #              pass
-        #
-        #          elif re.search('metadata::',colname) and exclude_na_metadata_columns and combined_dataframe[colname].isnull().values.any():
-        #              # ignore these as they have null values!
-        #              pass
-        #
-        #          else:
-        #              sample_metadata.insert(len(sample_metadata.columns), colname, colval.values)
-
-        # Method to remove any columns with null metadata columns
-
-       # if exclude_samples_with_na_feature_values or exclude_na_metadata_samples:
-       #     excluded_sample_metadata = sample_metadata
-       #     excluded_intensity_data = intensity_data
-       #     for index, row in sample_metadata.iterrows():
-       #         if exclude_na_metadata_samples and row.isnull().values.any():
-       #             excluded_sample_metadata = sample_metadata.drop(index=index)
-       #             excluded_intensity_data = np.delete(intensity_data, index, 0)
-       #         if exclude_samples_with_na_feature_values and np.isnan(intensity_data[index,:]).any():
-       #             excluded_sample_metadata = sample_metadata.drop(index=index)
-       #             excluded_intensity_data = np.delete(intensity_data, index, 0)
-       #     intensity_data = excluded_intensity_data
-       #     sample_metadata = excluded_sample_metadata
-
-       # if exclude_features_with_na_feature_values:
-       #     excluded_feature_metadata = feature_metadata
-       #     excluded_intensity_data = intensity_data
-       #     for index,row in feature_metadata.iterrows():
-       #         if np.isnan(intensity_data[:,index]).any():
-       #             excluded_feature_metadata = feature_metadata.drop(index=index)
-       #             excluded_intensity_data = np.delete(intensity_data, index, 1)
-       #     intensity_data = excluded_intensity_data
-       #     feature_metadata = excluded_feature_metadata
-
-        #metadata_config = {label:{'method':'bin','column':'h_metadata::Age','bins':[18,30,50,70,90]}}
-   #     if metadata_bin_definition is not None and isinstance(metadata_bin_definition,dict):
-   #         for label, definition in metadata_bin_definition.items():
-   #             if definition['method'] == 'bin':
-   #                 sample_metadata[label] = pd.cut(sample_metadata.loc[:, definition['column']], definition['bins'],include_lowest=True).astype('str')
-
+       
         intensity_data = np.nan_to_num(intensity_data, copy=False)
 
         if 'Correction Batch' not in sample_metadata.columns and 'Batch' in sample_metadata.columns:
@@ -2160,31 +1854,6 @@ class QueryFactory:
         elif 'Correction Batch' not in sample_metadata.columns:
             sample_metadata['Correction Batch'] = 1
 
-
-        #if for_npyc and 'Correction Batch' not in sample_metadata.columns:
-            #sample_metadata['Run Order'] = range(1, 1+sample_metadata.shape[0])
-            #sample_metadata.insert(len(sample_metadata.columns), 'Metadata Available', 'TRUE')
-        #    sample_metadata['Correction Batch'] = 1
-       # if transform:
-       #     if transform == 'log':
-       #         scaled_intensity_data = np.log(intensity_data + 1)
-       #     elif transform == 'sqrt':
-       #         scaled_intensity_data = np.sqrt(intensity_data)
-
-       #     intensity_data = scaled_intensity_data
-
-
-        #if scaling:
-        #    if scaling not in ['uv', 'mc', 'pa',0,1,2]:
-        #        raise Exception("Scaling type not implemented/recognised: %s" % scaling)
-        #    if scaling in ['uv','mc','pa']:
-        #        scaling = utils.get_pyc_scaling(scaling)
-        #    scaler = ChemometricsScaler(scaling)
-        #    scaler.fit(intensity_data)
-        #    scaled_intensity_data = scaler.transform(intensity_data, copy=True)
-        #    self.logger.info('Intensity data scaled using %s' % scaling)
-
-        #    intensity_data = scaled_intensity_data
 
         if output_model == 'AnnotatedFeature':
             feature_id_matrix_key = self.get_dataframe_key(type='feature_id_matrix', model=output_model,
@@ -2210,6 +1879,8 @@ class QueryFactory:
         return sample_metadata,feature_metadata,intensity_data
 
     def delete_cache(self):
+        """Delete any saved cache entries for this query
+        """
 
         summary_key = self.saved_query.get_cache_summary_stats_key()
         if self.cache.exists(summary_key):
@@ -2600,6 +2271,47 @@ class QueryFactory:
                        correction_type=None, annotation_version=None, output_model='AnnotatedFeature',output_dir=None,harmonise_annotations=False,
                        class_level=None,class_type=None,zero_lloq=True, inf_uloq=True,aggregate_function=None,save_cache=True,
                        sample_label=None,feature_label=None):
+        """The main access point for queries. Checks the cache first, if it doesn't exist, executes the query, builds the dataframes and stores them in the cache.
+
+        :param type: _description_, defaults to 'combined'
+        :type type: str, optional
+        :param combined_csv_path: _description_, defaults to None
+        :type combined_csv_path: _type_, optional
+        :param convert_units: _description_, defaults to True
+        :type convert_units: bool, optional
+        :param master_unit: _description_, defaults to 'mmol/L'
+        :type master_unit: str, optional
+        :param reload_cache: _description_, defaults to False
+        :type reload_cache: bool, optional
+        :param correction_type: _description_, defaults to None
+        :type correction_type: _type_, optional
+        :param annotation_version: _description_, defaults to None
+        :type annotation_version: _type_, optional
+        :param output_model: _description_, defaults to 'AnnotatedFeature'
+        :type output_model: str, optional
+        :param output_dir: _description_, defaults to None
+        :type output_dir: _type_, optional
+        :param harmonise_annotations: _description_, defaults to False
+        :type harmonise_annotations: bool, optional
+        :param class_level: _description_, defaults to None
+        :type class_level: _type_, optional
+        :param class_type: _description_, defaults to None
+        :type class_type: _type_, optional
+        :param zero_lloq: _description_, defaults to True
+        :type zero_lloq: bool, optional
+        :param inf_uloq: _description_, defaults to True
+        :type inf_uloq: bool, optional
+        :param aggregate_function: _description_, defaults to None
+        :type aggregate_function: _type_, optional
+        :param save_cache: _description_, defaults to True
+        :type save_cache: bool, optional
+        :param sample_label: _description_, defaults to None
+        :type sample_label: _type_, optional
+        :param feature_label: _description_, defaults to None
+        :type feature_label: _type_, optional
+        :return: _description_
+        :rtype: _type_
+        """
         # csv_path is the name of the file to store on disk - can be removed once the cache object is built as the files will just exist anyway.
 
         # If it is saved, it can cache the dataframe in redis

@@ -20,17 +20,40 @@ class HarmoniseMetadataField(ImportTask):
     """AutoHarmoniseMetadataField Class. Takes a project metadata field and harmonised metadata field, and applies a lambda
     function to transform the raw data into the harmonised one.
 
-    :param task_options: A dictionary containing the task options
-    :type task_options: dict
+    :param metadata_field_name: The :class:`phenomedb.models.MetadataField` name, defaults to None
+    :type metadata_field_name: str, optional
+    :param harmonised_metadata_field_name: The :class:`phenomedb.models.HarmonisedMetadataField` name, defaults to None
+    :type harmonised_metadata_field_name: str, optional
+    :param inbuilt_transform_name: The name of the inbuilt_transform method to use, 'simple_assignment' or 'transform_dob_and_sampling_date_to_age', or 'categorise_bmi' defaults to None
+    :type inbuilt_transform_name: str, optional
+    :param lambda_function_string: The lambda function string to use, defaults to 'lambda x : x'
+    :type lambda_function_string: str, optional
+    :param allowed_decimal_places: How many decimal places the harmonised value can have, defaults to None
+    :type allowed_decimal_places: int, optional
+    :param allowed_data_range: The allowed range of harmonised values, defaults to None
+    :type allowed_data_range: list, optional
+    :param project_name: The name of the Project, defaults to None
+    :type project_name: str, optional
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
 
     """
 
     use_inbuilt = False
 
     def __init__(self,project_name=None,metadata_field_name=None,harmonised_metadata_field_name=None,inbuilt_transform_name=None,pipeline_run_id=None,
-                 lambda_function_string='lambda x : x',allowed_decimal_places=None,allowed_data_range=None,task_run_id=None,username=None,db_env=None,execution_date=None,db_session=None):
-        """Constructor method
-        """
+                 lambda_function_string='lambda x : x',allowed_decimal_places=None,allowed_data_range=None,task_run_id=None,username=None,db_env=None,execution_date=None,db_session=None,pipeline_run_id=None):
+        
         super().__init__(project_name=project_name,username=username,task_run_id=task_run_id,db_env=db_env,execution_date=execution_date,db_session=db_session,pipeline_run_id=pipeline_run_id)
 
         self.metadata_field_name = metadata_field_name
@@ -169,6 +192,13 @@ class HarmoniseMetadataField(ImportTask):
                 raise Exception(err)
 
     def call_lambda(self,metadata_value):
+        """Calls the lambda function
+
+        :param metadata_value: The :class:`phenomedb.model.MetadataValue`
+        :type metadata_value: :class:`phenomedb.model.MetadataValue`
+        :return: The :class:`phenomedb.model.MetadataValue`
+        :rtype: :class:`phenomedb.model.MetadataValue`
+        """
 
         if self.harmonised_metadata_field.datatype == HarmonisedMetadataField.HarmonisedMetadataFieldDatatype.text:
             metadata_value.harmonised_text_value = str(self.lambda_function(str(metadata_value.raw_value)))
@@ -185,6 +215,13 @@ class HarmoniseMetadataField(ImportTask):
         return metadata_value
 
     def call_inbuilt_transform(self,metadata_value):
+        """Calls the inbuilt transform function
+
+        :param metadata_value: The :class:`phenomedb.model.MetadataValue`
+        :type metadata_value: :class:`phenomedb.model.MetadataValue`
+        :return: The :class:`phenomedb.model.MetadataValue`
+        :rtype: :class:`phenomedb.model.MetadataValue`
+        """
 
         module = importlib.import_module('phenomedb.metadata')
 
@@ -223,7 +260,7 @@ class HarmoniseMetadataField(ImportTask):
 # harmonised ones would be easier
 
 def transform_dob_and_sampling_date_to_age(metadata_value,datatype,allowed_data_range,allowed_decimal_places,db_session=None,db_env=None):
-    """Method to transform date of birth and sampling date into a harmonised numeric age. Requires Sample.sample_date to exists.
+    """Inbuilt function: transform date of birth and sampling date into a harmonised numeric age. Requires Sample.sample_date to exists.
 
     :param metadata_value: The MetadataValue object.
     :type metadata_value: :class:`phenomedb.models.MetadataValue`
@@ -234,7 +271,7 @@ def transform_dob_and_sampling_date_to_age(metadata_value,datatype,allowed_data_
     :param allowed_decimal_places: How many decimal places are allowed.
     :type allowed_decimal_places: int
     :param db_session: The db_session to use, defaults to None.
-    :type db_session: :class:`sqlalchemy.orm.session`, optional
+    :type db_session: :class:`sqlalchemy.orm.Session`, optional
     :param db_env: The db_env to use, 'PROD', 'BETA', or 'TEST', defaults to None ('PROD').
     :type db_env: str, optional
     :raises MetadataHarmonisationError: If the transform cannot work, raise this Exception.
@@ -268,8 +305,20 @@ def transform_dob_and_sampling_date_to_age(metadata_value,datatype,allowed_data_
     return metadata_value
 
 def simple_assignment(metadata_value,datatype,allowed_data_range,allowed_decimal_places,db_session=None,db_env=None):
-    """ Method for simple assignment of data from raw to harmonised. Uses the HarmonisedMetadataField.datatype to cast to correct harmonised value.
+    """Inbuilt function: Simple assignment of data from raw to harmonised. Uses the HarmonisedMetadataField.datatype to cast to correct harmonised value.
 
+    :param metadata_value: The MetadataValue object.
+    :type metadata_value: :class:`phenomedb.models.MetadataValue`
+    :param datatype: The HarmonisedMetadataField.datatype.
+    :type datatype: :class:`phenomedb.models.HarmonisedMetadataField.HarmonisedMetadataFieldDatatype`
+    :param allowed_data_range: A constraint to prevent values outside of this allowed range.
+    :type allowed_data_range: list
+    :param allowed_decimal_places: How many decimal places are allowed.
+    :type allowed_decimal_places: int
+    :param db_session: The db_session to use, defaults to None.
+    :type db_session: :class:`sqlalchemy.orm.Session`, optional
+    :param db_env: The db_env to use, 'PROD', 'BETA', or 'TEST', defaults to None ('PROD').
+    :type db_env: str, optional
     :raises MetadataHarmonisationError: If the transform cannot work, raise this Exception.
     :return: The transformed, harmonised MetadataValue object.
     :rtype: :class:`phenomedb.models.MetadataValue`
@@ -303,6 +352,17 @@ def simple_assignment(metadata_value,datatype,allowed_data_range,allowed_decimal
     return metadata_value
 
 def categorise_bmi(metadata_value,datatype,allowed_data_range,allowed_decimal_places,db_session=None,db_env=None):
+    """Inbuilt function: Categorise numeric BMI values to string categories 
+
+    :param metadata_value: The MetadataValue object.
+    :type metadata_value: :class:`phenomedb.models.MetadataValue`
+    :param datatype: The HarmonisedMetadataField.datatype.
+    :type datatype: :class:`phenomedb.models.HarmonisedMetadataField.HarmonisedMetadataFieldDatatype`
+    :param allowed_data_range: A constraint to prevent values outside of this allowed range.
+    :type allowed_data_range: list
+    :param allowed_decimal_places: How many decimal places are allowed.
+    :type allowed_decimal_places: int
+    """
 
     raw_value = None
 

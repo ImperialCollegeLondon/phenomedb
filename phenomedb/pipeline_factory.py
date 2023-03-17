@@ -27,6 +27,23 @@ class BasePipelineManager:
     pipeline = None
 
     def __init__(self,pipeline_name=None,db_env=None,db_session=None,pipeline_id=None):
+        """Abstract BasePipeline class. 
+        
+        Extend this class to use another offline worker system, ie RedisQueue.
+
+        add_task() and submit() must be implemented.
+
+        :param pipeline_name: The name of Pipeline, defaults to None
+        :type pipeline_name: str, optional
+        :param db_env: The DB to use, 'PROD' or 'TEST', defaults to None
+        :type db_env: str, optional
+        :param db_session: The DB session to use, defaults to None
+        :type db_session: object, optional
+        :param pipeline_id: The Pipeline ID, defaults to None
+        :type pipeline_id: str, optional
+        :raises Exception: Pipeline ID not recognised
+        :raises Exception: Pipeline name and Pipeline ID do not match
+        """
 
         #self.name = (name + "_" + str(datetime.datetime.now()).replace('-','').replace(':','').replace('.','_')).replace(' ','_')
         if db_env and db_env != 'PROD':
@@ -56,6 +73,24 @@ class BasePipelineManager:
         self.task_runs = {}
 
     def add_task(self,task_module,task_class,task_id=None,run_config=None,upstream_task_id=None):
+        """Add a task to the pipeline, either with a run_config for the task or not, and with an upstream_task_id or not.
+
+        :param task_module: The module of the task, eg. 'phenomedb.imports'
+        :type task_module: str
+        :param task_class: The class of the task eg. 'ImportMetadata'
+        :type task_class: str
+        :param task_id: The unique identifier for the task in the pipeline, defaults to None
+        :type task_id: str, optional
+        :param run_config: The run_config for the task, e.g. dictionary of {task_id:**kwargs}, defaults to None
+        :type run_config: dict, optional
+        :param upstream_task_id: The ID of the upstream task, defaults to None
+        :type upstream_task_id: str, optional
+        :raises PipelineTaskIDError: Another task with that ID already exists
+        :raises PipelineTaskIDError: Task ID cannot start with a number
+        :raises PipelineTaskIDError: Upstream task with that ID does not exist
+        :return: _description_
+        :rtype: _type_
+        """
 
         if self.pipeline:
 
@@ -120,12 +155,16 @@ class BasePipelineManager:
             return None
 
     def run_pipeline(self):
+        """Run the pipeline
+        """
 
         if self.pipeline:
            self.db_session.commit()
 
 
     def commit_definition(self):
+        """Commit the definition using the PipelineManager
+        """
 
         if self.pipeline and isinstance(self.pipeline,Pipeline):
             if not self.pipeline.name:
@@ -137,14 +176,20 @@ class BasePipelineManager:
 class PipelineFactory:
     """PipelineFactory class. Default manager is apache-airflow. Most of the options below are airflow specific.
 
-    :param name: The pipeline name - the main identifier of the pipeline, must be unique
-    :type name: str
+    :param pipeline_name: The pipeline name - the main identifier of the pipeline, must be unique
+    :type pipeline_name: str
+    :param pipeline_id: The :class:`phenomedb.models.Pipeline` ID
+    :type pipeline_name: str
     :param description: The pipeline description, defaults to None.
     :type description: str, optional
     :param start_date: The start date of the airflow pipeline, defaults to None.
     :type start_date: :class:`datetime.datetime`, optional
+    :param pipeline_folder_path: The path to the pipeline folder (default used otherwise)
+    :type pipeline_folder_path: str, optional
     :param default_args: The default arguments of the airflow pipeline, defaults to {'owner': 'airflow','retries':1,'retries_delay':datetime.timedelta(minutes=5)}.
     :type default_args: dict, optional
+    :param hard_code_data: Whether to create a dynamically parameterised pipeline or one with hard-coded parameters, default False (dynamic)
+    :type hard_code_data: bool, optional
     :param schedule_interval: How often to run the airflow pipeline, defaults to "@once".
     :type schedule_interval: str, optional
     :param db_env: Which db to use - "PROD","BETA", or "TEST", defaults to None ("PROD").
@@ -153,6 +198,10 @@ class PipelineFactory:
     :type tags: list, optional
     :param sequential: Whether to run tasks sequentially, defaults to True. False means tasks will run concurrently, in no specific order.
     :type sequential: bool, optional
+    :param max_active_runs: How many active runs of a pipeline can there be
+    :type max_active_runs: int, optional
+    :param concurrency: How many concurrent runs of a pipeline can be executed
+    :type concurrency: int, optional
     """        
 
     logger = utils.configure_logging(identifier="pipeline_factory")
@@ -206,6 +255,11 @@ class PipelineFactory:
         return self.pipeline_manager.add_task(task_module,task_class,upstream_task_id=upstream_task_id,run_config=run_config,task_id=task_id)
 
     def commit_definition(self):
+        """Commit the definition of the pipeline
+
+        :return: _description_
+        :rtype: _type_
+        """
 
         return self.pipeline_manager.commit_definition()
 
@@ -222,25 +276,40 @@ class PipelineFactory:
         return self.pipeline_manager.run_pipeline(run_config=run_config,debug=debug)
 
     def pause_pipeline(self):
+        """Pause the pipeline
+        """
 
         return self.pipeline_manager.pause_pipeline()
 
     def delete_pipeline(self):
+        """Delete the pipeline
+        """
 
         return self.pipeline_manager.delete_pipeline()
 
     @staticmethod
     def get_json_task_spec():
+        """Get the json task_spec
+
+        :return: the json task spec dict
+        :rtype: dict
+        """
         json_spec = {}
 
-        json_file = os.path.join(os.environ['PHENOMEDB_PATH'], "phenomedb", "../data/config/task_typespec.json")
-        with open(json_file, "r") as read_file:
+        with open(config['DATA']['config'] + 'task_typespec.json', "r") as read_file:
             json_spec = json.load(read_file)
 
         return json_spec
 
     @staticmethod
     def get_tasks_from_json(modules_to_include=None):
+        """Parse the tasks from the task_spec file
+
+        :param modules_to_include: A list of modules to include, defaults to None
+        :type modules_to_include: list, optional
+        :return: task_spec_json
+        :rtype: dict
+        """
         task_spec = {}
 
         json_spec = PipelineFactory.get_json_task_spec()

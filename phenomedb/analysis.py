@@ -18,6 +18,81 @@ import nPYc
 
 
 class AnalysisTask(Task):
+    """The base AnalysisTask Task. Extend this Task to create your own methods.
+
+    :param query_factory: QueryFactory, a handle to the :class:`phenomedb.query_factory.QueryFactory` object that defined the cohort, defaults to None
+    :type query_factory: :class:`phenomedb.query_factory.QueryFactory`, optional
+    :param saved_query_model: The output model of the query, defaults to 'AnnotatedFeature'
+    :type saved_query_model: str, optional
+    :param saved_query_id: SavedQuery.id of the query, (typical usage), defaults to None
+    :type saved_query_id: int, optional
+    :param task_run_id: The TaskRun.id, defaults to None
+    :type task_run_id: int, optional
+    :param username: The username of the user running the task, defaults to None
+    :type username: str, optional
+    :param correction_type: The CorrectionType to pass to the Query (e.g. SR, LTR), defaults to None
+    :type correction_type: str, optional
+    :param exclude_na_metadata_samples: Whether to exclude samples that have na values for their metadata columns, defaults to False
+    :type exclude_na_metadata_samples: bool, optional
+    :param exclude_na_metadata_columns: Whether to exclude metadata columns that have na values, defaults to False
+    :type exclude_na_metadata_columns: bool, optional
+    :param output_dir: Output directory for function, defaults to None
+    :type output_dir: str, optional
+    :param db_env: Database environment, 'PROD','BETA','TEST', defaults to None
+    :type db_env: str, optional
+    :param db_session: Database session, defaults to None
+    :type db_session: object, optional
+    :param execution_date: Datetime of execution, defaults to None
+    :type execution_date: :class:`DateTime.DateTime`, optional
+    :param columns_to_exclude: Which columns to exclude, defaults to None
+    :type columns_to_exclude: list, optional
+    :param exclude_one_factor_columns: Exclude columns with only one factor, defaults to False
+    :type exclude_one_factor_columns: bool, optional
+    :param columns_to_include: Which columns to include, defaults to None
+    :type columns_to_include: list, optional
+    :param class_level: Query Aggregration class level (for Compounds), defaults to None
+    :type class_level: str, optional
+    :param class_type: Query Aggregration class type, defaults to None
+    :type class_type: str, optional
+    :param only_harmonised_metadata: Only include harmonised metadata fields, defaults to False
+    :type only_harmonised_metadata: bool, optional
+    :param only_metadata: Only include metadata fields, defaults to False
+    :type only_metadata: bool, optional
+    :param scaling: Which scaling to use, 'pa', 'uv', 'med', defaults to None
+    :type scaling: str, optional
+    :param transform: Which transformation to use, 'log', 'sqrt', defaults to None
+    :type transform: str, optional
+    :param reload_cache: Whether to reload the cache for the Query, defaults to False
+    :type reload_cache: bool, optional
+    :param validate: Whether to validate the Task by running the validate() method, defaults to True
+    :type validate: bool, optional
+    :param aggregate_function: Which Query aggregration function to use (mean, median, sum, avg), defaults to None
+    :type aggregate_function: str, optional
+    :param harmonise_annotations: Whether to use harmonised annotations, defaults to False
+    :type harmonise_annotations: bool, optional
+    :param upstream_task_run_id: The upstream TaskRun.id, defaults to None
+    :type upstream_task_run_id: int, optional
+    :param exclude_samples_with_na_feature_values: Exclude samples with na feature values, defaults to False
+    :type exclude_samples_with_na_feature_values: bool, optional
+    :param include_metadata: Whether to include metadata or not, defaults to False
+    :type include_metadata: bool, optional
+    :param exclude_features_with_na_feature_values: Exclude features with na feature values, defaults to False
+    :type exclude_features_with_na_feature_values: bool, optional
+    :param include_default_columns: Whether to include default columns, defaults to True
+    :type include_default_columns: bool, optional
+    :param include_harmonised_metadata: Whether to include harmonised metadata, defaults to True
+    :type include_harmonised_metadata: bool, optional
+    :param drop_sample_column: Drop the sample column, defaults to False
+    :type drop_sample_column: bool, optional
+    :param exclude_features_not_in_all_projects: Exclude features not in all projects, defaults to False
+    :type exclude_features_not_in_all_projects: bool, optional
+    :param sample_types: SampleTypes to include (StudySample, StudyReference, ExternalReference), defaults to None
+    :type sample_types: list, optional
+    :param assay_roles: AssayRoles to include (Assay, LinearityReference, PrecisionReference), defaults to None
+    :type assay_roles: list, optional
+    :param pipeline_run_id: The TaskRun.pipeline_run_id, defaults to None
+    :type pipeline_run_id: int, optional
+        """    
     
     for_npyc = True
     columns_to_include = ['Project','Unique Batch','Unique Correction Batch','Run Order','Acquired Time']
@@ -31,82 +106,7 @@ class AnalysisTask(Task):
                  harmonise_annotations=False,upstream_task_run_id=None,exclude_samples_with_na_feature_values=False,include_metadata=False,
                 exclude_features_with_na_feature_values=False,include_default_columns=True,include_harmonised_metadata=True,drop_sample_column=False,
                  exclude_features_not_in_all_projects=False,sample_types=None,assay_roles=None,pipeline_run_id=None):
-        """The base AnalysisTask Task. Extend this Task to create your own methods.
-
-        :param query_factory: QueryFactory, a handle to the :class:`phenomedb.query_factory.QueryFactory`
-        object that defined the cohort, defaults to None
-        :type query_factory: :class:`phenomedb.query_factory.QueryFactory`, optional
-        :param saved_query_model: The output model of the query, defaults to 'AnnotatedFeature'
-        :type saved_query_model: str, optional
-        :param saved_query_id: SavedQuery.id of the query, (typical usage), defaults to None
-        :type saved_query_id: int, optional
-        :param task_run_id: The TaskRun.id, defaults to None
-        :type task_run_id: int, optional
-        :param username: The username of the user running the task, defaults to None
-        :type username: str, optional
-        :param correction_type: The CorrectionType to pass to the Query (e.g. SR, LTR), defaults to None
-        :type correction_type: str, optional
-        :param exclude_na_metadata_samples: Whether to exclude samples that have na values for their metadata columns, defaults to False
-        :type exclude_na_metadata_samples: bool, optional
-        :param exclude_na_metadata_columns: Whether to exclude metadata columns that have na values, defaults to False
-        :type exclude_na_metadata_columns: bool, optional
-        :param output_dir: Output directory for function, defaults to None
-        :type output_dir: str, optional
-        :param db_env: Database environment, 'PROD','BETA','TEST', defaults to None
-        :type db_env: str, optional
-        :param db_session: Database session, defaults to None
-        :type db_session: object, optional
-        :param execution_date: Datetime of execution, defaults to None
-        :type execution_date: :class:`DateTime.DateTime`, optional
-        :param columns_to_exclude: Which columns to exclude, defaults to None
-        :type columns_to_exclude: list, optional
-        :param exclude_one_factor_columns: Exclude columns with only one factor, defaults to False
-        :type exclude_one_factor_columns: bool, optional
-        :param columns_to_include: Which columns to include, defaults to None
-        :type columns_to_include: list, optional
-        :param class_level: Query Aggregration class level (for Compounds), defaults to None
-        :type class_level: str, optional
-        :param class_type: Query Aggregration class type, defaults to None
-        :type class_type: str, optional
-        :param only_harmonised_metadata: Only include harmonised metadata fields, defaults to False
-        :type only_harmonised_metadata: bool, optional
-        :param only_metadata: Only include metadata fields, defaults to False
-        :type only_metadata: bool, optional
-        :param scaling: Which scaling to use, 'pa', 'uv', 'med', defaults to None
-        :type scaling: str, optional
-        :param transform: Which transformation to use, 'log', 'sqrt', defaults to None
-        :type transform: str, optional
-        :param reload_cache: Whether to reload the cache for the Query, defaults to False
-        :type reload_cache: bool, optional
-        :param validate: Whether to validate the Task by running the validate() method, defaults to True
-        :type validate: bool, optional
-        :param aggregate_function: Which Query aggregration function to use (mean, median, sum, avg), defaults to None
-        :type aggregate_function: str, optional
-        :param harmonise_annotations: Whether to use harmonised annotations, defaults to False
-        :type harmonise_annotations: bool, optional
-        :param upstream_task_run_id: The upstream TaskRun.id, defaults to None
-        :type upstream_task_run_id: int, optional
-        :param exclude_samples_with_na_feature_values: Exclude samples with na feature values, defaults to False
-        :type exclude_samples_with_na_feature_values: bool, optional
-        :param include_metadata: Whether to include metadata or not, defaults to False
-        :type include_metadata: bool, optional
-        :param exclude_features_with_na_feature_values: Exclude features with na feature values, defaults to False
-        :type exclude_features_with_na_feature_values: bool, optional
-        :param include_default_columns: Whether to include default columns, defaults to True
-        :type include_default_columns: bool, optional
-        :param include_harmonised_metadata: Whether to include harmonised metadata, defaults to True
-        :type include_harmonised_metadata: bool, optional
-        :param drop_sample_column: Drop the sample column, defaults to False
-        :type drop_sample_column: bool, optional
-        :param exclude_features_not_in_all_projects: Exclude features not in all projects, defaults to False
-        :type exclude_features_not_in_all_projects: bool, optional
-        :param sample_types: SampleTypes to include (StudySample, StudyReference, ExternalReference), defaults to None
-        :type sample_types: list, optional
-        :param assay_roles: AssayRoles to include (Assay, LinearityReference, PrecisionReference), defaults to None
-        :type assay_roles: list, optional
-        :param pipeline_run_id: The TaskRun.pipeline_run_id, defaults to None
-        :type pipeline_run_id: int, optional
-        """    
+    
 
         if not sample_types and self.sample_types is None:
             self.sample_types = [SampleType.StudySample,SampleType.StudyPool,SampleType.ExternalReference]
@@ -463,10 +463,36 @@ class RunPCA(AnalysisTask):
     Scaling is done by ChemometricsScaler() as part of the model, NOT the QueryFactory Scaler
 
     Uses SampleType masks. Masks can be specified if required.
-
-    :param AnalysisTask: The AnalysisTask base class.
-    :type AnalysisTask: `phenomedb.analysis.AnalysisTask`
-    """
+    
+    :param max_components: The max number of Principle Components, defaults to 10
+    :type max_components: int, optional_run
+    :param scaling: Which kind of scaling to use, 'mc': mean-centred, 'uv': univariate, 'pa': pareto. defaults to 'uv'
+    :type scaling: str, optional
+    :param minQ2: minQ2 for number of PC optimisation, defaults to 0.05
+    :type minQ2: float, optional
+    :param query_factory: The AnnotatedFeatureFactory object to load results from, defaults to None
+    :type query_factory: `phenomedb.query_factory.AnnotatedFeatureFactory`, optional
+    :param saved_query_id: The ID of the SavedQuery to load results from, defaults to None
+    :type saved_query_id: int, optional
+    :param annotations_only: Use only those annotated_features with annotations, defaults to False
+    :type annotations_only: bool, optional
+    :param upstream_task_run_id: The Upstream Task Run ID
+    :type upstream_task_run_id: int
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+    """        
 
     columns_to_include = []
     assay_roles = [AssayRole.PrecisionReference, AssayRole.Assay]
@@ -475,23 +501,6 @@ class RunPCA(AnalysisTask):
                  db_session=None,execution_date=None,query_factory=None,saved_query_id=None,correction_type=None,reload_cache=False,
                  validate=True,saved_query_model='AnnotatedFeature',class_level=None,class_type=None,aggregate_function=None,upstream_task_run_id=None,
                  include_harmonised_metadata=True,exclude_features_not_in_all_projects=True,sample_types=None,assay_roles=None,pipeline_run_id=None):
-        """The init method for the RunPCA.
-
-        :param max_components: The max number of Principle Components, defaults to 10
-        :type max_components: int, optional_run
-        :param scaling: Which kind of scaling to use, 'mc': mean-centred, 'uv': univariate, 'pa': pareto. defaults to 'uv'
-        :type scaling: str, optional
-        :param minQ2: minQ2 for number of PC optimisation, defaults to 0.05
-        :type minQ2: float, optional
-        :param username: Username of user running analysis, defaults to None
-        :type username: str, optional
-        :param query_factory: The AnnotatedFeatureFactory object to load results from, defaults to None
-        :type query_factory: `phenomedb.query_factory.AnnotatedFeatureFactory`, optional
-        :param saved_query_id: The ID of the SavedQuery to load results from, defaults to None
-        :type saved_query_id: int, optional
-        :param annotations_only: Use only those annotated_features with annotations, defaults to False
-        :type annotations_only: bool, optional
-        """        
 
         super().__init__(query_factory=query_factory,saved_query_id=saved_query_id,task_run_id=task_run_id,transform=transform,
                          username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,scaling=scaling,
@@ -600,6 +609,52 @@ class RAnalysisTask(AnalysisTask):
         :type query_factory: `phenomedb.query_factory.QueryFactory`, optional
         :param saved_query_id: The ID of the SavedQuery, defaults to None
         :type saved_query_id: int, optional
+        :param columns_to_exclude: Which columns to exclude, defaults to None
+        :type columns_to_exclude: list, optional
+        :param exclude_one_factor_columns: Exclude columns with only one factor, defaults to False
+        :type exclude_one_factor_columns: bool, optional
+        :param columns_to_include: Which columns to include, defaults to None
+        :type columns_to_include: list, optional
+        :param class_level: Query Aggregration class level (for Compounds), defaults to None
+        :type class_level: str, optional
+        :param class_type: Query Aggregration class type, defaults to None
+        :type class_type: str, optional
+        :param only_harmonised_metadata: Only include harmonised metadata fields, defaults to False
+        :type only_harmonised_metadata: bool, optional
+        :param only_metadata: Only include metadata fields, defaults to False
+        :type only_metadata: bool, optional
+        :param scaling: Which scaling to use, 'pa', 'uv', 'med', defaults to None
+        :type scaling: str, optional
+        :param transform: Which transformation to use, 'log', 'sqrt', defaults to None
+        :type transform: str, optional
+        :param reload_cache: Whether to reload the cache for the Query, defaults to False
+        :type reload_cache: bool, optional
+        :param validate: Whether to validate the Task by running the validate() method, defaults to True
+        :type validate: bool, optional
+        :param aggregate_function: Which Query aggregration function to use (mean, median, sum, avg), defaults to None
+        :type aggregate_function: str, optional
+        :param harmonise_annotations: Whether to use harmonised annotations, defaults to False
+        :type harmonise_annotations: bool, optional
+        :param upstream_task_run_id: The upstream TaskRun.id, defaults to None
+        :type upstream_task_run_id: int, optional
+        :param exclude_samples_with_na_feature_values: Exclude samples with na feature values, defaults to False
+        :type exclude_samples_with_na_feature_values: bool, optional
+        :param include_metadata: Whether to include metadata or not, defaults to False
+        :type include_metadata: bool, optional
+        :param exclude_features_with_na_feature_values: Exclude features with na feature values, defaults to False
+        :type exclude_features_with_na_feature_values: bool, optional
+        :param include_default_columns: Whether to include default columns, defaults to True
+        :type include_default_columns: bool, optional
+        :param include_harmonised_metadata: Whether to include harmonised metadata, defaults to True
+        :type include_harmonised_metadata: bool, optional
+        :param drop_sample_column: Drop the sample column, defaults to False
+        :type drop_sample_column: bool, optional
+        :param exclude_features_not_in_all_projects: Exclude features not in all projects, defaults to False
+        :type exclude_features_not_in_all_projects: bool, optional
+        :param sample_types: SampleTypes to include (StudySample, StudyReference, ExternalReference), defaults to None
+        :type sample_types: list, optional
+        :param assay_roles: AssayRoles to include (Assay, LinearityReference, PrecisionReference), defaults to None
+        :type assay_roles: list, optional
         :param username: The username of the user running the task, defaults to None
         :type username: str, optional
         """
@@ -742,6 +797,64 @@ class RAnalysisTask(AnalysisTask):
 
 
 class RunXCMS(RAnalysisTask):
+     """Run XCMS
+
+    :param chromatography: _description_, defaults to None
+    :type chromatography: _type_, optional
+    :param metabolights_study_id: _description_, defaults to None
+    :type metabolights_study_id: _type_, optional
+    :param lab: _description_, defaults to None
+    :type lab: _type_, optional
+    :param input_dir: _description_, defaults to None
+    :type input_dir: _type_, optional
+    :param sample_matrix: _description_, defaults to None
+    :type sample_matrix: _type_, optional
+    :param centwave_prefilter: _description_, defaults to None
+    :type centwave_prefilter: _type_, optional
+    :param centwave_peakwidth: _description_, defaults to None
+    :type centwave_peakwidth: _type_, optional
+    :param centwave_mzdiff: _description_, defaults to None
+    :type centwave_mzdiff: _type_, optional
+    :param centwave_snthresh: _description_, defaults to None
+    :type centwave_snthresh: _type_, optional
+    :param centwave_ppm: _description_, defaults to None
+    :type centwave_ppm: _type_, optional
+    :param centwave_noise: _description_, defaults to None
+    :type centwave_noise: _type_, optional
+    :param centwave_mzCenterFun: _description_, defaults to None
+    :type centwave_mzCenterFun: _type_, optional
+    :param centwave_integrate: _description_, defaults to None
+    :type centwave_integrate: _type_, optional
+    :param peakdensity_minFraction: _description_, defaults to None
+    :type peakdensity_minFraction: _type_, optional
+    :param peakdensity_minSamples: _description_, defaults to None
+    :type peakdensity_minSamples: _type_, optional
+    :param peakdensity_bw: _description_, defaults to None
+    :type peakdensity_bw: _type_, optional
+    :param peakdensity_binSize: _description_, defaults to None
+    :type peakdensity_binSize: _type_, optional
+    :param upstream_task_run_id: The Upstream Task Run ID
+    :type upstream_task_run_id: int
+    :param task_run_id: The TaskRun ID
+    :type task_run_id: float, optional
+    :param username: The username of the user running the job, defaults to None
+    :type username: str, optional
+    :param db_env: The db_env to use, 'PROD' or 'TEST', default 'PROD'
+    :type db_env: str, optional
+    :param db_session: The db_session to use
+    :type db_session: object, optional
+    :param execution_date: The date of execution, str format.
+    :type execution_date: str, optional
+    :param validate: Whether to run validation, default True
+    :type validate: boolean
+    :param pipeline_run_id: The Pipeline run ID
+    :type pipeline_run_id: str, optional
+    :raises Exception: _description_
+    :raises Exception: _description_
+    :raises Exception: _description_
+    :raises Exception: _description_
+    :raises Exception: _description_
+    """
 
     r_template = 'xcms.r'
 
@@ -749,7 +862,7 @@ class RunXCMS(RAnalysisTask):
                  chromatography=None,metabolights_study_id=None,lab=None,input_dir=None,sample_matrix=None,centwave_prefilter=None,centwave_peakwidth=None,
                 centwave_mzdiff = None,centwave_snthresh = None,centwave_ppm = None,centwave_noise = None,centwave_mzCenterFun = None,
                  centwave_integrate = None, peakdensity_minFraction = None,peakdensity_minSamples = None,peakdensity_bw = None,peakdensity_binSize = None):
-
+    
         super().__init__(username=username,
                          task_run_id=task_run_id,
                          db_env=db_env, db_session=db_session,
@@ -915,6 +1028,83 @@ class RunXCMS(RAnalysisTask):
                         'xcms_file':xcms_file}
 
 class RunPCPR2(RAnalysisTask):
+        """Run a PCPR2 analysis. Uses the R package PCPR2 under the hood :link:`https://github.com/JoeRothwell/pcpr2`
+
+    :param pct_threshold: _description_, defaults to 0.95
+    :type pct_threshold: float, optional
+    :param query_factory: QueryFactory, a handle to the :class:`phenomedb.query_factory.QueryFactory` object that defined the cohort, defaults to None
+    :type query_factory: :class:`phenomedb.query_factory.QueryFactory`, optional
+    :param saved_query_model: The output model of the query, defaults to 'AnnotatedFeature'
+    :type saved_query_model: str, optional
+    :param saved_query_id: SavedQuery.id of the query, (typical usage), defaults to None
+    :type saved_query_id: int, optional
+    :param task_run_id: The TaskRun.id, defaults to None
+    :type task_run_id: int, optional
+    :param username: The username of the user running the task, defaults to None
+    :type username: str, optional
+    :param correction_type: The CorrectionType to pass to the Query (e.g. SR, LTR), defaults to None
+    :type correction_type: str, optional
+    :param exclude_na_metadata_samples: Whether to exclude samples that have na values for their metadata columns, defaults to False
+    :type exclude_na_metadata_samples: bool, optional
+    :param exclude_na_metadata_columns: Whether to exclude metadata columns that have na values, defaults to False
+    :type exclude_na_metadata_columns: bool, optional
+    :param output_dir: Output directory for function, defaults to None
+    :type output_dir: str, optional
+    :param db_env: Database environment, 'PROD','BETA','TEST', defaults to None
+    :type db_env: str, optional
+    :param db_session: Database session, defaults to None
+    :type db_session: object, optional
+    :param execution_date: Datetime of execution, defaults to None
+    :type execution_date: :class:`DateTime.DateTime`, optional
+    :param columns_to_exclude: Which columns to exclude, defaults to None
+    :type columns_to_exclude: list, optional
+    :param exclude_one_factor_columns: Exclude columns with only one factor, defaults to False
+    :type exclude_one_factor_columns: bool, optional
+    :param columns_to_include: Which columns to include, defaults to None
+    :type columns_to_include: list, optional
+    :param class_level: Query Aggregration class level (for Compounds), defaults to None
+    :type class_level: str, optional
+    :param class_type: Query Aggregration class type, defaults to None
+    :type class_type: str, optional
+    :param only_harmonised_metadata: Only include harmonised metadata fields, defaults to False
+    :type only_harmonised_metadata: bool, optional
+    :param only_metadata: Only include metadata fields, defaults to False
+    :type only_metadata: bool, optional
+    :param scaling: Which scaling to use, 'pa', 'uv', 'med', defaults to None
+    :type scaling: str, optional
+    :param transform: Which transformation to use, 'log', 'sqrt', defaults to None
+    :type transform: str, optional
+    :param reload_cache: Whether to reload the cache for the Query, defaults to False
+    :type reload_cache: bool, optional
+    :param validate: Whether to validate the Task by running the validate() method, defaults to True
+    :type validate: bool, optional
+    :param aggregate_function: Which Query aggregration function to use (mean, median, sum, avg), defaults to None
+    :type aggregate_function: str, optional
+    :param harmonise_annotations: Whether to use harmonised annotations, defaults to False
+    :type harmonise_annotations: bool, optional
+    :param upstream_task_run_id: The upstream TaskRun.id, defaults to None
+    :type upstream_task_run_id: int, optional
+    :param exclude_samples_with_na_feature_values: Exclude samples with na feature values, defaults to False
+    :type exclude_samples_with_na_feature_values: bool, optional
+    :param include_metadata: Whether to include metadata or not, defaults to False
+    :type include_metadata: bool, optional
+    :param exclude_features_with_na_feature_values: Exclude features with na feature values, defaults to False
+    :type exclude_features_with_na_feature_values: bool, optional
+    :param include_default_columns: Whether to include default columns, defaults to True
+    :type include_default_columns: bool, optional
+    :param include_harmonised_metadata: Whether to include harmonised metadata, defaults to True
+    :type include_harmonised_metadata: bool, optional
+    :param drop_sample_column: Drop the sample column, defaults to False
+    :type drop_sample_column: bool, optional
+    :param exclude_features_not_in_all_projects: Exclude features not in all projects, defaults to False
+    :type exclude_features_not_in_all_projects: bool, optional
+    :param sample_types: SampleTypes to include (StudySample, StudyReference, ExternalReference), defaults to None
+    :type sample_types: list, optional
+    :param assay_roles: AssayRoles to include (Assay, LinearityReference, PrecisionReference), defaults to None
+    :type assay_roles: list, optional
+    :param pipeline_run_id: The TaskRun.pipeline_run_id, defaults to None
+    :type pipeline_run_id: int, optional
+    """
 
     columns_to_include = ['Unique Batch']
     for_npyc = False
@@ -1062,6 +1252,83 @@ class NPYCTask(AnalysisTask):
         self.npyc_dataset = self.query_factory.load_npyc_dataset(sample_metadata,feature_metadata,intensity_data,self.assay_platform)
 
 class RunNPYCReport(NPYCTask):
+    """Run a nPYc report.
+
+    :param report_name: The report nPYc report to run, from :link:`https://npyc-toolbox.readthedocs.io/en/latest/reports.html` 
+    :type report_name: str
+    :param query_factory: QueryFactory, a handle to the :class:`phenomedb.query_factory.QueryFactory` object that defined the cohort, defaults to None
+    :type query_factory: :class:`phenomedb.query_factory.QueryFactory`, optional
+    :param saved_query_model: The output model of the query, defaults to 'AnnotatedFeature'
+    :type saved_query_model: str, optional
+    :param saved_query_id: SavedQuery.id of the query, (typical usage), defaults to None
+    :type saved_query_id: int, optional
+    :param task_run_id: The TaskRun.id, defaults to None
+    :type task_run_id: int, optional
+    :param username: The username of the user running the task, defaults to None
+    :type username: str, optional
+    :param correction_type: The CorrectionType to pass to the Query (e.g. SR, LTR), defaults to None
+    :type correction_type: str, optional
+    :param exclude_na_metadata_samples: Whether to exclude samples that have na values for their metadata columns, defaults to False
+    :type exclude_na_metadata_samples: bool, optional
+    :param exclude_na_metadata_columns: Whether to exclude metadata columns that have na values, defaults to False
+    :type exclude_na_metadata_columns: bool, optional
+    :param output_dir: Output directory for function, defaults to None
+    :type output_dir: str, optional
+    :param db_env: Database environment, 'PROD','BETA','TEST', defaults to None
+    :type db_env: str, optional
+    :param db_session: Database session, defaults to None
+    :type db_session: object, optional
+    :param execution_date: Datetime of execution, defaults to None
+    :type execution_date: :class:`DateTime.DateTime`, optional
+    :param columns_to_exclude: Which columns to exclude, defaults to None
+    :type columns_to_exclude: list, optional
+    :param exclude_one_factor_columns: Exclude columns with only one factor, defaults to False
+    :type exclude_one_factor_columns: bool, optional
+    :param columns_to_include: Which columns to include, defaults to None
+    :type columns_to_include: list, optional
+    :param class_level: Query Aggregration class level (for Compounds), defaults to None
+    :type class_level: str, optional
+    :param class_type: Query Aggregration class type, defaults to None
+    :type class_type: str, optional
+    :param only_harmonised_metadata: Only include harmonised metadata fields, defaults to False
+    :type only_harmonised_metadata: bool, optional
+    :param only_metadata: Only include metadata fields, defaults to False
+    :type only_metadata: bool, optional
+    :param scaling: Which scaling to use, 'pa', 'uv', 'med', defaults to None
+    :type scaling: str, optional
+    :param transform: Which transformation to use, 'log', 'sqrt', defaults to None
+    :type transform: str, optional
+    :param reload_cache: Whether to reload the cache for the Query, defaults to False
+    :type reload_cache: bool, optional
+    :param validate: Whether to validate the Task by running the validate() method, defaults to True
+    :type validate: bool, optional
+    :param aggregate_function: Which Query aggregration function to use (mean, median, sum, avg), defaults to None
+    :type aggregate_function: str, optional
+    :param harmonise_annotations: Whether to use harmonised annotations, defaults to False
+    :type harmonise_annotations: bool, optional
+    :param upstream_task_run_id: The upstream TaskRun.id, defaults to None
+    :type upstream_task_run_id: int, optional
+    :param exclude_samples_with_na_feature_values: Exclude samples with na feature values, defaults to False
+    :type exclude_samples_with_na_feature_values: bool, optional
+    :param include_metadata: Whether to include metadata or not, defaults to False
+    :type include_metadata: bool, optional
+    :param exclude_features_with_na_feature_values: Exclude features with na feature values, defaults to False
+    :type exclude_features_with_na_feature_values: bool, optional
+    :param include_default_columns: Whether to include default columns, defaults to True
+    :type include_default_columns: bool, optional
+    :param include_harmonised_metadata: Whether to include harmonised metadata, defaults to True
+    :type include_harmonised_metadata: bool, optional
+    :param drop_sample_column: Drop the sample column, defaults to False
+    :type drop_sample_column: bool, optional
+    :param exclude_features_not_in_all_projects: Exclude features not in all projects, defaults to False
+    :type exclude_features_not_in_all_projects: bool, optional
+    :param sample_types: SampleTypes to include (StudySample, StudyReference, ExternalReference), defaults to None
+    :type sample_types: list, optional
+    :param assay_roles: AssayRoles to include (Assay, LinearityReference, PrecisionReference), defaults to None
+    :type assay_roles: list, optional
+    :param pipeline_run_id: The TaskRun.pipeline_run_id, defaults to None
+    :type pipeline_run_id: int, optional
+    """
 
     for_npyc = True
 
@@ -1145,6 +1412,13 @@ class RunNPYCReport(NPYCTask):
             nPYc.reports.generateReport(self.npyc_dataset, self.report_name, destinationPath=self.report_folder)
 
 class RunWilcoxonRankTest(RAnalysisTask):
+    """Run a Wilcoxon Rank Test (not implemented)
+
+    :param RAnalysisTask: _description_
+    :type RAnalysisTask: _type_
+    :return: _description_
+    :rtype: _type_
+    """
 
     #sample_types = [SampleType.StudySample]
 
@@ -1204,6 +1478,99 @@ class RunWilcoxonRankTest(RAnalysisTask):
 
 
 class RunMWAS(RAnalysisTask):
+     """Run an MWAS analysis. Uses the R package MWASTools :link:`https://www.bioconductor.org/packages/release/bioc/html/MWASTools.html`
+
+    :param model_Y_variable: The output variable to measure association against, for example h_metadata::Age for the harmonised age
+    :type model_Y_variable: str
+    :param model_X_variables: Covariates for the test of association
+    :type model_X_variables: list
+    :param method: Which association method to use, one of: linear, logistic, pearson, spearman, kendall
+    :type model_X_variables: str
+    :param correction_method: Which multiple-testing correction to use, one of: bonferroni, benjamin-hochberg,
+    :type correction_method: str
+    :param model_Y_ci: A confidence interval value to limit the range of Y valued samples to include (e.g. 0.95)
+    :type model_Y_ci: float
+    :param model_Y_min: The minimum range value of Y to include (eg. 20)
+    :type model_Y_min: float
+    :param model_Y_max: The maximum range value of Y to include (eg 80)
+    :type model_Y_max: float
+    :param bootstrap: Whether to run bootstrapping (takes a long time) default False
+    :type model_Y_max: boolean
+    :param bootstrap: Whether to save the models as well as the summary statistics/coefficients, default False
+    :type bootstrap: boolean
+    :param query_factory: QueryFactory, a handle to the :class:`phenomedb.query_factory.QueryFactory` object that defined the cohort, defaults to None
+    :type query_factory: :class:`phenomedb.query_factory.QueryFactory`, optional
+    :param saved_query_model: The output model of the query, defaults to 'AnnotatedFeature'
+    :type saved_query_model: str, optional
+    :param saved_query_id: SavedQuery.id of the query, (typical usage), defaults to None
+    :type saved_query_id: int, optional
+    :param task_run_id: The TaskRun.id, defaults to None
+    :type task_run_id: int, optional
+    :param username: The username of the user running the task, defaults to None
+    :type username: str, optional
+    :param correction_type: The CorrectionType to pass to the Query (e.g. SR, LTR), defaults to None
+    :type correction_type: str, optional
+    :param exclude_na_metadata_samples: Whether to exclude samples that have na values for their metadata columns, defaults to False
+    :type exclude_na_metadata_samples: bool, optional
+    :param exclude_na_metadata_columns: Whether to exclude metadata columns that have na values, defaults to False
+    :type exclude_na_metadata_columns: bool, optional
+    :param output_dir: Output directory for function, defaults to None
+    :type output_dir: str, optional
+    :param db_env: Database environment, 'PROD','BETA','TEST', defaults to None
+    :type db_env: str, optional
+    :param db_session: Database session, defaults to None
+    :type db_session: object, optional
+    :param execution_date: Datetime of execution, defaults to None
+    :type execution_date: :class:`DateTime.DateTime`, optional
+    :param columns_to_exclude: Which columns to exclude, defaults to None
+    :type columns_to_exclude: list, optional
+    :param exclude_one_factor_columns: Exclude columns with only one factor, defaults to False
+    :type exclude_one_factor_columns: bool, optional
+    :param columns_to_include: Which columns to include, defaults to None
+    :type columns_to_include: list, optional
+    :param class_level: Query Aggregration class level (for Compounds), defaults to None
+    :type class_level: str, optional
+    :param class_type: Query Aggregration class type, defaults to None
+    :type class_type: str, optional
+    :param only_harmonised_metadata: Only include harmonised metadata fields, defaults to False
+    :type only_harmonised_metadata: bool, optional
+    :param only_metadata: Only include metadata fields, defaults to False
+    :type only_metadata: bool, optional
+    :param scaling: Which scaling to use, 'pa', 'uv', 'med', defaults to None
+    :type scaling: str, optional
+    :param transform: Which transformation to use, 'log', 'sqrt', defaults to None
+    :type transform: str, optional
+    :param reload_cache: Whether to reload the cache for the Query, defaults to False
+    :type reload_cache: bool, optional
+    :param validate: Whether to validate the Task by running the validate() method, defaults to True
+    :type validate: bool, optional
+    :param aggregate_function: Which Query aggregration function to use (mean, median, sum, avg), defaults to None
+    :type aggregate_function: str, optional
+    :param harmonise_annotations: Whether to use harmonised annotations, defaults to False
+    :type harmonise_annotations: bool, optional
+    :param upstream_task_run_id: The upstream TaskRun.id, defaults to None
+    :type upstream_task_run_id: int, optional
+    :param exclude_samples_with_na_feature_values: Exclude samples with na feature values, defaults to False
+    :type exclude_samples_with_na_feature_values: bool, optional
+    :param include_metadata: Whether to include metadata or not, defaults to False
+    :type include_metadata: bool, optional
+    :param exclude_features_with_na_feature_values: Exclude features with na feature values, defaults to False
+    :type exclude_features_with_na_feature_values: bool, optional
+    :param include_default_columns: Whether to include default columns, defaults to True
+    :type include_default_columns: bool, optional
+    :param include_harmonised_metadata: Whether to include harmonised metadata, defaults to True
+    :type include_harmonised_metadata: bool, optional
+    :param drop_sample_column: Drop the sample column, defaults to False
+    :type drop_sample_column: bool, optional
+    :param exclude_features_not_in_all_projects: Exclude features not in all projects, defaults to False
+    :type exclude_features_not_in_all_projects: bool, optional
+    :param sample_types: SampleTypes to include (StudySample, StudyReference, ExternalReference), defaults to None
+    :type sample_types: list, optional
+    :param assay_roles: AssayRoles to include (Assay, LinearityReference, PrecisionReference), defaults to None
+    :type assay_roles: list, optional
+    :param pipeline_run_id: The TaskRun.pipeline_run_id, defaults to None
+    :type pipeline_run_id: int, optional
+    """
 
     r_code = None
     r_script_path = None
@@ -1214,15 +1581,7 @@ class RunMWAS(RAnalysisTask):
                  model_X_variables=None,reload_cache=False,method='linear',correction_type=None,scaling=None,transform=None,upstream_task_run_id=None,pipeline_run_id=None,
                  include_harmonised_metadata=True,db_env=None,db_session=None,execution_date=None,multiple_correction='BH',features_to_include=None,
                  bootstrap=False,save_models=False,exclude_features_not_in_all_projects=True,harmonise_annotations=True,model_Y_ci=None,model_Y_min=None,model_Y_max=None):
-        """Init method
 
-        :param query_factory: The query factory, defaults to None
-        :type query_factory: `phenomedb.query_factory.QueryFactory`, optional
-        :param saved_query_id: The ID of the SavedQuery, defaults to None
-        :type saved_query_id: int, optional
-        :param username: The username of the user running the task, defaults to None
-        :type username: str, optional
-        """
         if model_X_variables and isinstance(model_X_variables,list):
             columns_to_include = model_X_variables
         else:
