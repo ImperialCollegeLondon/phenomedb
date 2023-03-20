@@ -39,7 +39,7 @@ To use the API with Python:
     
     # Import a sample manifest -
     data = {"project_name":"PipelineTesting",
-            "sample_manifest_path": '/path/to/phenomedb/data/test/DEVSET_sampleManifest.xlsx',
+            "sample_manifest_path": '/opt/phenomedb_app/phenomedb/data/test/DEVSET_sampleManifest.xlsx',
             "columns_to_ignore":[],
             "username": "admin"}
     
@@ -61,13 +61,12 @@ To use the API with Python:
             "run_batch_correction": False,
             "username": "admin"}
     
-
-r = session.post('http://localhost:5001/custom/api/v1/import/peakpanther',
-json=data,
-headers={'Authorization': 'Bearer '+access_token})
-print(r.content)
-
-# Refresh the JWT token (if access token expires)
-r = session.post(refresh_url,headers={"Authorization": "Bearer " + refresh_token})
-access_token = json.loads(r.content)['access_token']
-refresh_token = json.loads(r.content)['refresh_token']
+    r = session.post('http://localhost:5001/custom/api/v1/import/peakpanther',
+    json=data,
+    headers={'Authorization': 'Bearer '+access_token})
+    print(r.content)
+    
+    # Refresh the JWT token (if access token expires)
+    r = session.post(refresh_url,headers={"Authorization": "Bearer " + refresh_token})
+    access_token = json.loads(r.content)['access_token']
+    refresh_token = json.loads(r.content)['refresh_token']

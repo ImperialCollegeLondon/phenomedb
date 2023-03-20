@@ -120,7 +120,7 @@
 
 <span class="c1"># Import a sample manifest -</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;project_name&quot;</span><span class="p">:</span><span class="s2">&quot;PipelineTesting&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;sample_manifest_path&quot;</span><span class="p">:</span> <span class="s1">&#39;/path/to/phenomedb/data/test/DEVSET_sampleManifest.xlsx&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;sample_manifest_path&quot;</span><span class="p">:</span> <span class="s1">&#39;/opt/phenomedb_app/phenomedb/data/test/DEVSET_sampleManifest.xlsx&#39;</span><span class="p">,</span>
         <span class="s2">&quot;columns_to_ignore&quot;</span><span class="p">:[],</span>
         <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">}</span>
 
@@ -141,16 +141,18 @@
         <span class="s2">&quot;assay_name&quot;</span><span class="p">:</span> <span class="s2">&quot;LPOS&quot;</span><span class="p">,</span>
         <span class="s2">&quot;run_batch_correction&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
         <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">}</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;http://localhost:5001/custom/api/v1/import/peakpanther&#39;</span><span class="p">,</span>
+<span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+<span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Bearer &#39;</span><span class="o">+</span><span class="n">access_token</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+
+<span class="c1"># Refresh the JWT token (if access token expires)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">refresh_url</span><span class="p">,</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">refresh_token</span><span class="p">})</span>
+<span class="n">access_token</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)[</span><span class="s1">&#39;access_token&#39;</span><span class="p">]</span>
+<span class="n">refresh_token</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)[</span><span class="s1">&#39;refresh_token&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>r = session.post(’<a class="reference external" href="http://localhost:5001/custom/api/v1/import/peakpanther">http://localhost:5001/custom/api/v1/import/peakpanther</a>’,
-json=data,
-headers={‘Authorization’: ‘Bearer ‘+access_token})
-print(r.content)</p>
-<p># Refresh the JWT token (if access token expires)
-r = session.post(refresh_url,headers={“Authorization”: “Bearer ” + refresh_token})
-access_token = json.loads(r.content)[‘access_token’]
-refresh_token = json.loads(r.content)[‘refresh_token’]</p>
 </section>
 
 
