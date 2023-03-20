@@ -17,11 +17,13 @@ Please see the following guides for installing and using PhenomeDB
 
 A. :ref:`installation`
 B. :ref:`usage`
-C. :ref:`development`
+C. :ref:`api`
+D. :ref:`development`
 
 .. toctree::
    installation
    usage
+   api
    development
    analysis
    batch_correction
