@@ -71,26 +71,26 @@ services:
         ports:
             - "8080:8080"
 
-    api:
-        image: phenomedb/phenomedb-api
-        entrypoint: /opt/phenomedb_app/entrypoint.sh
-        restart: on-failure
-        depends_on:
-            postgres:
-                condition: service_healthy
-        env_file:
-            - .env
-        volumes:
-            - .:/opt/phenomedb_app
-            - ./dags:/opt/airflow/dags
-            - ./docker/api/entrypoint.sh:/opt/phenomedb_app/entrypoint.sh
-            - ./docker/wait-for-redis.py:/opt/wait-for-redis.py
-            - ./docker/wait-for-scheduler.py:/opt/wait-for-scheduler.py
-            - ../appdata:/opt/phenomedb_app_data
-            - ../appdata/cache:/opt/phenomedb_cache
-            - ../appdata/system:/opt/system
-        ports:
-            - "5001:5000"
+    #api:
+    #    image: phenomedb/phenomedb-api
+    #    entrypoint: /opt/phenomedb_app/entrypoint.sh
+    #    restart: on-failure
+    #    depends_on:
+    #        postgres:
+    #            condition: service_healthy
+    #    env_file:
+    #        - .env
+    #    volumes:
+    #        - .:/opt/phenomedb_app
+    #        - ./dags:/opt/airflow/dags
+    #        - ./docker/api/entrypoint.sh:/opt/phenomedb_app/entrypoint.sh
+    #        - ./docker/wait-for-redis.py:/opt/wait-for-redis.py
+    #        - ./docker/wait-for-scheduler.py:/opt/wait-for-scheduler.py
+    #        - ../appdata:/opt/phenomedb_app_data
+    #        - ../appdata/cache:/opt/phenomedb_cache
+    #        - ../appdata/system:/opt/system
+    #    ports:
+    #        - "5001:5000"
 
     redis:
         image: redis:alpine

@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
 rm -rf /opt/system/scheduler_ready
-cd /opt/phenomedb_app/phenomedb
-python setup.py install
-cd
-#pip install libchebipy "pymzml[full]"
+#cd /opt/phenomedb_app
+#sudo python setup.py install
+#cd
 python /opt/wait-for-redis.py
 airflow db init
 airflow db upgrade

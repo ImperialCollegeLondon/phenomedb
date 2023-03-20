@@ -4,7 +4,7 @@
 
 # both arm64 and x86
 # cp requirements.txt ./docker/custom_images/phenomedb-airflow/
-# docker buildx build --platform linux/amd64,linux/arm64 -t ghaggart/phenomedb-airflow:latest ./docker/custom_images/phenomedb-airflow/
+# docker buildx build --platform linux/amd64,linux/arm64 -t phenomedb/phenomedb-airflow:latest ./docker/custom_images/phenomedb-airflow/
 
 FROM apache/airflow:2.5.1-python3.9
 

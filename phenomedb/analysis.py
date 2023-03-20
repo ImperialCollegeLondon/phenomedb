@@ -797,7 +797,7 @@ class RAnalysisTask(AnalysisTask):
 
 
 class RunXCMS(RAnalysisTask):
-     """Run XCMS
+    """Run XCMS
 
     :param chromatography: _description_, defaults to None
     :type chromatography: _type_, optional
@@ -854,6 +854,7 @@ class RunXCMS(RAnalysisTask):
     :raises Exception: _description_
     :raises Exception: _description_
     :raises Exception: _description_
+
     """
 
     r_template = 'xcms.r'
@@ -1028,7 +1029,7 @@ class RunXCMS(RAnalysisTask):
                         'xcms_file':xcms_file}
 
 class RunPCPR2(RAnalysisTask):
-        """Run a PCPR2 analysis. Uses the R package PCPR2 under the hood :link:`https://github.com/JoeRothwell/pcpr2`
+    """Run a PCPR2 analysis. Uses the R package PCPR2 under the hood :link:`https://github.com/JoeRothwell/pcpr2`
 
     :param pct_threshold: _description_, defaults to 0.95
     :type pct_threshold: float, optional
@@ -1478,7 +1479,7 @@ class RunWilcoxonRankTest(RAnalysisTask):
 
 
 class RunMWAS(RAnalysisTask):
-     """Run an MWAS analysis. Uses the R package MWASTools :link:`https://www.bioconductor.org/packages/release/bioc/html/MWASTools.html`
+    """Run an MWAS analysis. Uses the R package MWASTools :link:`https://www.bioconductor.org/packages/release/bioc/html/MWASTools.html`
 
     :param model_Y_variable: The output variable to measure association against, for example h_metadata::Age for the harmonised age
     :type model_Y_variable: str

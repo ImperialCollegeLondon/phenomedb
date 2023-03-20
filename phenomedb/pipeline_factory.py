@@ -296,7 +296,7 @@ class PipelineFactory:
         """
         json_spec = {}
 
-        with open(config['DATA']['config'] + 'task_typespec.json', "r") as read_file:
+        with open(os.path.join(os.path.dirname(__file__), "./data/config/task_typespec.json"), "r") as read_file:
             json_spec = json.load(read_file)
 
         return json_spec

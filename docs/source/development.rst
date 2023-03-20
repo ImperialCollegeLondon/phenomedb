@@ -65,4 +65,4 @@ From the project root:
 
    $ cp ./requirements.txt
    $ cp requirements.txt ./docker/custom_images/phenomedb-airflow/
-   $ docker buildx build --platform linux/amd64,linux/arm64 -t ghaggart/phenomedb-airflow:latest ./docker/custom_images/phenomedb-airflow/
+   $ docker buildx build --platform linux/amd64,linux/arm64 -t phenomedb/phenomedb-airflow:latest ./docker/custom_images/phenomedb-airflow/
