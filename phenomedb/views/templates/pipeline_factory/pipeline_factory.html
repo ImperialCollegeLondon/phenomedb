@@ -10,8 +10,10 @@
 			    <div class="col-xs-3 table-label">Select task</div>
 			    <div class="col-xs-8 table-value">
 			         <select class="form-control" id="task_select" name="task_select">
-			         {% for module_class,task in data.tasks.items() %}
-						<option data-mod="{{task.module}}" data-args="{{task.args}}" data-params="{{task.params}}" value="{{task.task}}">{{ task.module }}.{{task.task}}</option>
+			         {% for module_class,task in data.tasks.items()|sort() %}
+						{% if task.task %}
+							<option data-mod="{{task.module}}" data-args="{{task.args}}" data-params="{{task.params}}" value="{{task.task}}">{{ task.module }}.{{task.task}}</option>
+						 {% endif %}
 			         {% endfor %}
 			         </select>
 			     </div>
@@ -229,6 +231,7 @@ $(function() {
 		var mod = task.data("mod");
 		var args = task.data("args");
 		var params = task.data("params");
+		console.log(params);
 
 		$("#task_fields").empty();
 		$("#user_message").empty();
@@ -257,65 +260,63 @@ $(function() {
 
 		if ( args.length > 0 ) {
 			var argList = args.split(",");
-			
-			$.each( argList, function(index, argName) {	
-				
-				var paramData = params[argName];
 
-				var label = paramData['label'];
-				var required = paramData['required'];
-				var inputType = paramData['type'];
+			$.each( argList, function(index, argName) {
 
-				console.log(label);
-				console.log(inputType);
-				var editBox = $("<input/>"); 
-	        	editBox.attr("type", "text");
+				if (params.hasOwnProperty(argName) === true) {
 
-		        if ( inputType == "dropdown"){
-		        	editBox = $("<select/>"); 
-		        	editBox.append( $("<option/>").attr("value", "").html("--- select ---") );
-		        	var options = paramData['options'];
-		        	for ( var opt in options ) {
-		        		editBox.append( $("<option/>").attr("value", options[opt]).html(opt) );
-		        	}
-		        } else if (inputType=='project') {   
-		        	editBox = getSelectOptions('project');
-		        } else if (inputType=='unit') {
-		        	editBox = getSelectOptions('unit');
-		        }
-				else if (inputType=='metadata_harmonised_field') {
-					editBox = getSelectOptions('metadata_harmonised_field');
+					var paramData = params[argName];
+
+					var label = paramData['label'];
+					var required = paramData['required'];
+					var inputType = paramData['type'];
+
+					var editBox = $("<input/>");
+					editBox.attr("type", "text");
+
+					if (inputType == "dropdown") {
+						editBox = $("<select/>");
+						editBox.append($("<option/>").attr("value", "").html("--- select ---"));
+						var options = paramData['options'];
+						for (var opt in options) {
+							editBox.append($("<option/>").attr("value", options[opt]).html(opt));
+						}
+					} else if (inputType == 'project') {
+						editBox = getSelectOptions('project');
+					} else if (inputType == 'unit') {
+						editBox = getSelectOptions('unit');
+					} else if (inputType == 'metadata_harmonised_field') {
+						editBox = getSelectOptions('metadata_harmonised_field');
+					} else if (inputType == 'file_path_remote') {
+						editBox.attr("type", "file");
+					} else if (inputType == 'file_upload') {
+						editBox.attr("type", "file");
+					}
+
+					editBox.addClass("form-control arg");
+					editBox.attr("name", argName);
+					editBox.attr("required", required);
+					editBox.attr("id", argName);
+					editBox.attr("data-type", inputType);
+					editBox.attr("data-required", required);
+					editBox.attr("data-label", label);
+					if (required == true) {
+						label = $("<em/>").append(label);
+					}
+					var taskRow = $("<div/>").attr("class", "row");
+					var taskFields = $("#task_fields");
+
+					taskRow.append($("<td/>").attr("class", "col-xs-4 table-label").html(label));
+
+					if (inputType == 'file_upload') {
+						taskRow.append($("<td/>").attr("class", "col-xs-5 table-value").html(editBox));
+						extra_input = "<input type='checkbox' name='overwrite-" + argName + "' value='overwrite' /> Overwrite";
+						taskRow.append($("<td/>").attr("class", "col-xs-3 table-value").html(extra_input));
+					} else {
+						taskRow.append($("<td/>").attr("class", "col-xs-7 table-value").html(editBox));
+					}
+					taskFields.append(taskRow);
 				}
-				else if (inputType=='file_path_remote'){
-					editBox.attr("type", "file");
-				} else if (inputType=='file_upload' ) {
-		        	editBox.attr("type", "file");
-		        }
-		        
-		        editBox.addClass("form-control arg");							
-				editBox.attr("name", argName);
-				editBox.attr("required", required);
-				editBox.attr("id", argName);
-				editBox.attr("data-type", inputType);
-				editBox.attr("data-required", required);
-				editBox.attr("data-label", label);
-				if ( required == true ) {
-					label = $("<em/>").append(label);
-				}
-				var taskRow = $("<div/>").attr("class", "row");
-				var taskFields = $("#task_fields");
-				
-				taskRow.append( $("<td/>").attr("class", "col-xs-4 table-label").html(label));
-
-				if (inputType=='file_upload' ) {
-					taskRow.append( $("<td/>").attr("class", "col-xs-5 table-value").html(editBox));
-					extra_input = "<input type='checkbox' name='overwrite-" + argName + "' value='overwrite' /> Overwrite";
-					taskRow.append( $("<td/>").attr("class", "col-xs-3 table-value").html(extra_input));
-				} else {
-					taskRow.append( $("<td/>").attr("class", "col-xs-7 table-value").html(editBox));
-				}
-				taskFields.append(taskRow);
-
 			});
 		} else {
 			$("#task_fields").append( $("<div/>").attr("class", "row")

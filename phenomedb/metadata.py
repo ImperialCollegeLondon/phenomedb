@@ -51,7 +51,7 @@ class HarmoniseMetadataField(ImportTask):
 
     use_inbuilt = False
 
-    def __init__(self,project_name=None,metadata_field_name=None,harmonised_metadata_field_name=None,inbuilt_transform_name=None,pipeline_run_id=None,
+    def __init__(self,project_name=None,metadata_field_name=None,harmonised_metadata_field_name=None,inbuilt_transform_name=None,
                  lambda_function_string='lambda x : x',allowed_decimal_places=None,allowed_data_range=None,task_run_id=None,username=None,db_env=None,execution_date=None,db_session=None,pipeline_run_id=None):
         
         super().__init__(project_name=project_name,username=username,task_run_id=task_run_id,db_env=db_env,execution_date=execution_date,db_session=db_session,pipeline_run_id=pipeline_run_id)

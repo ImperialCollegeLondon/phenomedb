@@ -9,6 +9,7 @@ import os, sys
 
 import phenomedb.utilities as utils
 from phenomedb.config import config
+from phenomedb.pipeline_factory import PipelineFactory
      
 class CLI:
     """PhenomeDB CLI module - for running tasks via the command line.
@@ -44,8 +45,8 @@ class CLI:
     
         from phenomedb.config import config
 
-        #self.task_dir  = config['DATA']['task_directory']
-        self.task_json = self.read_json_task_spec()
+
+        self.task_json = PipelineFactory.get_json_task_spec()
 
         self.available_tasks = [t for t in self.task_json.keys()]
 

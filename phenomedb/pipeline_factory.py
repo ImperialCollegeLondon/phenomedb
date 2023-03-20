@@ -341,8 +341,13 @@ class PipelineFactory:
                         # params = list(param_list.keys())
     
                         arg_spec = isp.getfullargspec(cls.__init__).args
-    
-                        arg_spec.remove("self")
+
+                        # Remove those not in the task_spec definition
+                        for arg_name in arg_spec:
+                            if arg_name not in param_list.keys():
+                                arg_spec.remove(arg_name)
+
+                        #arg_spec.remove("self")
                         result['args'] = ",".join(arg_spec)
                         result['params'] = json.dumps(param_list)
                         task_spec[module_class] = result

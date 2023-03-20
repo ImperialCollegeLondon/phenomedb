@@ -3,6 +3,8 @@
 python /opt/wait-for-redis.py
 python /opt/wait-for-scheduler.py
 
+
+
 cd /opt/phenomedb_app/phenomedb/api
 
 export FLASK_CONFIG="/opt/phenomedb_app/phenomedb/api/config.py"

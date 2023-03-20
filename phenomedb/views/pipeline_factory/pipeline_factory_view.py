@@ -79,7 +79,7 @@ class PipelineFactoryView(PhenomeDBBaseView):
             table_name = request.args.get("table")  
             self.logger.debug("getting %s", table_name)
             if table_name is not None:
-                rows = self.execute_sql("select name from " + str(table_name))
+                rows = self.execute_sql("select name from " + str(table_name) + " order by name")
                 for row in rows:    
                     options.append(row['name'])
                
