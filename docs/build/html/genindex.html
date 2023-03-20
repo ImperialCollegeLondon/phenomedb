@@ -42,6 +42,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html#settings">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
@@ -165,8 +166,6 @@
 </li>
       <li><a href="compounds.html#phenomedb.compounds.ImportROICompounds.add_or_update_compound_from_subrow">add_or_update_compound_from_subrow() (phenomedb.compounds.ImportROICompounds method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imports.html#phenomedb.imports.ImportBrukerIVDRAnnotations.add_or_update_feature_metadata">add_or_update_feature_metadata() (phenomedb.imports.ImportBrukerIVDRAnnotations method)</a>
 
       <ul>
@@ -175,6 +174,8 @@
         <li><a href="imports.html#phenomedb.imports.ImportTargetLynxAnnotations.add_or_update_feature_metadata">(phenomedb.imports.ImportTargetLynxAnnotations method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="compounds.html#phenomedb.compounds.CompoundTask.add_or_update_hmdb">add_or_update_hmdb() (phenomedb.compounds.CompoundTask method)</a>
 </li>
       <li><a href="compounds.html#phenomedb.compounds.CompoundTask.add_or_update_kegg">add_or_update_kegg() (phenomedb.compounds.CompoundTask method)</a>
@@ -198,6 +199,8 @@
 </li>
       </ul></li>
       <li><a href="compounds.html#phenomedb.compounds.AddMissingClassyFireClasses">AddMissingClassyFireClasses (class in phenomedb.compounds)</a>
+</li>
+      <li><a href="analysis.html#phenomedb.analysis.AnalysisTask">AnalysisTask (class in phenomedb.analysis)</a>
 </li>
       <li><a href="models.html#phenomedb.models.AnnotatedFeature">AnnotatedFeature (class in phenomedb.models)</a>
 </li>
@@ -229,6 +232,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pipeline_factory.html#phenomedb.pipeline_factory.BasePipelineManager">BasePipelineManager (class in phenomedb.pipeline_factory)</a>
 </li>
+      <li><a href="pipelines.html#phenomedb.pipelines.BasicSetup">BasicSetup (class in phenomedb.pipelines)</a>
+</li>
+      <li><a href="pipelines.html#phenomedb.pipelines.BatchCorrectionAssessmentPipelineGenerator">BatchCorrectionAssessmentPipelineGenerator (class in phenomedb.pipelines)</a>
+</li>
       <li><a href="utilities.html#phenomedb.utilities.breakdown_annotation_id">breakdown_annotation_id() (in module phenomedb.utilities)</a>
 </li>
       <li><a href="utilities.html#phenomedb.utilities.breakdown_compound_class_id">breakdown_compound_class_id() (in module phenomedb.utilities)</a>
@@ -241,10 +248,10 @@
 </li>
       <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.build_filter_string">build_filter_string() (phenomedb.query_factory.QueryFactory method)</a>
 </li>
-      <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.build_function_operation">build_function_operation() (phenomedb.query_factory.QueryFactory method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.build_function_operation">build_function_operation() (phenomedb.query_factory.QueryFactory method)</a>
+</li>
       <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.build_intensity_data_sample_metadata_and_feature_metadata">build_intensity_data_sample_metadata_and_feature_metadata() (phenomedb.query_factory.QueryFactory method)</a>
 </li>
       <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.build_logical_operator">build_logical_operator() (phenomedb.query_factory.QueryFactory method)</a>
@@ -277,6 +284,12 @@
 </li>
       <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.calculate_summary_statistics">calculate_summary_statistics() (phenomedb.query_factory.QueryFactory method)</a>
 </li>
+      <li><a href="metadata.html#phenomedb.metadata.HarmoniseMetadataField.call_inbuilt_transform">call_inbuilt_transform() (phenomedb.metadata.HarmoniseMetadataField method)</a>
+</li>
+      <li><a href="metadata.html#phenomedb.metadata.HarmoniseMetadataField.call_lambda">call_lambda() (phenomedb.metadata.HarmoniseMetadataField method)</a>
+</li>
+      <li><a href="metadata.html#phenomedb.metadata.categorise_bmi">categorise_bmi() (in module phenomedb.metadata)</a>
+</li>
       <li><a href="compounds.html#phenomedb.compounds.CleanROIFile.check_cas">check_cas() (phenomedb.compounds.CleanROIFile method)</a>
 </li>
       <li><a href="compounds.html#phenomedb.compounds.CleanROIFile.check_chebi">check_chebi() (phenomedb.compounds.CleanROIFile method)</a>
@@ -290,6 +303,8 @@
       <li><a href="compounds.html#phenomedb.compounds.CleanROIFile.check_field">check_field() (phenomedb.compounds.CleanROIFile method)</a>
 </li>
       <li><a href="compounds.html#phenomedb.compounds.CleanROIFile.check_fields">check_fields() (phenomedb.compounds.CleanROIFile method)</a>
+</li>
+      <li><a href="metadata.html#phenomedb.metadata.HarmoniseMetadataField.check_functions">check_functions() (phenomedb.metadata.HarmoniseMetadataField method)</a>
 </li>
       <li><a href="compounds.html#phenomedb.compounds.CleanROIFile.check_hmdb">check_hmdb() (phenomedb.compounds.CleanROIFile method)</a>
 </li>
@@ -309,12 +324,12 @@
 </li>
       <li><a href="models.html#phenomedb.models.ChemicalStandardDataset">ChemicalStandardDataset (class in phenomedb.models)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#phenomedb.models.ChemicalStandardPeakList">ChemicalStandardPeakList (class in phenomedb.models)</a>
 </li>
       <li><a href="task.html#phenomedb.task.Task.clean_project_name">clean_project_name() (phenomedb.task.Task method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="compounds.html#phenomedb.compounds.CleanROIFile">CleanROIFile (class in phenomedb.compounds)</a>
 </li>
       <li><a href="pipeline_factory.html#phenomedb.pipeline_factory.BasePipelineManager.commit_definition">commit_definition() (phenomedb.pipeline_factory.BasePipelineManager method)</a>
@@ -381,10 +396,10 @@
 </li>
       <li><a href="cache.html#phenomedb.cache.Cache.delete_keys_by_regex">delete_keys_by_regex() (phenomedb.cache.Cache method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pipeline_factory.html#phenomedb.pipeline_factory.PipelineFactory.delete_pipeline">delete_pipeline() (phenomedb.pipeline_factory.PipelineFactory method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="base_view.html#phenomedb.base_view.PhenomeDBBaseView.delete_rows_by_id">delete_rows_by_id() (phenomedb.base_view.PhenomeDBBaseView method)</a>
 </li>
       <li><a href="cache.html#phenomedb.cache.Cache.delete_test_keys">delete_test_keys() (phenomedb.cache.Cache method)</a>
@@ -396,6 +411,8 @@
       <li><a href="task.html#phenomedb.task.Task.download_from_metabolights_api">download_from_metabolights_api() (phenomedb.task.Task method)</a>
 </li>
       <li><a href="imports.html#phenomedb.imports.DownloadMetabolightsStudy">DownloadMetabolightsStudy (class in phenomedb.imports)</a>
+</li>
+      <li><a href="pipelines.html#phenomedb.pipelines.DynamicPipelineTask">DynamicPipelineTask (class in phenomedb.pipelines)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -464,6 +481,8 @@
       <li><a href="compounds.html#phenomedb.compounds.CompoundTask.generate_inchi_key">generate_inchi_key() (phenomedb.compounds.CompoundTask method)</a>
 </li>
       <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.generate_query">generate_query() (phenomedb.query_factory.QueryFactory method)</a>
+</li>
+      <li><a href="pipelines.html#phenomedb.pipelines.GenerateSingleTaskPipelines">GenerateSingleTaskPipelines (class in phenomedb.pipelines)</a>
 </li>
       <li><a href="cache.html#phenomedb.cache.Cache.get">get() (phenomedb.cache.Cache method)</a>
 </li>
@@ -676,7 +695,11 @@
       <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.get_unique_match_models">get_unique_match_models() (phenomedb.query_factory.QueryFactory method)</a>
 </li>
       <li><a href="imports.html#phenomedb.imports.getrandbits">getrandbits() (in module phenomedb.imports)</a>
+
+      <ul>
+        <li><a href="metadata.html#phenomedb.metadata.getrandbits">(in module phenomedb.metadata)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -701,6 +724,8 @@
 </li>
       <li><a href="models.html#phenomedb.models.HarmonisedMetadataField.HarmonisedMetadataFieldDatatype">HarmonisedMetadataField.HarmonisedMetadataFieldDatatype (class in phenomedb.models)</a>
 </li>
+      <li><a href="metadata.html#phenomedb.metadata.HarmoniseMetadataField">HarmoniseMetadataField (class in phenomedb.metadata)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -708,6 +733,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="compounds.html#phenomedb.compounds.ImportROICompounds.import_row">import_row() (phenomedb.compounds.ImportROICompounds method)</a>
+</li>
+      <li><a href="pipelines.html#phenomedb.pipelines.ImportAllMetabolightsPipelineGenerator">ImportAllMetabolightsPipelineGenerator (class in phenomedb.pipelines)</a>
 </li>
       <li><a href="compounds.html#phenomedb.compounds.ImportBrukerBiLISACompounds">ImportBrukerBiLISACompounds (class in phenomedb.compounds)</a>
 </li>
@@ -769,9 +796,19 @@
 </li>
       <li><a href="cache.html#phenomedb.cache.Cache.load_cache_from_file">load_cache_from_file() (phenomedb.cache.Cache method)</a>
 </li>
-      <li><a href="compounds.html#phenomedb.compounds.AddMissingClassyFireClasses.load_data">load_data() (phenomedb.compounds.AddMissingClassyFireClasses method)</a>
+      <li><a href="analysis.html#phenomedb.analysis.AnalysisTask.load_data">load_data() (phenomedb.analysis.AnalysisTask method)</a>
 
       <ul>
+        <li><a href="analysis.html#phenomedb.analysis.RunNPYCReport.load_data">(phenomedb.analysis.RunNPYCReport method)</a>
+</li>
+        <li><a href="analysis.html#phenomedb.analysis.RunXCMS.load_data">(phenomedb.analysis.RunXCMS method)</a>
+</li>
+        <li><a href="batch_correction.html#phenomedb.batch_correction.RunNPYCBatchCorrection.load_data">(phenomedb.batch_correction.RunNPYCBatchCorrection method)</a>
+</li>
+        <li><a href="batch_correction.html#phenomedb.batch_correction.RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset.load_data">(phenomedb.batch_correction.RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset method)</a>
+</li>
+        <li><a href="compounds.html#phenomedb.compounds.AddMissingClassyFireClasses.load_data">(phenomedb.compounds.AddMissingClassyFireClasses method)</a>
+</li>
         <li><a href="compounds.html#phenomedb.compounds.CleanROIFile.load_data">(phenomedb.compounds.CleanROIFile method)</a>
 </li>
         <li><a href="compounds.html#phenomedb.compounds.CompoundTask.load_data">(phenomedb.compounds.CompoundTask method)</a>
@@ -811,6 +848,8 @@
         <li><a href="imports.html#phenomedb.imports.ImportTask.load_dataset">(phenomedb.imports.ImportTask method)</a>
 </li>
         <li><a href="imports.html#phenomedb.imports.ImportXCMSFeatures.load_dataset">(phenomedb.imports.ImportXCMSFeatures method)</a>
+</li>
+        <li><a href="metadata.html#phenomedb.metadata.HarmoniseMetadataField.load_dataset">(phenomedb.metadata.HarmoniseMetadataField method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -880,22 +919,28 @@
 </li>
         <li><a href="imports.html#phenomedb.imports.ImportXCMSFeatures.map_and_add_dataset_data">(phenomedb.imports.ImportXCMSFeatures method)</a>
 </li>
+        <li><a href="metadata.html#phenomedb.metadata.HarmoniseMetadataField.map_and_add_dataset_data">(phenomedb.metadata.HarmoniseMetadataField method)</a>
+</li>
       </ul></li>
       <li><a href="models.html#phenomedb.models.MetadataField">MetadataField (class in phenomedb.models)</a>
 </li>
       <li><a href="query_factory.html#phenomedb.query_factory.MetadataFilter">MetadataFilter (class in phenomedb.query_factory)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#phenomedb.models.MetadataValue">MetadataValue (class in phenomedb.models)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#phenomedb.models.MissingImportData">MissingImportData (class in phenomedb.models)</a>
 </li>
       <li>
     module
 
       <ul>
+        <li><a href="analysis.html#module-phenomedb.analysis">phenomedb.analysis</a>
+</li>
         <li><a href="base_view.html#module-phenomedb.base_view">phenomedb.base_view</a>
+</li>
+        <li><a href="batch_correction.html#module-phenomedb.batch_correction">phenomedb.batch_correction</a>
 </li>
         <li><a href="cache.html#module-phenomedb.cache">phenomedb.cache</a>
 </li>
@@ -903,9 +948,13 @@
 </li>
         <li><a href="imports.html#module-phenomedb.imports">phenomedb.imports</a>
 </li>
+        <li><a href="metadata.html#module-phenomedb.metadata">phenomedb.metadata</a>
+</li>
         <li><a href="models.html#module-phenomedb.models">phenomedb.models</a>
 </li>
         <li><a href="pipeline_factory.html#module-phenomedb.pipeline_factory">phenomedb.pipeline_factory</a>
+</li>
+        <li><a href="pipelines.html#module-phenomedb.pipelines">phenomedb.pipelines</a>
 </li>
         <li><a href="query_factory.html#module-phenomedb.query_factory">phenomedb.query_factory</a>
 </li>
@@ -925,6 +974,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imports.html#phenomedb.imports.ImportDataLocations.nmr_assay_regexes">nmr_assay_regexes (phenomedb.imports.ImportDataLocations attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis.html#phenomedb.analysis.NPYCTask">NPYCTask (class in phenomedb.analysis)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -999,10 +1052,24 @@
       <li><a href="pipeline_factory.html#phenomedb.pipeline_factory.PipelineFactory.pause_pipeline">pause_pipeline() (phenomedb.pipeline_factory.PipelineFactory method)</a>
 </li>
       <li>
+    phenomedb.analysis
+
+      <ul>
+        <li><a href="analysis.html#module-phenomedb.analysis">module</a>
+</li>
+      </ul></li>
+      <li>
     phenomedb.base_view
 
       <ul>
         <li><a href="base_view.html#module-phenomedb.base_view">module</a>
+</li>
+      </ul></li>
+      <li>
+    phenomedb.batch_correction
+
+      <ul>
+        <li><a href="batch_correction.html#module-phenomedb.batch_correction">module</a>
 </li>
       </ul></li>
       <li>
@@ -1027,6 +1094,13 @@
 </li>
       </ul></li>
       <li>
+    phenomedb.metadata
+
+      <ul>
+        <li><a href="metadata.html#module-phenomedb.metadata">module</a>
+</li>
+      </ul></li>
+      <li>
     phenomedb.models
 
       <ul>
@@ -1040,6 +1114,13 @@
 
       <ul>
         <li><a href="pipeline_factory.html#module-phenomedb.pipeline_factory">module</a>
+</li>
+      </ul></li>
+      <li>
+    phenomedb.pipelines
+
+      <ul>
+        <li><a href="pipelines.html#module-phenomedb.pipelines">module</a>
 </li>
       </ul></li>
       <li>
@@ -1076,15 +1157,21 @@
 </li>
       <li><a href="pipeline_factory.html#phenomedb.pipeline_factory.PipelineFactory">PipelineFactory (class in phenomedb.pipeline_factory)</a>
 </li>
+      <li><a href="pipelines.html#phenomedb.pipelines.PipelineGeneratorTask">PipelineGeneratorTask (class in phenomedb.pipelines)</a>
+</li>
       <li><a href="imports.html#phenomedb.imports.ImportBrukerIVDRAnnotations.post_commit_actions">post_commit_actions() (phenomedb.imports.ImportBrukerIVDRAnnotations method)</a>
 
       <ul>
         <li><a href="imports.html#phenomedb.imports.ImportPeakPantherAnnotations.post_commit_actions">(phenomedb.imports.ImportPeakPantherAnnotations method)</a>
 </li>
       </ul></li>
-      <li><a href="cache.html#phenomedb.cache.CreateSavedQueryDataframeCache.process">process() (phenomedb.cache.CreateSavedQueryDataframeCache method)</a>
+      <li><a href="analysis.html#phenomedb.analysis.AnalysisTask.process">process() (phenomedb.analysis.AnalysisTask method)</a>
 
       <ul>
+        <li><a href="analysis.html#phenomedb.analysis.NPYCTask.process">(phenomedb.analysis.NPYCTask method)</a>
+</li>
+        <li><a href="cache.html#phenomedb.cache.CreateSavedQueryDataframeCache.process">(phenomedb.cache.CreateSavedQueryDataframeCache method)</a>
+</li>
         <li><a href="cache.html#phenomedb.cache.CreateSavedQuerySummaryStatsCache.process">(phenomedb.cache.CreateSavedQuerySummaryStatsCache method)</a>
 </li>
         <li><a href="cache.html#phenomedb.cache.CreateTaskViewCache.process">(phenomedb.cache.CreateTaskViewCache method)</a>
@@ -1104,6 +1191,8 @@
         <li><a href="imports.html#phenomedb.imports.AnnotationImportTask.process">(phenomedb.imports.AnnotationImportTask method)</a>
 </li>
         <li><a href="imports.html#phenomedb.imports.ImportTask.process">(phenomedb.imports.ImportTask method)</a>
+</li>
+        <li><a href="metadata.html#phenomedb.metadata.HarmoniseMetadataField.process">(phenomedb.metadata.HarmoniseMetadataField method)</a>
 </li>
       </ul></li>
       <li><a href="models.html#phenomedb.models.Project">Project (class in phenomedb.models)</a>
@@ -1138,7 +1227,15 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="analysis.html#phenomedb.analysis.RAnalysisTask">RAnalysisTask (class in phenomedb.analysis)</a>
+</li>
       <li><a href="imports.html#phenomedb.imports.random">random() (in module phenomedb.imports)</a>
+
+      <ul>
+        <li><a href="metadata.html#phenomedb.metadata.random">(in module phenomedb.metadata)</a>
+</li>
+      </ul></li>
+      <li><a href="pipelines.html#phenomedb.pipelines.RebuildPipelinesFromDB">RebuildPipelinesFromDB (class in phenomedb.pipelines)</a>
 </li>
       <li><a href="base_view.html#phenomedb.base_view.PhenomeDBBaseView.relationship_dict">relationship_dict() (phenomedb.base_view.PhenomeDBBaseView method)</a>
 </li>
@@ -1148,20 +1245,58 @@
 </li>
       <li><a href="compounds.html#phenomedb.compounds.ParseHMDBXMLtoCSV.reset_found_fields">reset_found_fields() (phenomedb.compounds.ParseHMDBXMLtoCSV method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="utilities.html#phenomedb.utilities.round_decimals_down">round_decimals_down() (in module phenomedb.utilities)</a>
 </li>
       <li><a href="utilities.html#phenomedb.utilities.round_decimals_up">round_decimals_up() (in module phenomedb.utilities)</a>
 </li>
       <li><a href="task.html#phenomedb.task.Task.run">run() (phenomedb.task.Task method)</a>
 </li>
+      <li><a href="analysis.html#phenomedb.analysis.AnalysisTask.run_analysis">run_analysis() (phenomedb.analysis.AnalysisTask method)</a>
+
+      <ul>
+        <li><a href="analysis.html#phenomedb.analysis.RAnalysisTask.run_analysis">(phenomedb.analysis.RAnalysisTask method)</a>
+</li>
+        <li><a href="analysis.html#phenomedb.analysis.RunNPYCReport.run_analysis">(phenomedb.analysis.RunNPYCReport method)</a>
+</li>
+        <li><a href="analysis.html#phenomedb.analysis.RunPCA.run_analysis">(phenomedb.analysis.RunPCA method)</a>
+</li>
+        <li><a href="batch_correction.html#phenomedb.batch_correction.RunNPYCBatchCorrection.run_analysis">(phenomedb.batch_correction.RunNPYCBatchCorrection method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pipeline_factory.html#phenomedb.pipeline_factory.BasePipelineManager.run_pipeline">run_pipeline() (phenomedb.pipeline_factory.BasePipelineManager method)</a>
 
       <ul>
         <li><a href="pipeline_factory.html#phenomedb.pipeline_factory.PipelineFactory.run_pipeline">(phenomedb.pipeline_factory.PipelineFactory method)</a>
 </li>
       </ul></li>
+      <li><a href="pipelines.html#phenomedb.pipelines.RunBatchCorrectionAssessmentPipeline">RunBatchCorrectionAssessmentPipeline (class in phenomedb.pipelines)</a>
+</li>
+      <li><a href="batch_correction.html#phenomedb.batch_correction.RunCombatCorrection">RunCombatCorrection (class in phenomedb.batch_correction)</a>
+</li>
+      <li><a href="batch_correction.html#phenomedb.batch_correction.RunDBnormCorrection">RunDBnormCorrection (class in phenomedb.batch_correction)</a>
+</li>
+      <li><a href="analysis.html#phenomedb.analysis.RunMWAS">RunMWAS (class in phenomedb.analysis)</a>
+</li>
+      <li><a href="pipelines.html#phenomedb.pipelines.RunMWASMulti">RunMWASMulti (class in phenomedb.pipelines)</a>
+</li>
+      <li><a href="batch_correction.html#phenomedb.batch_correction.RunNormResidualsMM">RunNormResidualsMM (class in phenomedb.batch_correction)</a>
+</li>
+      <li><a href="batch_correction.html#phenomedb.batch_correction.RunNPYCBatchCorrection">RunNPYCBatchCorrection (class in phenomedb.batch_correction)</a>
+</li>
+      <li><a href="batch_correction.html#phenomedb.batch_correction.RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset">RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset (class in phenomedb.batch_correction)</a>
+</li>
+      <li><a href="analysis.html#phenomedb.analysis.RunNPYCReport">RunNPYCReport (class in phenomedb.analysis)</a>
+</li>
+      <li><a href="analysis.html#phenomedb.analysis.RunPCA">RunPCA (class in phenomedb.analysis)</a>
+</li>
+      <li><a href="analysis.html#phenomedb.analysis.RunPCPR2">RunPCPR2 (class in phenomedb.analysis)</a>
+</li>
+      <li><a href="analysis.html#phenomedb.analysis.RunWilcoxonRankTest">RunWilcoxonRankTest (class in phenomedb.analysis)</a>
+</li>
+      <li><a href="analysis.html#phenomedb.analysis.RunXCMS">RunXCMS (class in phenomedb.analysis)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1178,6 +1313,26 @@
 </li>
       <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.save_query">save_query() (phenomedb.query_factory.QueryFactory method)</a>
 </li>
+      <li><a href="analysis.html#phenomedb.analysis.AnalysisTask.save_results">save_results() (phenomedb.analysis.AnalysisTask method)</a>
+
+      <ul>
+        <li><a href="analysis.html#phenomedb.analysis.RunMWAS.save_results">(phenomedb.analysis.RunMWAS method)</a>
+</li>
+        <li><a href="batch_correction.html#phenomedb.batch_correction.RunCombatCorrection.save_results">(phenomedb.batch_correction.RunCombatCorrection method)</a>
+</li>
+        <li><a href="batch_correction.html#phenomedb.batch_correction.RunDBnormCorrection.save_results">(phenomedb.batch_correction.RunDBnormCorrection method)</a>
+</li>
+        <li><a href="batch_correction.html#phenomedb.batch_correction.RunNormResidualsMM.save_results">(phenomedb.batch_correction.RunNormResidualsMM method)</a>
+</li>
+        <li><a href="batch_correction.html#phenomedb.batch_correction.RunNPYCBatchCorrection.save_results">(phenomedb.batch_correction.RunNPYCBatchCorrection method)</a>
+</li>
+        <li><a href="batch_correction.html#phenomedb.batch_correction.RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset.save_results">(phenomedb.batch_correction.RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset method)</a>
+</li>
+      </ul></li>
+      <li><a href="batch_correction.html#phenomedb.batch_correction.SaveBatchCorrection">SaveBatchCorrection (class in phenomedb.batch_correction)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#phenomedb.models.SavedQuery">SavedQuery (class in phenomedb.models)</a>
 </li>
       <li><a href="models.html#phenomedb.models.SavedQuery.Type">SavedQuery.Type (class in phenomedb.models)</a>
@@ -1186,8 +1341,6 @@
 </li>
       <li><a href="imports.html#phenomedb.imports.ImportTask.send_user_failure_email">send_user_failure_email() (phenomedb.imports.ImportTask method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imports.html#phenomedb.imports.ImportTask.send_user_success_email">send_user_success_email() (phenomedb.imports.ImportTask method)</a>
 </li>
       <li><a href="utilities.html#phenomedb.utilities.serialise_unserialise">serialise_unserialise() (in module phenomedb.utilities)</a>
@@ -1202,6 +1355,8 @@
         <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.set_db_session">(phenomedb.query_factory.QueryFactory method)</a>
 </li>
       </ul></li>
+      <li><a href="metadata.html#phenomedb.metadata.simple_assignment">simple_assignment() (in module phenomedb.metadata)</a>
+</li>
       <li><a href="imports.html#phenomedb.imports.ImportTask.simple_report">simple_report() (phenomedb.imports.ImportTask method)</a>
 </li>
       <li><a href="base_view.html#phenomedb.base_view.PhenomeDBBaseView.sql_to_dataframe">sql_to_dataframe() (phenomedb.base_view.PhenomeDBBaseView method)</a>
@@ -1229,6 +1384,8 @@
 </li>
         <li><a href="imports.html#phenomedb.imports.ImportTask.task_validation">(phenomedb.imports.ImportTask method)</a>
 </li>
+        <li><a href="metadata.html#phenomedb.metadata.HarmoniseMetadataField.task_validation">(phenomedb.metadata.HarmoniseMetadataField method)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -1237,6 +1394,8 @@
       <li><a href="models.html#phenomedb.models.TaskRun.Status">TaskRun.Status (class in phenomedb.models)</a>
 </li>
       <li><a href="utilities.html#phenomedb.utilities.total_size">total_size() (in module phenomedb.utilities)</a>
+</li>
+      <li><a href="metadata.html#phenomedb.metadata.transform_dob_and_sampling_date_to_age">transform_dob_and_sampling_date_to_age() (in module phenomedb.metadata)</a>
 </li>
   </ul></td>
 </tr></table>

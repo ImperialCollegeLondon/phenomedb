@@ -44,6 +44,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html#settings">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
@@ -95,6 +96,7 @@
 <ol class="upperalpha simple">
 <li><p><a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a></p></li>
 <li><p><a class="reference internal" href="usage.html#usage"><span class="std std-ref">Usage</span></a></p></li>
+<li><p><a class="reference internal" href="installation.html#api"><span class="std std-ref">API</span></a></p></li>
 <li><p><a class="reference internal" href="development.html#development"><span class="std std-ref">Development</span></a></p></li>
 </ol>
 <div class="toctree-wrapper compound">
@@ -136,14 +138,34 @@
 <li class="toctree-l2"><a class="reference internal" href="usage.html#running-analyses">Running analyses</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="development.html#core-platform-architecture">Core platform architecture</a></li>
 <li class="toctree-l2"><a class="reference internal" href="development.html#adding-tasks">Adding tasks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="development.html#building-the-docker-images">Building the docker images</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#phenomedb.analysis.AnalysisTask"><code class="docutils literal notranslate"><span class="pre">AnalysisTask</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#phenomedb.analysis.NPYCTask"><code class="docutils literal notranslate"><span class="pre">NPYCTask</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#phenomedb.analysis.RAnalysisTask"><code class="docutils literal notranslate"><span class="pre">RAnalysisTask</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#phenomedb.analysis.RunMWAS"><code class="docutils literal notranslate"><span class="pre">RunMWAS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#phenomedb.analysis.RunNPYCReport"><code class="docutils literal notranslate"><span class="pre">RunNPYCReport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#phenomedb.analysis.RunPCA"><code class="docutils literal notranslate"><span class="pre">RunPCA</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#phenomedb.analysis.RunPCPR2"><code class="docutils literal notranslate"><span class="pre">RunPCPR2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#phenomedb.analysis.RunWilcoxonRankTest"><code class="docutils literal notranslate"><span class="pre">RunWilcoxonRankTest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#phenomedb.analysis.RunXCMS"><code class="docutils literal notranslate"><span class="pre">RunXCMS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="batch_correction.html#phenomedb.batch_correction.RunCombatCorrection"><code class="docutils literal notranslate"><span class="pre">RunCombatCorrection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_correction.html#phenomedb.batch_correction.RunDBnormCorrection"><code class="docutils literal notranslate"><span class="pre">RunDBnormCorrection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_correction.html#phenomedb.batch_correction.RunNPYCBatchCorrection"><code class="docutils literal notranslate"><span class="pre">RunNPYCBatchCorrection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_correction.html#phenomedb.batch_correction.RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset"><code class="docutils literal notranslate"><span class="pre">RunNPYCBatchCorrectionReportsForExistingCorrectedFeatureDataset</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_correction.html#phenomedb.batch_correction.RunNormResidualsMM"><code class="docutils literal notranslate"><span class="pre">RunNormResidualsMM</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_correction.html#phenomedb.batch_correction.SaveBatchCorrection"><code class="docutils literal notranslate"><span class="pre">SaveBatchCorrection</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="base_view.html#phenomedb.base_view.PhenomeDBBaseView"><code class="docutils literal notranslate"><span class="pre">PhenomeDBBaseView</span></code></a></li>
 </ul>
@@ -229,7 +251,18 @@
 <li class="toctree-l2"><a class="reference internal" href="pipeline_factory.html#phenomedb.pipeline_factory.PipelineFactory"><code class="docutils literal notranslate"><span class="pre">PipelineFactory</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pipelines.html">phenomedb.pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipelines.html">phenomedb.pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pipelines.html#phenomedb.pipelines.BasicSetup"><code class="docutils literal notranslate"><span class="pre">BasicSetup</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipelines.html#phenomedb.pipelines.BatchCorrectionAssessmentPipelineGenerator"><code class="docutils literal notranslate"><span class="pre">BatchCorrectionAssessmentPipelineGenerator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipelines.html#phenomedb.pipelines.DynamicPipelineTask"><code class="docutils literal notranslate"><span class="pre">DynamicPipelineTask</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipelines.html#phenomedb.pipelines.GenerateSingleTaskPipelines"><code class="docutils literal notranslate"><span class="pre">GenerateSingleTaskPipelines</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipelines.html#phenomedb.pipelines.ImportAllMetabolightsPipelineGenerator"><code class="docutils literal notranslate"><span class="pre">ImportAllMetabolightsPipelineGenerator</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipelines.html#phenomedb.pipelines.PipelineGeneratorTask"><code class="docutils literal notranslate"><span class="pre">PipelineGeneratorTask</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipelines.html#phenomedb.pipelines.RebuildPipelinesFromDB"><code class="docutils literal notranslate"><span class="pre">RebuildPipelinesFromDB</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipelines.html#phenomedb.pipelines.RunBatchCorrectionAssessmentPipeline"><code class="docutils literal notranslate"><span class="pre">RunBatchCorrectionAssessmentPipeline</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pipelines.html#phenomedb.pipelines.RunMWASMulti"><code class="docutils literal notranslate"><span class="pre">RunMWASMulti</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="query_factory.html">phenomedb.query_factory</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="query_factory.html#phenomedb.query_factory.MetadataFilter"><code class="docutils literal notranslate"><span class="pre">MetadataFilter</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="query_factory.html#phenomedb.query_factory.ProjectRoleFilter"><code class="docutils literal notranslate"><span class="pre">ProjectRoleFilter</span></code></a></li>

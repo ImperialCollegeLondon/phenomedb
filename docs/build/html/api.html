@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>phenomedb.views &mdash; PhenomeDB 1.0 documentation</title>
+  <title>API &mdash; PhenomeDB 1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,7 +17,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="phenomedb.utilities" href="utilities.html" /> 
+    <link rel="next" title="Development" href="development.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,7 +45,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html#settings">Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">phenomedb.analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="batch_correction.html">phenomedb.batch_correction</a></li>
@@ -59,7 +60,7 @@
 <li class="toctree-l1"><a class="reference internal" href="query_factory.html">phenomedb.query_factory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="task.html">phenomedb.task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utilities.html">phenomedb.utilities</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">phenomedb.views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="views.html">phenomedb.views</a></li>
 </ul>
 
         </div>
@@ -76,9 +77,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">phenomedb.views</li>
+      <li class="breadcrumb-item active">API</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/views.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -86,15 +87,77 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-phenomedb.views">
-<span id="phenomedb-views"></span><h1>phenomedb.views<a class="headerlink" href="#module-phenomedb.views" title="Permalink to this heading"></a></h1>
+  <section id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this heading"></a></h1>
+<p>To access the PhenomeDB API on a local docker installation go to: <a href="#id1"><span class="problematic" id="id2">:link:`http://localhost:5001/custom/`</span></a>.</p>
+<p>The username and password will be the same as your $AIRFLOW_ADMIN_USER and $AIRFLOW_ADMIN_PASSWORD</p>
+<p>To view the OpenAPI/Swagger documentation for the API, go to: <a href="#id3"><span class="problematic" id="id4">:link:`http://localhost:5001/custom/swagger/v1`</span></a></p>
+<p>Implemented API Import endpoints:</p>
+<ul class="simple">
+<li><p>import/samplemanifest</p></li>
+<li><p>import/brukerivdrannotations</p></li>
+<li><p>import/peakpantherannotations</p></li>
+</ul>
+<p>More can be implemented using these as examples.</p>
+<p>To use the API with Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>import json
+import requests</p>
+<p>data = {“username”: “admin”,”password”: “testpass”,’refresh’:True}</p>
+<p>session = requests.session()</p>
+<p>login_url = “<a class="reference external" href="http://localhost:5001/custom/api/v1/security/login">http://localhost:5001/custom/api/v1/security/login</a>”
+refresh_url = “<a class="reference external" href="https://localhost:5001/custom/api/v1/security/refresh">https://localhost:5001/custom/api/v1/security/refresh</a>”</p>
+<p># Login and set the JWT tokens
+r = session.post(login_url,json=data)
+access_token = json.loads(r.content)[‘access_token’]
+refresh_token = json.loads(r.content)[‘refresh_token’]</p>
+<p>print(access_token)
+print(refresh_token)</p>
+<p># Import a sample manifest -
+data = {“project_name”:”PipelineTesting”,</p>
+<blockquote>
+<div><p>“sample_manifest_path”: ‘/path/to/phenomedb/data/test/DEVSET_sampleManifest.xlsx’,
+“columns_to_ignore”:[],
+“username”: “admin”}</p>
+</div></blockquote>
+<dl class="simple">
+<dt>r = self.session.post(’<a class="reference external" href="http://localhost:5001/custom/api/v1/import/samplemanifest">http://localhost:5001/custom/api/v1/import/samplemanifest</a>’,</dt><dd><p>json=data,
+headers={‘Authorization’: ‘Bearer ‘+ access_token})</p>
+</dd>
+</dl>
+<p># Import the peak panther data
+data = {“project_name”:”PipelineTesting”,</p>
+<blockquote>
+<div><p>“feature_metadata_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_featureMetadata.csv’,
+“sample_metadata_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_sampleMetadata_SMALL.csv’,
+“intensity_data_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_intensityData.csv’,
+“batch_corrected_data_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_intensityData_batchcorrected.csv’,
+“ppr_annotation_parameters_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET_P_LPOS_annotationParameters_summary.csv’,
+“ppr_mz_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET_P_LPOS_PPR_mz.csv’,
+“ppr_rt_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET_P_LPOS_PPR_rt_with_extra_paths.csv’,
+“sample_matrix”: “plasma”,
+“assay_name”: “LPOS”,
+“run_batch_correction”: False,
+“username”: “admin”}</p>
+</div></blockquote>
+<p>r = session.post(’<a class="reference external" href="http://localhost:5001/custom/api/v1/import/peakpanther">http://localhost:5001/custom/api/v1/import/peakpanther</a>’,
+json=data,
+headers={‘Authorization’: ‘Bearer ‘+access_token})
+print(r.content)</p>
+<p># Refresh the JWT token (if access token expires)
+r = session.post(refresh_url,headers={“Authorization”: “Bearer ” + refresh_token})
+access_token = json.loads(r.content)[‘access_token’]
+refresh_token = json.loads(r.content)[‘refresh_token’]</p>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="utilities.html" class="btn btn-neutral float-left" title="phenomedb.utilities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="development.html" class="btn btn-neutral float-right" title="Development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
