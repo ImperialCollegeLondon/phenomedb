@@ -100,48 +100,49 @@
 </ul>
 <p>More can be implemented using these as examples.</p>
 <p>To use the API with Python:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">,</span><span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;testpass&quot;</span><span class="p">,</span><span class="s1">&#39;refresh&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">}</span>
+
+<span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">session</span><span class="p">()</span>
+
+<span class="n">login_url</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:5001/custom/api/v1/security/login&quot;</span>
+<span class="n">refresh_url</span> <span class="o">=</span> <span class="s2">&quot;https://localhost:5001/custom/api/v1/security/refresh&quot;</span>
+
+<span class="c1"># Login and set the JWT tokens</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">login_url</span><span class="p">,</span><span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="n">access_token</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)[</span><span class="s1">&#39;access_token&#39;</span><span class="p">]</span>
+<span class="n">refresh_token</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)[</span><span class="s1">&#39;refresh_token&#39;</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">access_token</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">refresh_token</span><span class="p">)</span>
+
+<span class="c1"># Import a sample manifest -</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;project_name&quot;</span><span class="p">:</span><span class="s2">&quot;PipelineTesting&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sample_manifest_path&quot;</span><span class="p">:</span> <span class="s1">&#39;/path/to/phenomedb/data/test/DEVSET_sampleManifest.xlsx&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;columns_to_ignore&quot;</span><span class="p">:[],</span>
+        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">}</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;http://localhost:5001/custom/api/v1/import/samplemanifest&#39;</span><span class="p">,</span>
+                      <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="s1">&#39;Bearer &#39;</span><span class="o">+</span> <span class="n">access_token</span><span class="p">})</span>
+
+<span class="c1"># Import the peak panther data</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;project_name&quot;</span><span class="p">:</span><span class="s2">&quot;PipelineTesting&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;feature_metadata_csv_path&quot;</span><span class="p">:</span> <span class="s1">&#39;/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_featureMetadata.csv&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;sample_metadata_csv_path&quot;</span><span class="p">:</span> <span class="s1">&#39;/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_sampleMetadata_SMALL.csv&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;intensity_data_csv_path&quot;</span><span class="p">:</span> <span class="s1">&#39;/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_intensityData.csv&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;batch_corrected_data_csv_path&quot;</span><span class="p">:</span> <span class="s1">&#39;/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_intensityData_batchcorrected.csv&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;ppr_annotation_parameters_csv_path&quot;</span><span class="p">:</span> <span class="s1">&#39;/opt/phenomedb_app/phenomedb/data/test/DEVSET_P_LPOS_annotationParameters_summary.csv&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;ppr_mz_csv_path&quot;</span><span class="p">:</span> <span class="s1">&#39;/opt/phenomedb_app/phenomedb/data/test/DEVSET_P_LPOS_PPR_mz.csv&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;ppr_rt_csv_path&quot;</span><span class="p">:</span> <span class="s1">&#39;/opt/phenomedb_app/phenomedb/data/test/DEVSET_P_LPOS_PPR_rt_with_extra_paths.csv&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;sample_matrix&quot;</span><span class="p">:</span> <span class="s2">&quot;plasma&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;assay_name&quot;</span><span class="p">:</span> <span class="s2">&quot;LPOS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;run_batch_correction&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
-<p>import json
-import requests</p>
-<p>data = {“username”: “admin”,”password”: “testpass”,’refresh’:True}</p>
-<p>session = requests.session()</p>
-<p>login_url = “<a class="reference external" href="http://localhost:5001/custom/api/v1/security/login">http://localhost:5001/custom/api/v1/security/login</a>”
-refresh_url = “<a class="reference external" href="https://localhost:5001/custom/api/v1/security/refresh">https://localhost:5001/custom/api/v1/security/refresh</a>”</p>
-<p># Login and set the JWT tokens
-r = session.post(login_url,json=data)
-access_token = json.loads(r.content)[‘access_token’]
-refresh_token = json.loads(r.content)[‘refresh_token’]</p>
-<p>print(access_token)
-print(refresh_token)</p>
-<p># Import a sample manifest -
-data = {“project_name”:”PipelineTesting”,</p>
-<blockquote>
-<div><p>“sample_manifest_path”: ‘/path/to/phenomedb/data/test/DEVSET_sampleManifest.xlsx’,
-“columns_to_ignore”:[],
-“username”: “admin”}</p>
-</div></blockquote>
-<dl class="simple">
-<dt>r = self.session.post(’<a class="reference external" href="http://localhost:5001/custom/api/v1/import/samplemanifest">http://localhost:5001/custom/api/v1/import/samplemanifest</a>’,</dt><dd><p>json=data,
-headers={‘Authorization’: ‘Bearer ‘+ access_token})</p>
-</dd>
-</dl>
-<p># Import the peak panther data
-data = {“project_name”:”PipelineTesting”,</p>
-<blockquote>
-<div><p>“feature_metadata_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_featureMetadata.csv’,
-“sample_metadata_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_sampleMetadata_SMALL.csv’,
-“intensity_data_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_intensityData.csv’,
-“batch_corrected_data_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET P LPOS PeakPantheR_intensityData_batchcorrected.csv’,
-“ppr_annotation_parameters_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET_P_LPOS_annotationParameters_summary.csv’,
-“ppr_mz_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET_P_LPOS_PPR_mz.csv’,
-“ppr_rt_csv_path”: ‘/opt/phenomedb_app/phenomedb/data/test/DEVSET_P_LPOS_PPR_rt_with_extra_paths.csv’,
-“sample_matrix”: “plasma”,
-“assay_name”: “LPOS”,
-“run_batch_correction”: False,
-“username”: “admin”}</p>
-</div></blockquote>
 <p>r = session.post(’<a class="reference external" href="http://localhost:5001/custom/api/v1/import/peakpanther">http://localhost:5001/custom/api/v1/import/peakpanther</a>’,
 json=data,
 headers={‘Authorization’: ‘Bearer ‘+access_token})
