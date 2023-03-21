@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; PhenomeDB 1.0 documentation</title>
+  <title>Index &mdash; PhenomeDB 0.9.8 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -49,6 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database.html">phenomedb.database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
@@ -494,6 +495,8 @@
 </li>
       <li><a href="compounds.html#phenomedb.compounds.CleanROIFile.get_assay">get_assay() (phenomedb.compounds.CleanROIFile method)</a>
 </li>
+      <li><a href="database.html#phenomedb.database.get_beta_database_session">get_beta_database_session() (in module phenomedb.database)</a>
+</li>
       <li><a href="cache.html#phenomedb.cache.Cache.get_cache_keys_dataframe">get_cache_keys_dataframe() (phenomedb.cache.Cache method)</a>
 </li>
       <li><a href="compounds.html#phenomedb.compounds.CompoundTask.get_cas_from_pubchem">get_cas_from_pubchem() (phenomedb.compounds.CompoundTask method)</a>
@@ -506,9 +509,13 @@
 </li>
       <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.get_code_string">get_code_string() (phenomedb.query_factory.QueryFactory method)</a>
 </li>
+      <li><a href="database.html#phenomedb.database.get_database_session">get_database_session() (in module phenomedb.database)</a>
+</li>
       <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.get_dataframe_key">get_dataframe_key() (phenomedb.query_factory.QueryFactory method)</a>
 </li>
       <li><a href="utilities.html#phenomedb.utilities.get_date">get_date() (in module phenomedb.utilities)</a>
+</li>
+      <li><a href="database.html#phenomedb.database.get_db_session">get_db_session() (in module phenomedb.database)</a>
 </li>
       <li><a href="base_view.html#phenomedb.base_view.PhenomeDBBaseView.get_entities_as_dicts">get_entities_as_dicts() (phenomedb.base_view.PhenomeDBBaseView method)</a>
 </li>
@@ -574,10 +581,10 @@
         <li><a href="imports.html#phenomedb.imports.ImportMetabolightsXCMSAnnotations.get_or_add_data_repository">(phenomedb.imports.ImportMetabolightsXCMSAnnotations method)</a>
 </li>
       </ul></li>
-      <li><a href="imports.html#phenomedb.imports.ImportPeakPantherAnnotations.get_or_add_feature_dataset">get_or_add_feature_dataset() (phenomedb.imports.ImportPeakPantherAnnotations method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="imports.html#phenomedb.imports.ImportPeakPantherAnnotations.get_or_add_feature_dataset">get_or_add_feature_dataset() (phenomedb.imports.ImportPeakPantherAnnotations method)</a>
+</li>
       <li><a href="imports.html#phenomedb.imports.AnnotationImportTask.get_or_add_feature_dataset_unified">get_or_add_feature_dataset_unified() (phenomedb.imports.AnnotationImportTask method)</a>
 </li>
       <li><a href="imports.html#phenomedb.imports.ImportPeakPantherAnnotations.get_or_add_feature_metadata">get_or_add_feature_metadata() (phenomedb.imports.ImportPeakPantherAnnotations method)</a>
@@ -691,6 +698,8 @@
       <li><a href="base_view.html#phenomedb.base_view.PhenomeDBBaseView.get_table_names">get_table_names() (phenomedb.base_view.PhenomeDBBaseView method)</a>
 </li>
       <li><a href="pipeline_factory.html#phenomedb.pipeline_factory.PipelineFactory.get_tasks_from_json">get_tasks_from_json() (phenomedb.pipeline_factory.PipelineFactory static method)</a>
+</li>
+      <li><a href="database.html#phenomedb.database.get_test_database_session">get_test_database_session() (in module phenomedb.database)</a>
 </li>
       <li><a href="query_factory.html#phenomedb.query_factory.QueryFactory.get_unique_match_models">get_unique_match_models() (phenomedb.query_factory.QueryFactory method)</a>
 </li>
@@ -928,10 +937,10 @@
 </li>
       <li><a href="models.html#phenomedb.models.MetadataValue">MetadataValue (class in phenomedb.models)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="models.html#phenomedb.models.MissingImportData">MissingImportData (class in phenomedb.models)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     module
 
@@ -945,6 +954,8 @@
         <li><a href="cache.html#module-phenomedb.cache">phenomedb.cache</a>
 </li>
         <li><a href="compounds.html#module-phenomedb.compounds">phenomedb.compounds</a>
+</li>
+        <li><a href="database.html#module-phenomedb.database">phenomedb.database</a>
 </li>
         <li><a href="imports.html#module-phenomedb.imports">phenomedb.imports</a>
 </li>
@@ -1084,6 +1095,13 @@
 
       <ul>
         <li><a href="compounds.html#module-phenomedb.compounds">module</a>
+</li>
+      </ul></li>
+      <li>
+    phenomedb.database
+
+      <ul>
+        <li><a href="database.html#module-phenomedb.database">module</a>
 </li>
       </ul></li>
       <li>

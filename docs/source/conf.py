@@ -9,7 +9,7 @@
 project = 'PhenomeDB'
 copyright = '2023, Imperial College London'
 author = 'Gordon A. Haggart-Davies'
-release = '1.0'
+release = '0.9.8'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

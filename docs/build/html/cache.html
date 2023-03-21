@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>phenomedb.cache &mdash; PhenomeDB 1.0 documentation</title>
+  <title>phenomedb.cache &mdash; PhenomeDB 0.9.8 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -84,6 +84,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database.html">phenomedb.database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
@@ -312,7 +313,7 @@ Takes a SavedQuery, and generates the cache for the dataframe</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>saved_query_id</strong> (<em>int</em><em>, </em><em>optional</em>) – The ID of the SavedQuery, defaults to None</p></li>
-<li><p><strong>master_unit</strong> (<em>str</em><em>, </em><em>optional</em>) – The master unit to harmonise units against, defaults to None</p></li>
+<li><p><strong>master_unit</strong> (<em>str</em><em>, </em><em>optional</em>) – The master unit to harmonise units against, defaults to ‘mmol/L’</p></li>
 <li><p><strong>class_level</strong> (<em>str</em><em>, </em><em>optional</em>) – Query Aggregration class level (for Compounds), defaults to None</p></li>
 <li><p><strong>class_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Query Aggregration class type, defaults to None</p></li>
 <li><p><strong>output_model</strong> (<em>str</em><em>, </em><em>optional</em>) – The output model of the query, defaults to ‘AnnotatedFeature’</p></li>

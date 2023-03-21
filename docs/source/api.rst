@@ -1,11 +1,11 @@
 API
 ===
 
-To access the PhenomeDB API on a local docker installation go to: :link:`http://localhost:5001/custom/`.
+To access the PhenomeDB API on a local docker installation go to: `http://localhost:5001/custom/ <http://localhost:5001/custom/>`_.
 
 The username and password will be the same as your $AIRFLOW_ADMIN_USER and $AIRFLOW_ADMIN_PASSWORD
 
-To view the OpenAPI/Swagger documentation for the API, go to: :link:`http://localhost:5001/custom/swagger/v1`
+To view the OpenAPI/Swagger documentation for the API, go to: `http://localhost:5001/custom/swagger/v1 <http://localhost:5001/custom/swagger/v1>`_
 
 Implemented API Import endpoints:
 
@@ -14,6 +14,8 @@ Implemented API Import endpoints:
 * import/peakpantherannotations
 
 More can be implemented using these as examples.
+
+Please note, the files must be accessible to the server, either on the same server or via a file-system mount.
 
 To use the API with Python:
 

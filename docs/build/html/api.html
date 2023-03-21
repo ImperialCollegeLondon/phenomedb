@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API &mdash; PhenomeDB 1.0 documentation</title>
+  <title>API &mdash; PhenomeDB 0.9.8 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database.html">phenomedb.database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
@@ -89,9 +90,9 @@
              
   <section id="api">
 <h1>API<a class="headerlink" href="#api" title="Permalink to this heading"></a></h1>
-<p>To access the PhenomeDB API on a local docker installation go to: <a href="#id1"><span class="problematic" id="id2">:link:`http://localhost:5001/custom/`</span></a>.</p>
+<p>To access the PhenomeDB API on a local docker installation go to: <a class="reference external" href="http://localhost:5001/custom/">http://localhost:5001/custom/</a>.</p>
 <p>The username and password will be the same as your $AIRFLOW_ADMIN_USER and $AIRFLOW_ADMIN_PASSWORD</p>
-<p>To view the OpenAPI/Swagger documentation for the API, go to: <a href="#id3"><span class="problematic" id="id4">:link:`http://localhost:5001/custom/swagger/v1`</span></a></p>
+<p>To view the OpenAPI/Swagger documentation for the API, go to: <a class="reference external" href="http://localhost:5001/custom/swagger/v1">http://localhost:5001/custom/swagger/v1</a></p>
 <p>Implemented API Import endpoints:</p>
 <ul class="simple">
 <li><p>import/samplemanifest</p></li>
@@ -99,6 +100,7 @@
 <li><p>import/peakpantherannotations</p></li>
 </ul>
 <p>More can be implemented using these as examples.</p>
+<p>Please note, the files must be accessible to the server, either on the same server or via a file-system mount.</p>
 <p>To use the API with Python:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">requests</span>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>phenomedb.pipeline_factory &mdash; PhenomeDB 1.0 documentation</title>
+  <title>phenomedb.pipeline_factory &mdash; PhenomeDB 0.9.8 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -52,24 +52,30 @@
 <li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database.html">phenomedb.database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">phenomedb.pipeline_factory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#phenomedb.pipeline_factory.BasePipelineManager"><code class="docutils literal notranslate"><span class="pre">BasePipelineManager</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.BasePipelineManager.add_task"><code class="docutils literal notranslate"><span class="pre">BasePipelineManager.add_task()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.BasePipelineManager.commit_definition"><code class="docutils literal notranslate"><span class="pre">BasePipelineManager.commit_definition()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.BasePipelineManager.run_pipeline"><code class="docutils literal notranslate"><span class="pre">BasePipelineManager.run_pipeline()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-interface">User Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python-api">Python API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.BasePipelineManager"><code class="docutils literal notranslate"><span class="pre">BasePipelineManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.pipeline_factory.BasePipelineManager.add_task"><code class="docutils literal notranslate"><span class="pre">BasePipelineManager.add_task()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.pipeline_factory.BasePipelineManager.commit_definition"><code class="docutils literal notranslate"><span class="pre">BasePipelineManager.commit_definition()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.pipeline_factory.BasePipelineManager.run_pipeline"><code class="docutils literal notranslate"><span class="pre">BasePipelineManager.run_pipeline()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory"><code class="docutils literal notranslate"><span class="pre">PipelineFactory</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.add_task"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.add_task()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.commit_definition"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.commit_definition()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.delete_pipeline"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.delete_pipeline()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.get_json_task_spec"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.get_json_task_spec()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.get_tasks_from_json"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.get_tasks_from_json()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.pause_pipeline"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.pause_pipeline()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.run_pipeline"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.run_pipeline()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory"><code class="docutils literal notranslate"><span class="pre">PipelineFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.add_task"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.add_task()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.commit_definition"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.commit_definition()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.delete_pipeline"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.delete_pipeline()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.get_json_task_spec"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.get_json_task_spec()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.get_tasks_from_json"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.get_tasks_from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.pause_pipeline"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.pause_pipeline()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phenomedb.pipeline_factory.PipelineFactory.run_pipeline"><code class="docutils literal notranslate"><span class="pre">PipelineFactory.run_pipeline()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -108,18 +114,135 @@
   <section id="phenomedb-pipeline-factory">
 <h1>phenomedb.pipeline_factory<a class="headerlink" href="#phenomedb-pipeline-factory" title="Permalink to this heading"></a></h1>
 <p>Pipelines can be created, registered with Airflow, and executed via the PipelineFactory. Using this approach removes the requirements for manually writing Airflow DAG files.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.modules.PipelineFactory</span></code> is the interface between the user and the PipelineManager (the default of which is the AirflowPipelineManager). The PipelineFactory provides a standardised interface to creating Pipelines. Pipelines are created by add Tasks to a pipeline, and then committing them and then executing them.</p>
 <figure class="align-default" id="id3">
 <a class="reference internal image-reference" href="_images/pipeline-factory-overview.png"><img alt="PhenomeB PipelineFactory Overview" src="_images/pipeline-factory-overview.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">Overview of how the PipelineFactory can be used to create Apache Airflow pipelines</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Overview of how the <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.modules.PipelineFactory</span></code> can be used to create Apache Airflow pipelines</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
+</section>
+<section id="user-interface">
+<h2>User Interface<a class="headerlink" href="#user-interface" title="Permalink to this heading"></a></h2>
+<p>The PipelineFactory UI can be used to created parameterised, hard-coded Pipelines/DAGs made of many tasks (executed sequentially).</p>
 <figure class="align-default" id="id4">
-<a class="reference internal image-reference" href="_images/pipeline-factory-ui-example.png"><img alt="PhenomeB PipelineFactory UI Example" src="_images/pipeline-factory-ui-example.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="_images/pipeline-factory-ui-example.png"><img alt="PhenomeB PipelineFactory UI Example" src="_images/pipeline-factory-ui-example.png" style="width: 650px;" /></a>
 <figcaption>
 <p><span class="caption-text">Example of using a the PipelineFactory UI to create a parameterised pipeline</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
+</section>
+<section id="python-api">
+<h2>Python API<a class="headerlink" href="#python-api" title="Permalink to this heading"></a></h2>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.modules.PipelineFactory</span></code> Python API has more flexibility in creating a <a class="reference internal" href="models.html#phenomedb.models.Pipeline" title="phenomedb.models.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.Pipeline</span></code></a>, as it can be used to create two kinds of <a class="reference internal" href="models.html#phenomedb.models.Pipeline" title="phenomedb.models.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.models.Pipeline</span></code></a>, dynamic, or hard-coded.</p>
+<ul class="simple">
+<li><p>Hard coded: The pipeline parameters are injected into the DAG file, so each instance of a Pipeline will be specific to one project, for example. These are the kinds of Pipelines the UI builds.</p></li>
+<li><p>Dynamic: The pipeline is created with no parameters, to be executed with a run_config (of the same JSON structure as running pipelines through the Airflow UI)</p></li>
+</ul>
+<p>These options are specified using the hard_coded parameter of the <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.modules.PipelineFactory</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pipeline_factory</span> <span class="o">=</span> <span class="n">PipelineFactory</span><span class="p">(</span><span class="n">pipeline_name</span><span class="o">=</span><span class="s1">&#39;Example Hard-coded Pipeline&#39;</span><span class="p">,</span>
+                                   <span class="n">description</span><span class="o">=</span><span class="s1">&#39;An Example hard-coded Pipeline&#39;</span><span class="p">,</span>
+                                   <span class="n">hard_coded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Import a Sample Manifest (could use ImportMetadata instead for CSV files)</span>
+<span class="n">pipeline_factory</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="s1">&#39;phenomedb.imports&#39;</span><span class="p">,</span> <span class="c1"># module</span>
+                          <span class="s1">&#39;ImportSampleManifest&#39;</span><span class="p">,</span> <span class="c1"># class</span>
+                          <span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;importsamplemanifest&#39;</span><span class="p">,</span> <span class="c1"># unique per pipeline</span>
+                           <span class="n">run_config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;PipelineTesting&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;sample_manifest_path&quot;</span><span class="p">:</span><span class="s1">&#39;/path&#39;</span><span class="p">,</span>
+                                       <span class="s2">&quot;columns_to_ignore&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;sensitive&#39;</span><span class="p">],</span>
+                                        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">}</span>
+                           <span class="p">)</span>
+<span class="c1"># Import Bruker IVDr annotations</span>
+<span class="n">pipeline_factory</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="s1">&#39;phenomedb.imports&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;ImportBrukerIVDrAnnotations&#39;</span><span class="p">,</span>
+                          <span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;importbrukerivdrannotations&#39;</span><span class="p">,</span>
+                          <span class="n">upstream_task_id</span><span class="o">=</span><span class="s1">&#39;importsamplemanifest&#39;</span><span class="p">,</span>
+                           <span class="n">run_config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;PipelineTesting&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;sample_matrix&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;assay&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;annotation_method&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;bruker_path&quot;</span><span class="p">:</span><span class="s1">&#39;/path&#39;</span><span class="p">,</span>
+                                        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span> <span class="p">},</span>
+                           <span class="p">)</span>
+
+<span class="c1"># Harmonise the metadata (just one field in this example, add one HarmoniseMetadata task per field to be harmonised)</span>
+<span class="n">pipeline_factory</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="s1">&#39;phenomedb.metadata&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;HarmoniseMetadata&#39;</span><span class="p">,</span>
+                          <span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;harmoniseage&#39;</span><span class="p">,</span>
+                          <span class="n">upstream_task_id</span><span class="o">=</span><span class="s1">&#39;importbrukerivdrannotations&#39;</span><span class="p">,</span>
+                           <span class="n">run_config</span><span class="o">=</span><span class="p">{</span> <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;PipelineTesting&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;metadata_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;harmonised_metadata_field_name&quot;</span><span class="p">:</span><span class="s2">&quot;Age&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;inbuilt_transform_name&quot;</span><span class="p">:</span><span class="s2">&quot;simple_assignment&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;allowed_decimal_places&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+                                        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span> <span class="p">}</span>
+                           <span class="p">)</span>
+
+<span class="n">pipeline_factory</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="s1">&#39;phenomedb.metadata&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;HarmoniseMetadata&#39;</span><span class="p">,</span>
+                          <span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;harmonisesex&#39;</span><span class="p">,</span>
+                          <span class="n">upstream_task_id</span><span class="o">=</span><span class="s1">&#39;harmoniseage&#39;</span><span class="p">,</span>
+                           <span class="n">run_config</span><span class="o">=</span><span class="p">{</span> <span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;PipelineTesting&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;metadata_field_name&quot;</span><span class="p">:</span> <span class="s2">&quot;gender&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;harmonised_metadata_field_name&quot;</span><span class="p">:</span><span class="s2">&quot;Sex&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;lambda_function_string&quot;</span><span class="p">:</span><span class="s2">&quot;lambda x: &#39;Male&#39; if x.lower().strip() == &#39;m&#39; else (&#39;Female&#39; if x.lower().strip() == &#39;f&#39; else &#39;Unknown&#39; )&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span> <span class="p">}</span>
+                           <span class="p">)</span>
+
+<span class="c1"># Create a SavedQuery that will target the data (in this case those individuals under 40)</span>
+
+<span class="n">query_factory</span> <span class="o">=</span> <span class="n">QueryFactory</span><span class="p">(</span><span class="n">query_name</span><span class="o">=</span><span class="s1">&#39;PipelineTesting IVDr under 40&#39;</span><span class="p">,</span> <span class="n">query_description</span><span class="o">=</span><span class="s1">&#39;test description&#39;</span><span class="p">)</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;PipelineTesting&#39;</span><span class="p">)</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;Sample&#39;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s1">&#39;matrix&#39;</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;Assay&#39;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;NOESY&#39;</span><span class="p">)</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;AnnotationMethod&#39;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;Bi-LISA&#39;</span><span class="p">)</span>
+<span class="n">query_factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">MetadataFilter</span><span class="p">(</span><span class="s1">&#39;Age&#39;</span><span class="p">,</span><span class="s1">&#39;lt&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="mi">40</span><span class="p">)))</span>
+<span class="n">saved_query</span> <span class="o">=</span> <span class="n">query_factory</span><span class="o">.</span><span class="n">save_query</span><span class="p">()</span>
+
+<span class="c1"># Add a task to create the SavedQuery dataframe cache for the query</span>
+<span class="c1"># As this it IVDr, we use the raw values (correction_type=None)</span>
+<span class="c1"># If we were targeting LC-MS PeakPantheR data, we would use the SR-corrected data (correction_type=&#39;SR&#39;)</span>
+<span class="c1"># By default it will harmonise the intensities to mmol/L</span>
+<span class="n">pipeline_factory</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="s1">&#39;phenomedb.cache&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;CreateSavedQueryDataframeCache&#39;</span><span class="p">,</span>
+                          <span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;createquerycache&#39;</span><span class="p">,</span>
+                          <span class="n">upstream_task_id</span><span class="o">=</span><span class="s1">&#39;harmonisesex&#39;</span><span class="p">,</span>
+                           <span class="n">run_config</span><span class="o">=</span><span class="p">{</span> <span class="s2">&quot;saved_query_id&quot;</span><span class="p">:</span> <span class="n">saved_query</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span> <span class="p">}</span>
+                           <span class="p">)</span>
+
+<span class="c1"># Run a PCA with default params</span>
+<span class="n">pipeline_factory</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="s1">&#39;phenomedb.analysis&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;RunPCA&#39;</span><span class="p">,</span>
+                          <span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;runpca&#39;</span><span class="p">,</span>
+                          <span class="n">upstream_task_id</span><span class="o">=</span><span class="s1">&#39;createqueryccache&#39;</span><span class="p">,</span>
+                           <span class="n">run_config</span><span class="o">=</span><span class="p">{</span> <span class="s2">&quot;saved_query_id&quot;</span><span class="p">:</span> <span class="n">saved_query</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span> <span class="p">}</span>
+                           <span class="p">)</span>
+
+<span class="c1"># Run an Bonferroni-corrected linear-regression MWAS where harmonised Age is the outcome-of-interest and harmonised Sex is a covariate</span>
+<span class="n">pipeline_factory</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="s1">&#39;phenomedb.analysis&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;RunMWAS&#39;</span><span class="p">,</span>
+                          <span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;runmwas&#39;</span><span class="p">,</span>
+                          <span class="n">upstream_task_id</span><span class="o">=</span><span class="s1">&#39;runpca&#39;</span><span class="p">,</span>
+                           <span class="n">run_config</span><span class="o">=</span><span class="p">{</span> <span class="s2">&quot;saved_query_id&quot;</span><span class="p">:</span> <span class="n">saved_query</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                                        <span class="s2">&quot;model_Y_variable&quot;</span><span class="p">:</span> <span class="s2">&quot;h_metadata::Age&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;model_X_variables&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;h_metadata::Sex&quot;</span><span class="p">],</span>
+                                        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;correction_method&quot;</span><span class="p">:</span> <span class="s2">&quot;bonferroni&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span> <span class="p">}</span>
+                           <span class="p">)</span>
+
+<span class="c1"># Write out the hard coded DAG and register with Airflow</span>
+<span class="n">pipeline_factory</span><span class="o">.</span><span class="n">commit_definition</span><span class="p">()</span>
+
+<span class="c1"># Run the Pipeline (may block while waiting for Airflow to register the Pipeline)</span>
+<span class="n">pipeline_factory</span><span class="o">.</span><span class="n">run_pipeline</span><span class="p">()</span>
+</pre></div>
+</div>
 <span class="target" id="module-phenomedb.pipeline_factory"></span><dl class="py class">
 <dt class="sig sig-object py" id="phenomedb.pipeline_factory.BasePipelineManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.pipeline_factory.</span></span><span class="sig-name descname"><span class="pre">BasePipelineManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.pipeline_factory.BasePipelineManager" title="Permalink to this definition"></a></dt>
@@ -287,6 +410,7 @@
 
 </dd></dl>
 
+</section>
 </section>
 
 

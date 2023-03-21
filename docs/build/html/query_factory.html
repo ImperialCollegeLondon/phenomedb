@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>phenomedb.query_factory &mdash; PhenomeDB 1.0 documentation</title>
+  <title>phenomedb.query_factory &mdash; PhenomeDB 0.9.8 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="base_view.html">phenomedb.base_view</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cache.html">phenomedb.cache</a></li>
 <li class="toctree-l1"><a class="reference internal" href="compounds.html">phenomedb.compounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database.html">phenomedb.database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metadata.html">phenomedb.metadata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="models.html">phenomedb.models</a></li>
@@ -561,7 +562,13 @@ query_dict[‘filters’][‘matches’][‘value’]: The value to match on. Mu
 <dl class="py class">
 <dt class="sig sig-object py" id="phenomedb.query_factory.ProjectRoleFilter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.query_factory.</span></span><span class="sig-name descname"><span class="pre">ProjectRoleFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.query_factory.ProjectRoleFilter" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The Role ID to add the project filter to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>role_id</strong> (<em>int</em>) – The Role ID to filter projects by.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="phenomedb.query_factory.QueryFactory">
@@ -595,29 +602,6 @@ query_dict[‘filters’][‘matches’][‘value’]: The value to match on. Mu
 <dt class="sig sig-object py" id="phenomedb.query_factory.QueryFactory.add_filter">
 <span class="sig-name descname"><span class="pre">add_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_operator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AND'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_dicts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.query_factory.QueryFactory.add_filter" title="Permalink to this definition"></a></dt>
 <dd><p>Add a filter to the query_dict. Either generate a new one with this method or pass in a filter_dict or QueryFilter()</p>
-<blockquote>
-<div><dl>
-<dt>Usage:</dt><dd><p>query_factory = CohortQuery()
-filter = QueryFilter(filter_operator=’AND’)
-filter.add_match(QueryMatch(model=’Project’,property=’name’,operator=’eq’,value=’PipelineTesting’))
-cohort_query.add_filter(query_filter=filter)
-cohort_query.calculate_joins()</p>
-</dd>
-<dt>filter = {</dt><dd><blockquote>
-<div><p>‘filter_operator’: ‘AND’,
-‘matches’: [{</p>
-<blockquote>
-<div><p>‘model’: ‘Project’,
-‘property’: ‘name’,
-“operator”: ‘eq’,
-‘value’: ‘PipelineTesting’,</p>
-</div></blockquote>
-<p>}]</p>
-</div></blockquote>
-<p>}</p>
-</dd>
-</dl>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -752,35 +736,6 @@ cohort_query.calculate_joins()</p>
 <dt class="sig sig-object py" id="phenomedb.query_factory.QueryFactory.build_query_string">
 <span class="sig-name descname"><span class="pre">build_query_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SampleAssay'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">harmonise_annotations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.query_factory.QueryFactory.build_query_string" title="Permalink to this definition"></a></dt>
 <dd><p>Translates the query_dict into an SQLAlchemy query object string</p>
-<p>ie:</p>
-<p>query = db_session.query(SampleAssay).join(Sample,Subject,Project).filter(Project.name==’PipelineTesting’)</p>
-<dl>
-<dt>query_dict = {  ‘model’: ‘SampleAssay’,</dt><dd><blockquote>
-<div><p>‘joins’:[‘Subject’,’Project’],
-‘filters’: [{</p>
-<blockquote>
-<div><p>‘filter_operator’: ‘AND’
-‘sub_filters’: [{</p>
-<blockquote>
-<div><p>‘sub_filter_operator’: ‘AND’,
-‘matches’: [{</p>
-<blockquote>
-<div><blockquote>
-<div><p>‘model’: ‘Project’,
-‘property’: ‘name’,
-“operator”: ‘eq’,</p>
-</div></blockquote>
-<p>‘value’: ‘PipelineTesting’,</p>
-</div></blockquote>
-<p>}]</p>
-</div></blockquote>
-<p>}]</p>
-</div></blockquote>
-<p>}]</p>
-</div></blockquote>
-<p>}</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -917,7 +872,7 @@ cpd::HPOS-PPR:Glucose -&gt; HPOS-PPR AnnotationCompound called “Glucose”</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="phenomedb.query_factory.QueryFactory.get_dataframe_key">
 <span class="sig-name descname"><span class="pre">get_dataframe_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correction_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggregate_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">harmonise_annotations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_bin_definition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convert_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">master_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mmol/L'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.query_factory.QueryFactory.get_dataframe_key" title="Permalink to this definition"></a></dt>
-<dd><p>_summary_</p>
+<dd><p>Get the dataframe cache key</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

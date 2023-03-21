@@ -30,6 +30,7 @@ D. :ref:`development`
    base_view
    cache
    compounds
+   database
    imports
    metadata
    models
