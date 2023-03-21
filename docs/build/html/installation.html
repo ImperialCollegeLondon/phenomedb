@@ -163,10 +163,10 @@
 </pre></div>
 </div>
 <p>Using a phenomedb-airflow docker container:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>postgres<span class="w"> </span>redis<span class="w"> </span>scheduler
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 <span class="gp">$ </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>phenomedb-scheduler-1<span class="w"> </span>/bin/bash
-<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>/opt/phenomedb_app/phenomedb/tests
-<span class="gp">$ </span>pytest<span class="w"> </span>.
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>/opt/phenomedb_app/phenomedb/
+<span class="gp">$ </span>pytest<span class="w"> </span>tests/
 </pre></div>
 </div>
 </section>
@@ -174,8 +174,7 @@
 <h2>Building the docs<a class="headerlink" href="#building-the-docs" title="Permalink to this heading"></a></h2>
 <p>The docs are hosted on readthedocs, but must be built locally before upload (due to the postgres and redis dependencies). The sphinx and sphinx-rtd-theme pip packages are required to build the docs. To upload them to readthedocs, simply push them to the repo.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>docs
-<span class="gp">$ </span>make<span class="w"> </span>clean
-<span class="gp">$ </span>make<span class="w"> </span>html
+<span class="gp">$ </span>make<span class="w"> </span>clean<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>html
 <span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>..
 <span class="gp">$ </span>git<span class="w"> </span>add<span class="w"> </span>.<span class="w"> </span>-A
 <span class="gp">$ </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s1">&#39;updated docs&#39;</span>
