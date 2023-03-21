@@ -18,7 +18,7 @@ class CreateSavedQueryDataframeCache(Task):
 
     :param saved_query_id: The ID of the SavedQuery, defaults to None
     :type saved_query_id: int, optional
-    :param master_unit: The master unit to harmonise units against, defaults to None
+    :param master_unit: The master unit to harmonise units against, defaults to 'mmol/L'
     :type master_unit: str, optional
     :param class_level: Query Aggregration class level (for Compounds), defaults to None
     :type class_level: str, optional

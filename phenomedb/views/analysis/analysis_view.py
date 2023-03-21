@@ -1449,10 +1449,15 @@ v_appbuilder_package = {"name": "Analysis",
                         "category": "PhenomeDB",
                         "view": v_appbuilder_view}
 
-appbuilder_mitem = {"name": "Analysis",
-                    "category": "PhenomeDB",
+#appbuilder_mitem = {"name": "Analysis",
+#                    "category": "PhenomeDB",
+#                    "category_icon": "fa-th",
+#                    "href": "/analysis/"}
+
+appbuilder_mitem = {"name": "PhenomeDB docs",
+                    "category": "Search",
                     "category_icon": "fa-th",
-                    "href": "/analysis/"}
+                    "href": "https://www.google.com"}
 
 class AnalysisPlugin(AirflowPlugin):
 
@@ -1463,4 +1468,4 @@ class AnalysisPlugin(AirflowPlugin):
     #admin_views = [compound_view]
     #admin_views = []
     appbuilder_views = [v_appbuilder_package]
-    #appbuilder_menu_items = [appbuilder_mitem]
+    appbuilder_menu_items = [appbuilder_mitem]

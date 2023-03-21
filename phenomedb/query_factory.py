@@ -25,36 +25,36 @@ import gc
 class QueryFactory:
     """Class for building, executing, and saving SQLAlchemy queries that define 'SavedQueries', and generating and caching result set dataframes, such as the nPYc format.
 
-        A QueryFactory is simply a collection of filters that match on table properties.
+    A QueryFactory is simply a collection of filters that match on table properties.
 
-        Generates an SQLAlchemy query object that allows for further filters to be added as required, or .all() or
-        .count() methods to be used. 
+    Generates an SQLAlchemy query object that allows for further filters to be added as required, or .all() or
+    .count() methods to be used.
 
-        A join route calculator helps build the query by knowing the route between filter tables and the output model.
+    A join route calculator helps build the query by knowing the route between filter tables and the output model.
 
-        :param saved_query: A :class:`phenomedb.models.SavedQuery` object, defaults to None
-        :type saved_query: :class:`phenomedb.models.SavedQuery`, optional
-        :param saved_query_id: A :class:`phenomedb.models.SavedQuery` ID, defaults to None
-        :type saved_query_id: int, optional
-        :param filters: A dictionary of specifying the query filters, defaults to None
-        :type filters: dict, optional
-        :param query_dict: A dictionary specifying an entire query definition, defaults to None
-        :type query_dict: dict, optional
-        :param db_env: The db to use 'PROD' or 'TEST', defaults to None
-        :type db_env: str, optional
-        :param db_session: The db session to use, defaults to None
-        :type db_session: object, optional
-        :param project_short_label: A short label to add to a query for easier visualisation, defaults to None
-        :type project_short_label: str, optional
-        :param query_name: The name of the query, defaults to None
-        :type query_name: str, optional
-        :param query_description: The description of the query, defaults to None
-        :type query_description: _type_, optional
-        :param username: The username of the user who created the query, defaults to None
-        :type username: str, optional
-        :param output_model: The output model to use, defaults to 'SampleAssay', but typically might be 'AnnotatedFeature'
-        :type output_model: str, optional
-        :raises Exception: _description_
+    :param saved_query: A :class:`phenomedb.models.SavedQuery` object, defaults to None
+    :type saved_query: :class:`phenomedb.models.SavedQuery`, optional
+    :param saved_query_id: A :class:`phenomedb.models.SavedQuery` ID, defaults to None
+    :type saved_query_id: int, optional
+    :param filters: A dictionary of specifying the query filters, defaults to None
+    :type filters: dict, optional
+    :param query_dict: A dictionary specifying an entire query definition, defaults to None
+    :type query_dict: dict, optional
+    :param db_env: The db to use 'PROD' or 'TEST', defaults to None
+    :type db_env: str, optional
+    :param db_session: The db session to use, defaults to None
+    :type db_session: object, optional
+    :param project_short_label: A short label to add to a query for easier visualisation, defaults to None
+    :type project_short_label: str, optional
+    :param query_name: The name of the query, defaults to None
+    :type query_name: str, optional
+    :param query_description: The description of the query, defaults to None
+    :type query_description: _type_, optional
+    :param username: The username of the user who created the query, defaults to None
+    :type username: str, optional
+    :param output_model: The output model to use, defaults to 'SampleAssay', but typically might be 'AnnotatedFeature'
+    :type output_model: str, optional
+    :raises Exception: _description_
     """    
     foreign_keys = {
         'SampleAssay-Sample':['SampleAssay.sample_id','Sample.id'],
@@ -268,7 +268,7 @@ class QueryFactory:
                           feature_orientation=None, feature_label=None,
                           metadata_bin_definition=None,convert_units=True, master_unit='mmol/L'
                           ):
-        """_summary_
+        """Get the dataframe cache key
 
         :param type: The file type, for example 'combined','intensity_data','sample_metadata', 'feature_metadata','feature_id_matrix','feature_id_combined_dataframe', 'metaboanalyst_data','metaboanalyst_metadata'
         :type type: str
@@ -402,23 +402,6 @@ class QueryFactory:
                    property=None, operator=None, value=None):
         """Add a filter to the query_dict. Either generate a new one with this method or pass in a filter_dict or QueryFilter()
 
-           Usage:
-                query_factory = CohortQuery()
-                filter = QueryFilter(filter_operator='AND')
-                filter.add_match(QueryMatch(model='Project',property='name',operator='eq',value='PipelineTesting'))
-                cohort_query.add_filter(query_filter=filter)
-                cohort_query.calculate_joins()
-
-           filter = {
-                        'filter_operator': 'AND',
-                        'matches': [{
-                            'model': 'Project',
-                            'property': 'name',
-                            "operator": 'eq',
-                            'value': 'PipelineTesting',
-                        }]
-                    }
-
         :param filter_operator: The top-level filter operator, "AND" or "OR", defaults to "AND".
         :type filter_operator: str, optional
         :param match_dicts: List of match dictionaries, defaults to [].
@@ -470,26 +453,6 @@ class QueryFactory:
 
     def build_query_string(self, output_model='SampleAssay',harmonise_annotations=True):
         """ Translates the query_dict into an SQLAlchemy query object string
-
-        ie:
-
-        query = db_session.query(SampleAssay).join(Sample,Subject,Project).filter(Project.name=='PipelineTesting')
-
-        query_dict = {  'model': 'SampleAssay',
-                        'joins':['Subject','Project'],
-                        'filters': [{
-                                    'filter_operator': 'AND'
-                                    'sub_filters': [{
-                                                    'sub_filter_operator': 'AND',
-                                                    'matches': [{
-                                                                'model': 'Project',
-                                                                'property': 'name',
-                                                                "operator": 'eq',
-                                                            'value': 'PipelineTesting',
-                                                    }]
-                                    }]
-                        }]
-                      }
 
         """
 
@@ -3367,13 +3330,13 @@ class MetadataFilter(QuerySubFilter):
 
 
 class ProjectRoleFilter(QuerySubFilter):
+    """The Role ID to add the project filter to.
+
+    :param role_id: The Role ID to filter projects by.
+    :type role_id: int
+    """
 
     def __init__(self, role_id):
-        """The Role ID to add the project filter to.
-
-        :param role_id: The Role ID to filter projects by.
-        :type role_id: int
-        """
 
         super().__init__()
 
