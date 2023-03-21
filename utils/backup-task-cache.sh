@@ -52,7 +52,7 @@ then
     echo "tar_path = ${tar_path}"
     echo "cache_path = ${cache_path}"
     echo "remote_path = ${remote_path}"
-    echo "tar -c${verbose}zpf ${output_path} ${cache_path}/Task*.cache"
+    echo "tar -c${verbose}f ${output_path} ${cache_path}/Task*.cache"
 fi
 
 tar -c${verbose}f ${tar_path} ${cache_path}/Task*.cache

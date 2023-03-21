@@ -46,8 +46,8 @@ These options are specified using the hard_coded parameter of the :class:`phenom
                               'ImportSampleManifest', # class
                               task_id='importsamplemanifest', # unique per pipeline
                                run_config={"project": "PipelineTesting",
-                                            "sample_manifest_path":'/path',
-                                           "columns_to_ignore": ['sensitive'],
+                                            "sample_manifest_path":config['DATA']['test_data'] + 'DEVSET_sampleManifest.xlsx',
+                                           "columns_to_ignore": ['Further Sample info?'],
                                             "username": "admin"}
                                )
     # Import Bruker IVDr annotations
@@ -56,10 +56,9 @@ These options are specified using the hard_coded parameter of the :class:`phenom
                               task_id='importbrukerivdrannotations',
                               upstream_task_id='importsamplemanifest',
                                run_config={"project": "PipelineTesting",
-                                           "sample_matrix": "",
-                                           "assay": "",
-                                           "annotation_method": "",
-                                            "bruker_path":'/path',
+                                           "sample_matrix": "plasma",
+                                           "annotation_method": "Bi-LISA",
+                                            "unified_csv_path": config['DATA']['test_data'] + 'DEVSET_P_BILISA_combinedData.csv',
                                             "username": "admin" },
                                )
 
@@ -87,7 +86,8 @@ These options are specified using the hard_coded parameter of the :class:`phenom
                                             "username": "admin" }
                                )
 
-    # Create a SavedQuery that will target the data (in this case those individuals under 40)
+    # Create a SavedQuery that will target the data (in this case those individuals under 40).
+    # Note: When importing annotations, a SavedQuery will be created targeting the imported FeatureDataset
 
     query_factory = QueryFactory(query_name='PipelineTesting IVDr under 40', query_description='test description')
     query_factory.add_filter(model='Project', property='name', operator='eq', value='PipelineTesting')

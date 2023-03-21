@@ -1772,10 +1772,10 @@ class ImportBrukerIVDRAnnotations(AnnotationImportTask):
     units = {}
     minimum_columns = []
 
-    def __init__(self,project_name=None,annotation_method=None,version=None,is_latest=True,unified_csv_path=None,
+    def __init__(self,project_name=None,annotation_method=None,version=None,is_latest=True,unified_csv_path=None,pipeline_run_id=None,
                  sample_matrix=None,task_run_id=None,username=None,db_env=None,db_session=None,execution_date=None,validate=True):
         
-        super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate)
+        super().__init__(project_name=project_name,task_run_id=task_run_id,username=username,db_env=db_env,db_session=db_session,execution_date=execution_date,validate=validate,pipeline_run_id=pipeline_run_id)
 
         if version:
             self.version = str(version)
@@ -2130,64 +2130,9 @@ class ImportBrukerIVDRAnnotations(AnnotationImportTask):
                     self.logger.info("Imported SampleAssay AnnotatedFeatures %s/%s" % (sample_assay.getCountAnnotatedFeatures(),feature_column_index))
 
             sample_row_index = sample_row_index + 1
-
-        bp = True
-
     def post_commit_actions(self):
         """ Triggers the post-commit pipelines
         """
-        from phenomedb.pipeline_factory import PipelineFactory
-
-        try:
-            post_import_pipeline = PipelineFactory(pipeline_name='npc_post_import_pipeline')
-            run_config = {
-                        utils.clean_task_id('CreateSavedQuerySummaryStatsCache'):{
-                            'saved_query_id':self.saved_query.id,
-                            'db_env':self.db_env
-                        },
-                        utils.clean_task_id('RunFeatureSummaryReport'): {
-                            'report_name': 'feature summary',
-                            'saved_query_id': self.saved_query.id,
-                            'db_env': self.db_env,
-                        },
-                        utils.clean_task_id('RunSampleSummaryReport'): {
-                            'report_name': 'sample summary',
-                            'saved_query_id': self.saved_query.id,
-                            'db_env': self.db_env,
-                        },
-                        utils.clean_task_id('RunCorrelationToDilutionReport'): {
-                            'report_name': 'correlation to dilution',
-                            'saved_query_id': self.saved_query.id,
-                            'db_env': self.db_env,
-                        },
-                        utils.clean_task_id('RunFeatureSelectionReport'): {
-                            'report_name': 'feature selection',
-                            'saved_query_id': self.saved_query.id,
-                            'db_env': self.db_env,
-                        },
-                        utils.clean_task_id('RunMultivariateReport'): {
-                            'report_name': 'multivariate report',
-                            'saved_query_id': self.saved_query.id,
-                            'db_env': self.db_env,
-                        },
-                        utils.clean_task_id('RunFinalReport'): {
-                            'report_name': 'final report',
-                            'saved_query_id': self.saved_query.id,
-                            'db_env': self.db_env,
-                        }
-            }
-            if self.db_env != 'TEST':
-                post_import_pipeline.run_pipeline(run_config=run_config)
-                task_run_urls = []
-                for task_run_id,task_run in post_import_pipeline.pipeline_manager.task_runs.items():
-                    task_run_urls.append(task_run.get_url())
-                self.logger.info("npc_post_import_pipeline %s batch correction pipeline triggered %s" % (self.run_batch_correction,
-                                                                                   "\n".join(post_import_pipeline.pipeline_manager.task_runs.keys())))
-        except Exception as err:
-            self.logger.info("npc_post_import_pipeline not triggered!")
-            self.logger.exception(err)
-
-
 
         super().post_commit_actions()
 

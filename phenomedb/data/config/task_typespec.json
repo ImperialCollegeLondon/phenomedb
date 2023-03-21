@@ -50,7 +50,7 @@
   },
   "imports.ImportBrukerIVDRAnnotations": {
     "project_name": {"type":"project","label": "Project","required":true},
-    "annotation_method": {"type":"dropdown","label": "IVDR annotation method","options": {"BI-QUANT": "Bruker IVDR BI-QUANT","BI-LISA": "Bruker IVDR BI-LISA"},"required": true},
+    "annotation_method": {"type":"dropdown","label": "IVDR annotation method","options": {"Bi-Quant-P": "Bi-Quant-P","Bi-Quant-U": "Bi-Quant-U","Bi-LISA": "Bi-LISA"},"required": true},
     "unified_csv_path": {"type":"file_upload","label": "Unified CSV file","remote_folder_path": "uploads","required": true,"project_folder": false},
     "sample_matrix": {"type":"dropdown","label": "Sample matrix","options": {"Serum": "Serum","Plasma": "Plasma","Urine": "Urine"},"required": true}
   },
