@@ -14,7 +14,7 @@ Local/desktop Docker installation
 
 .. code-block:: console
 
-   $ git clone git@github.com:phenomedb/phenomedb.git
+   $ git clone git@github.com:phenomecentre/phenomedb.git
    $ cd phenomedb
    $ cp .env-example .env
    $ vim .env # or whichever text editor
