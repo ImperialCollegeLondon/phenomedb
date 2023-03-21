@@ -316,14 +316,11 @@ v_appbuilder_package = {"name": "Annotations",
                         "view": v_appbuilder_view}
 
 
-class AnnotationPlugin(AirflowPlugin):
+#class AnnotationPlugin(AirflowPlugin):
 
-    name = VIEW_NAME
-    # the variables called flask_blueprints and admin_views
-    # are inherited AirflowPlugin properties
-    flask_blueprints = [annotation_bp]
-    #admin_views = [metadata_view]
-    appbuilder_views = [v_appbuilder_package]
+#    name = VIEW_NAME
+#    flask_blueprints = [annotation_bp]
+#    appbuilder_views = [v_appbuilder_package]
 
 
 

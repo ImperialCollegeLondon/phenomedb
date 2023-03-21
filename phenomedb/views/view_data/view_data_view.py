@@ -198,14 +198,11 @@ v_appbuilder_package = {"name": "View Data",
                         "view": v_appbuilder_view}
 
 
-class ViewDataPlugin(AirflowPlugin):
+#class ViewDataPlugin(AirflowPlugin):
 
-    name = VIEW_NAME
-    # the variables called flask_blueprints and admin_views
-    # are inherited AirflowPlugin properties
-    flask_blueprints = [view_data_bp]
-    #admin_views = [metadata_view]
-    appbuilder_views = [v_appbuilder_package]
+ #   name = VIEW_NAME
+ #   flask_blueprints = [view_data_bp]
+ #   appbuilder_views = [v_appbuilder_package]
 
 
 

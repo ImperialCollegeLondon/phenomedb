@@ -218,8 +218,6 @@ analysis_bp = Blueprint(
     static_folder='../templates/static',
     static_url_path='/static/phenomedb')
 
-#compound_view = CompoundView(category="PhenomeDB", name="Compounds")
-
 v_appbuilder_view = BatchCorrectionView()
 v_appbuilder_package = {"name": "Batch Correction",
                         "category": "PhenomeDB",
@@ -230,13 +228,9 @@ appbuilder_mitem = {"name": "Batch Correction",
                     "category_icon": "fa-th",
                     "href": "/batchcorrection/"}
 
-class BatchCorrectionPlugin(AirflowPlugin):
+#class BatchCorrectionPlugin(AirflowPlugin):
 
-    name = VIEW_NAME
+    #name = VIEW_NAME
 
-    # flask_blueprints and admin_views are AirflowPlugin properties
-    flask_blueprints = [analysis_bp]
-    #admin_views = [compound_view]
-    #admin_views = []
-    appbuilder_views = [v_appbuilder_package]
-    #appbuilder_menu_items = [appbuilder_mitem]
+    #flask_blueprints = [analysis_bp]
+    #appbuilder_views = [v_appbuilder_package]

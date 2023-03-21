@@ -92,12 +92,8 @@ v_appbuilder_package = {"name": "Project Roles",
                         "view": v_appbuilder_view}
 
 
-class ProjectPlugin(AirflowPlugin):
-    name = VIEW_NAME
+#class ProjectPlugin(AirflowPlugin):
+ #   name = VIEW_NAME
 
-    # flask_blueprints and admin_views are AirflowPlugin properties
-    flask_blueprints = [project_bp]
-    # admin_views = [compound_view]
-    # admin_views = []
-    appbuilder_views = [v_appbuilder_package]
-    # appbuilder_menu_items = [appbuilder_mitem]
+  #  flask_blueprints = [project_bp]
+  #  appbuilder_views = [v_appbuilder_package]
