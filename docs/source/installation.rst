@@ -33,15 +33,13 @@ To install the phenomedb library locally:
 1. Checkout the repo
 2. install the pip requirements (inside a virtualenv or conda env)
 3. run setup.py install
-4. install apache-airflow from pip
-5. Either run the docker compose separately or install postgres and redis according to your OS instructions.
-6. Test the installation by running the phenomedb cli.py -h command
+4. Either run the docker compose separately or install postgres and redis according to your OS instructions.
+5. Test the installation by running the phenomedb cli.py -h command
 
 .. code-block:: console
 
   $ python setup.py install # this will fail the first time, run it twice
   $ python setup.py install
-  $ pip install 'apache-airflow[password]==2.5.1'
   $ docker compose up -d postgres redis
   $ cd phenomedb
   $ python cli.py -h

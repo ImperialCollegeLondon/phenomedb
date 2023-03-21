@@ -151,8 +151,8 @@
                           <span class="s1">&#39;ImportSampleManifest&#39;</span><span class="p">,</span> <span class="c1"># class</span>
                           <span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;importsamplemanifest&#39;</span><span class="p">,</span> <span class="c1"># unique per pipeline</span>
                            <span class="n">run_config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;PipelineTesting&quot;</span><span class="p">,</span>
-                                        <span class="s2">&quot;sample_manifest_path&quot;</span><span class="p">:</span><span class="s1">&#39;/path&#39;</span><span class="p">,</span>
-                                       <span class="s2">&quot;columns_to_ignore&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;sensitive&#39;</span><span class="p">],</span>
+                                        <span class="s2">&quot;sample_manifest_path&quot;</span><span class="p">:</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;DATA&#39;</span><span class="p">][</span><span class="s1">&#39;test_data&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;DEVSET_sampleManifest.xlsx&#39;</span><span class="p">,</span>
+                                       <span class="s2">&quot;columns_to_ignore&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Further Sample info?&#39;</span><span class="p">],</span>
                                         <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">}</span>
                            <span class="p">)</span>
 <span class="c1"># Import Bruker IVDr annotations</span>
@@ -161,10 +161,9 @@
                           <span class="n">task_id</span><span class="o">=</span><span class="s1">&#39;importbrukerivdrannotations&#39;</span><span class="p">,</span>
                           <span class="n">upstream_task_id</span><span class="o">=</span><span class="s1">&#39;importsamplemanifest&#39;</span><span class="p">,</span>
                            <span class="n">run_config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;PipelineTesting&quot;</span><span class="p">,</span>
-                                       <span class="s2">&quot;sample_matrix&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                                       <span class="s2">&quot;assay&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                                       <span class="s2">&quot;annotation_method&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                                        <span class="s2">&quot;bruker_path&quot;</span><span class="p">:</span><span class="s1">&#39;/path&#39;</span><span class="p">,</span>
+                                       <span class="s2">&quot;sample_matrix&quot;</span><span class="p">:</span> <span class="s2">&quot;plasma&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;annotation_method&quot;</span><span class="p">:</span> <span class="s2">&quot;Bi-LISA&quot;</span><span class="p">,</span>
+                                        <span class="s2">&quot;unified_csv_path&quot;</span><span class="p">:</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;DATA&#39;</span><span class="p">][</span><span class="s1">&#39;test_data&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;DEVSET_P_BILISA_combinedData.csv&#39;</span><span class="p">,</span>
                                         <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span> <span class="p">},</span>
                            <span class="p">)</span>
 
@@ -192,7 +191,8 @@
                                         <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;admin&quot;</span> <span class="p">}</span>
                            <span class="p">)</span>
 
-<span class="c1"># Create a SavedQuery that will target the data (in this case those individuals under 40)</span>
+<span class="c1"># Create a SavedQuery that will target the data (in this case those individuals under 40).</span>
+<span class="c1"># Note: When importing annotations, a SavedQuery will be created targeting the imported FeatureDataset</span>
 
 <span class="n">query_factory</span> <span class="o">=</span> <span class="n">QueryFactory</span><span class="p">(</span><span class="n">query_name</span><span class="o">=</span><span class="s1">&#39;PipelineTesting IVDr under 40&#39;</span><span class="p">,</span> <span class="n">query_description</span><span class="o">=</span><span class="s1">&#39;test description&#39;</span><span class="p">)</span>
 <span class="n">query_factory</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">operator</span><span class="o">=</span><span class="s1">&#39;eq&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;PipelineTesting&#39;</span><span class="p">)</span>

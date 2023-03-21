@@ -121,7 +121,7 @@
 <li><p>Copy the .env-example file to a file called .env, and edit the parameters as required (see settings)</p></li>
 <li><p>cd into the directory and run docker-compose up</p></li>
 </ol>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:ghaggart/phenomedb.git
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:phenomedb/phenomedb.git
 <span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>phenomedb
 <span class="gp">$ </span>cp<span class="w"> </span>.env-example<span class="w"> </span>.env
 <span class="gp">$ </span>vim<span class="w"> </span>.env<span class="w"> </span><span class="c1"># or whichever text editor</span>
@@ -141,13 +141,11 @@
 <li><p>Checkout the repo</p></li>
 <li><p>install the pip requirements (inside a virtualenv or conda env)</p></li>
 <li><p>run setup.py install</p></li>
-<li><p>install apache-airflow from pip</p></li>
 <li><p>Either run the docker compose separately or install postgres and redis according to your OS instructions.</p></li>
 <li><p>Test the installation by running the phenomedb cli.py -h command</p></li>
 </ol>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span><span class="c1"># this will fail the first time, run it twice</span>
 <span class="gp">$ </span>python<span class="w"> </span>setup.py<span class="w"> </span>install
-<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;apache-airflow[password]==2.5.1&#39;</span>
 <span class="gp">$ </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>postgres<span class="w"> </span>redis
 <span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>phenomedb
 <span class="gp">$ </span>python<span class="w"> </span>cli.py<span class="w"> </span>-h
