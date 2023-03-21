@@ -1468,4 +1468,4 @@ class AnalysisPlugin(AirflowPlugin):
     #admin_views = [compound_view]
     #admin_views = []
     appbuilder_views = [v_appbuilder_package]
-    appbuilder_menu_items = [appbuilder_mitem]
+#    appbuilder_menu_items = [appbuilder_mitem]
