@@ -1454,10 +1454,10 @@ v_appbuilder_package = {"name": "Analysis",
 #                    "category_icon": "fa-th",
 #                    "href": "/analysis/"}
 
-appbuilder_mitem = {"name": "PhenomeDB docs",
-                    "category": "Search",
+appbuilder_mitems = {"name": "PhenomeDB docs",
+                    "category": "Docs",
                     "category_icon": "fa-th",
-                    "href": "https://www.google.com"}
+                    "href": "https://phenomedb.readthedocs.io/"}
 
 class AnalysisPlugin(AirflowPlugin):
 
