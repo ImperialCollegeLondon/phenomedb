@@ -1,4 +1,4 @@
-import cache
+#import phenomedb.cache as cache
 import pytest
 from pathlib import Path
 import deepdiff

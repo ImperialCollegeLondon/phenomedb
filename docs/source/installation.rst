@@ -63,10 +63,10 @@ Using a phenomedb-airflow docker container:
 
 .. code-block:: console
 
-  $ docker compose up postgres redis scheduler
+  $ docker compose up -d
   $ docker exec -it phenomedb-scheduler-1 /bin/bash
-  $ cd /opt/phenomedb_app/phenomedb/tests
-  $ pytest .
+  $ cd /opt/phenomedb_app/phenomedb/
+  $ pytest tests/
 
 Building the docs
 -----------------
@@ -76,8 +76,7 @@ The docs are hosted on readthedocs, but must be built locally before upload (due
 .. code-block:: console
 
   $ cd docs
-  $ make clean
-  $ make html
+  $ make clean && make html
   $ cd ..
   $ git add . -A
   $ git commit -m 'updated docs'

@@ -5,7 +5,7 @@ import pandas as pd
 
 import sys, os
 
-import metadata
+import phenomedb.metadata as metadata
 
  #if os.environ['PHENOMEDB_PATH'] not in sys.path:
  #   sys.path.append( os.environ['PHENOMEDB_PATH'])
