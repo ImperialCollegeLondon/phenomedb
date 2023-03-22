@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 
-# /home/npcair/phenomedb-dev/scripts/backup-task-cache.sh -d /data1/phenomedb-cache -v -o /data1/phenomedb-backup
-
-usage="$(basename "$0") [-h] [-o <string>] [-d <string>] [-r <string>] [-v]
+usage="$(basename "$0") [-h] [-o <string>] [-d <string>] [-v]
 Backup the task cache files
 
 where:
     -h  show this help text
-    -d  the cache path (default ${PHENOMEDB__DATA__CACHE})
+    -d  the cache path (default .})
     -o  the output path (default ./output)
-    -r  the remote backup path (default $PHENOMEDB__DATA__BACKUP_PATH)
     -v  verbose output
 "
 
@@ -51,12 +48,7 @@ if [ "${verbose}" = "v"  ]
 then
     echo "tar_path = ${tar_path}"
     echo "cache_path = ${cache_path}"
-    echo "remote_path = ${remote_path}"
     echo "tar -c${verbose}zpf ${output_path} ${cache_path}/SavedQuery*.cache"
 fi
 
 tar -c${verbose}f ${tar_path} ${cache_path}/SavedQuery*.cache
-gzip -9 ${tar_path}
-mkdir -p ${remote_path}
-
-cp ${tar_path} ${remote_path}/${filename}

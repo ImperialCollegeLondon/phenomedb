@@ -5,9 +5,8 @@ Backup the task cache files
 
 where:
     -h  show this help text
-    -d  the app directory path (default ${PHENOMEDB__DATA__APP_DATA})
+    -d  the app directory path (default .})
     -o  the output path (default ./output)
-    -r  the remote backup path (default ${PHENOMEDB__DATA__BACKUP_PATH})
     -v  verbose output
 "
 
@@ -23,8 +22,6 @@ while getopts ':h:o:d:v' option; do
     o) output_path=$OPTARG
        ;;
     d) app_data_path=$OPTARG
-       ;;
-    r) remote_path=$OPTARG
        ;;
     v) verbose="v"
        ;;
@@ -47,8 +44,7 @@ datestr=`date '+%Y-%m-%d-%H-%M'`
 if [ "${verbose}" = "v"  ]
 then
     echo "app_data_path = ${app_data_path}"
-    echo "output_path = ${output_path}"
-    echo "remote_path = ${remote_path}"
+    echo "p_output_path = ${output_path}"
     echo "tar -c${verbose}zpf ${output_path}/phenomedb_output_backup_${datestr}.tar.gz ${app_data_path}/output/*"
     echo "tar -c${verbose}zpf ${output_path}/phenomedb_uploads_backup_${datestr}.tar.gz ${app_data_path}/uploads/*"
     echo "tar -c${verbose}zpf ${output_path}/phenomedb_reports_backup_${datestr}.tar.gz ${app_data_path}/reports/*"
@@ -57,8 +53,3 @@ fi
 tar -c${verbose}zpf ${output_path}phenomedb_output_backup_${datestr}.tar.gz ${app_data_path}/output/*
 tar -c${verbose}zpf ${output_path}phenomedb_uploads_backup_${datestr}.tar.gz ${app_data_path}/uploads/*
 tar -c${verbose}zpf ${output_path}phenomedb_reports_backup_${datestr}.tar.gz ${app_data_path}/reports/*
-
-mkdir -p ${remote_path}
-cp ${output_path}/phenomedb_output_backup_${datestr}.tar.gz ${remote_path}/phenomedb_output_backup_${datestr}.tar.gz
-cp ${output_path}/phenomedb_uploads_backup_${datestr}.tar.gz ${remote_path}/phenomedb_uploads_backup_${datestr}.tar.gz
-cp ${output_path}/phenomedb_reports_backup_${datestr}.tar.gz ${remote_path}/phenomedb_reports_backup_${datestr}.tar.gz
