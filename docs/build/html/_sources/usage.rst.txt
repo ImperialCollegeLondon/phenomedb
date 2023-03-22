@@ -227,11 +227,11 @@ Importing compound metadata
 
 PhenomeDB enables the storage of annotation metadata such as chemical references and classes, and has a data model and import processes capable of harmonising annotations to their analytical specificity.
 
-Compound metadata can be imported from PeakPantheR region-of-interest files (ROI) files for LC-MS annotations. Recent versions for these can be found in ./phenomedb/data/compounds/.
+:class:`phenomedb.models.Compound` metadata can be imported from PeakPantheR region-of-interest files (ROI) files for LC-MS annotations. Recent versions for these can be found in ./phenomedb/data/compounds/.
 
-To import the ROI compound data use the tasks ImportROICompounds and ImportROILipids.
+To import the ROI compound data use the tasks :class:`phenomedb.compounds.ImportROICompounds` and :class:`phenomedb.compounds.ImportROILipids`.
 
-IVDr annotation metadata can be imported using ImportBrukerBiLISACompounds and ImportBrukerBiQuantCompounds,. The source data are available in ./phenomedb/data/compounds/
+IVDr annotation metadata can be imported using :class:`phenomedb.compounds.ImportBrukerBiLISACompounds` and :class:`phenomedb.compounds.ImportBrukerBiQuantCompounds`. The source data are available in ./phenomedb/data/compounds/
 
 .. figure:: ./_images/compound-view-example.png
   :width: 600
