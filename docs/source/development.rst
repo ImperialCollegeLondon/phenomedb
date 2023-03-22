@@ -24,7 +24,9 @@ E. Flask plugins for exploring the data, building queries, running analyses, and
 Adding tasks
 ------------
 
-To add new task, extend :func:`phenomedb.task.Task`, or for imports :func:`phenomedb.imports.ImportTask`, or for compounds the :func:`phenomedb.compounds.ImportCompounds` task.
+To add new task, extend :func:`phenomedb.task.Task`, or for imports :func:`phenomedb.imports.ImportTask`, for annotation imports :class:`phenomedb.imports.AnnotationImportTask`, for compounds the :func:`phenomedb.compounds.ImportCompounds` task.
+
+For new analysis methods, extend the :class:`phenomedb.analysis.AnalysisTask`, and R-based tools, the :class:`phenomedb.analysis.RAnalysisTask`. The method method_specific_steps should be implemented.
 
 Tasks are made available to the PipelineFactory, CLI, and UI via the ./phenomedb/data/config/task_spec.json file, a JSON file with parameters for each task option.
 
@@ -55,7 +57,7 @@ Once added to the code and the type_spec.json, the task must be added to the int
 Building the docker images
 --------------------------
 
-The docker/custom_images contains the docker files for building the images.
+The docker/custom_images folder contains the docker files for building the images.
 
 The docker images can be built using the docker build command. To target both arm64 and x86_64 chipsets use the buildx command.
 
@@ -65,4 +67,5 @@ From the project root:
 
    $ cp ./requirements.txt
    $ cp requirements.txt ./docker/custom_images/phenomedb-airflow/
-   $ docker buildx build --platform linux/amd64,linux/arm64 -t phenomedb/phenomedb-airflow:latest ./docker/custom_images/phenomedb-airflow/
+   $ docker buildx build --platform linux/amd64,linux/arm64 -t phenomedb/phenomedb-airflow:latest --push ./docker/custom_images/phenomedb-airflow/
+   $ docker buildx build --platform linux/amd64,linux/arm64 -t phenomedb/phenomedb-api:latest --push ./docker/custom_images/phenomedb-api/

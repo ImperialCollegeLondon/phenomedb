@@ -90,7 +90,7 @@ Settings in PhenomeDB are configured in different ways depending if PhenomeDB is
 Local Python Installation
 -------------------------
 
-When running the phenomedb python library from a local host (instead of Docker), the configuration is controlled by the ./data/config/default-config.ini file. The configuration can be overriden by either copying this file to the same directory with the name config.ini, or by copying it a location on your machine and specifying the PHENOMEDB_CONFIG environment variable.
+When running the phenomedb python library from a local host (instead of Docker), the configuration is controlled by the ./phenomedb/data/config/default-config.ini file. The configuration can be overriden by either copying this file to the same directory with the name config.ini, or by copying it a location on your machine and specifying the PHENOMEDB_CONFIG environment variable.
 
 .. code-block::bash
 
@@ -99,7 +99,7 @@ When running the phenomedb python library from a local host (instead of Docker),
 
 .. code-block::bash
 
-  $ cp ./data/config/default-config.ini /opt/phenomedb/config.ini
+  $ cp ./phenomedb/data/config/default-config.ini /opt/phenomedb/config.ini
   $ vim /opt/phenomedb/config.ini # or whichever text editor
   $ PHENOMEDB_CONFIG=/opt/phenomedb/config.ini
 

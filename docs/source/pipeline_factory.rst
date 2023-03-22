@@ -1,7 +1,7 @@
 phenomedb.pipeline_factory
 ==========================
 
-Pipelines can be created, registered with Airflow, and executed via the PipelineFactory. Using this approach removes the requirements for manually writing Airflow DAG files.
+Pipelines can be created, registered with Airflow, and executed via the :class:`phenomedb.modules.PipelineFactory`. Using this approach removes the requirements for manually writing Airflow DAG files.
 
 Overview
 --------
@@ -10,7 +10,7 @@ The :class:`phenomedb.modules.PipelineFactory` is the interface between the user
 
 .. figure:: ./_images/pipeline-factory-overview.png
   :width: 500
-  :alt: PhenomeB PipelineFactory Overview
+  :alt: PhenomeB `phenomedb.modules.PipelineFactory` Overview
 
   Overview of how the :class:`phenomedb.modules.PipelineFactory` can be used to create Apache Airflow pipelines
 
@@ -23,7 +23,7 @@ The PipelineFactory UI can be used to created parameterised, hard-coded Pipeline
   :width: 650
   :alt: PhenomeB PipelineFactory UI Example
 
-  Example of using a the PipelineFactory UI to create a parameterised pipeline
+  Example of using a the `phenomedb.modules.PipelineFactory` UI to create a parameterised pipeline
 
 Python API
 ----------
