@@ -16,14 +16,14 @@ The process for harmonisation of metadata is:
 
 Once harmonised, the fields can then be used in integration and stratification queries via the QueryFactory.
 
-Overview of the CurateMetadata task
------------------------------------
+Overview of the HarmoniseMetadataField task
+-------------------------------------------
 
 .. figure:: ./_images/curate-metadata-task.png
   :width: 600
-  :alt: PhenomeDB CurateMetadata task
+  :alt: PhenomeDB HarmoniseMetadataField task
 
-  The CurateMetadataTask architecture, with methods for harmonising types, names, and values
+  The HarmoniseMetadataField architecture, with methods for harmonising types, names, and values
 
 .. automodule:: phenomedb.metadata
    :members:

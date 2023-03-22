@@ -145,9 +145,32 @@ For more information regarding the usage of Apache-Airflow, please see the Apach
 Tasks and Pipelines
 -------------------
 
+Tasks can be executed individually using command line interface (cli.py), or via Airflow as part of a Pipeline.
+
 Pipelines can be created, registered with Airflow, and executed via the PipelineFactory. Using this approach removes the requirements for manually writing Airflow DAG files.
 
-See the :ref:`phenomedb.pipeline_factory` for more information, including how to build and execute pipelines via the python API and the UI.
+The PipelineFactory UI can be used to created parameterised, hard-coded Pipelines/DAGs made of many tasks (executed sequentially).
+
+.. figure:: ./_images/pipeline-factory-ui-example.png
+  :width: 650
+  :alt: PhenomeB PipelineFactory UI Example
+
+  Example of using a the `phenomedb.modules.PipelineFactory` UI to create a parameterised pipeline
+
+See the :ref:`phenomedb.pipeline_factory` for more information, including how to build and execute pipelines via the python API.
+
+Command line interface
+----------------------
+
+The cli.py provides a way of running individual tasks. To use it either install a local Python installation or inside the scheduler docker container.
+
+From the project root:
+
+.. code-block::console
+
+    $ cd phenomedb
+    $ python cli.py -h
+
 
 Importing analytical data and sample metadata
 ---------------------------------------------
@@ -183,10 +206,12 @@ C. Study data files: CSV files containing analytical features (measurements) rel
    * - :func:`phenomedb.imports.DownloadMetabolightsStudy`
      - Download a Metabolights study
 
+See the :ref:`phenomedb.imports` for more information, and use the CLI or :ref:`phenomedb.pipeline_factory` to run them.
+
 Harmonising sample metadata
 ---------------------------
 
-In order to compare, integrate, and stratify data across multiple cohorts, the sample metadata must be harmonised. To do this, it is recommended to use the CurateMetadataTask, which enables the curation of unharmonised 'raw' metadata fields and values into harmonised 'curated' metadata fields and values. Please see the :ref:`metadata` module for more information.
+In order to compare, integrate, and stratify data across multiple cohorts, the sample metadata must be harmonised. To do this, it is recommended to use the `phenomedb.metadata.HarmoniseMetadataField`, which enables the curation of unharmonised 'raw' metadata fields and values into harmonised 'curated' metadata fields and values. Please see the :ref:`metadata` module for more information.
 
 .. list-table:: Title
    :widths: 50 50
@@ -194,7 +219,7 @@ In order to compare, integrate, and stratify data across multiple cohorts, the s
 
    * - Task class
      - Task description
-   * - :func:`phenomedb.metadata.HarmoniseMetadataField`
+   * - :class:`phenomedb.metadata.HarmoniseMetadataField`
      - Harmonise/curate a metadata field
 
 Importing compound metadata
@@ -202,31 +227,11 @@ Importing compound metadata
 
 PhenomeDB enables the storage of annotation metadata such as chemical references and classes, and has a data model and import processes capable of harmonising annotations to their analytical specificity.
 
-The minimum information required for import is compound name (as annotated) and InChI (if available). If the specificity of the annotation is low, multiple compounds and InChIs can be recorded per annotation. With this minimum information, PhenomeDB can lookup and record the following external references and classes and make them queryable and reportable.
+Compound metadata can be imported from PeakPantheR region-of-interest files (ROI) files for LC-MS annotations. Recent versions for these can be found in ./phenomedb/data/compounds/.
 
-Databases: PubChem, ChEBI, ChEMBL, ChemSpider, LipidMAPS, HMDB
+To import the ROI compound data use the tasks ImportROICompounds and ImportROILipids.
 
-Classes: LipidMAPS, HMDB, ClassyFIRE
-
-.. figure:: ./_images/compound-task-overview.png
-  :width: 600
-  :alt: PhenomeDB ImportCompoundTask overview
-
-  The ImportCompoundTask overview, which looks up compound metadata and populates the database
-
-Compound metadata can be imported from PeakPantheR region-of-interest files (ROI) files for LC-MS annotations. Recent versions for these can be found in ./data/compounds/.
-
-To import the ROI compound data use the tasks ImportROICompounds and ImportROILipids
-
-IVDr annotation metadata can be imported using ImportBrukerBiLISACompounds and ImportBrukerBiQuantCompounds,. The source data are available in ./data/compounds/
-
-Once imported, compounds and compound classes can be explored using the Compound View UI.
-
-.. figure:: ./_images/compound-list-view.png
-  :width: 600
-  :alt: PhenomeDB Compound List View
-
-  The Compound List View, showing a searchable, paginated table of imported compounds
+IVDr annotation metadata can be imported using ImportBrukerBiLISACompounds and ImportBrukerBiQuantCompounds,. The source data are available in ./phenomedb/data/compounds/
 
 .. figure:: ./_images/compound-view-example.png
   :width: 600
@@ -285,6 +290,7 @@ Creating queries can be done either via the Query Factory view or the QueryFacto
 
   The QueryFilter and QueryMatch architecture. Multiple QueryFilters can be added, each with AND or OR boolean operators. Each QueryFilter can have multiple QueryMatches, targeting a specific Model.property, with a specific comparison operator and value.
 
+See the :class:`phenomedb.query_factory.QueryFactory` for more information, including using the Python API.
 
 Scaling, normalisation, and batch correction
 --------------------------------------------

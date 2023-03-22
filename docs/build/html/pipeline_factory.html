@@ -113,12 +113,12 @@
              
   <section id="phenomedb-pipeline-factory">
 <h1>phenomedb.pipeline_factory<a class="headerlink" href="#phenomedb-pipeline-factory" title="Permalink to this heading"></a></h1>
-<p>Pipelines can be created, registered with Airflow, and executed via the PipelineFactory. Using this approach removes the requirements for manually writing Airflow DAG files.</p>
+<p>Pipelines can be created, registered with Airflow, and executed via the <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.modules.PipelineFactory</span></code>. Using this approach removes the requirements for manually writing Airflow DAG files.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.modules.PipelineFactory</span></code> is the interface between the user and the PipelineManager (the default of which is the AirflowPipelineManager). The PipelineFactory provides a standardised interface to creating Pipelines. Pipelines are created by add Tasks to a pipeline, and then committing them and then executing them.</p>
 <figure class="align-default" id="id3">
-<a class="reference internal image-reference" href="_images/pipeline-factory-overview.png"><img alt="PhenomeB PipelineFactory Overview" src="_images/pipeline-factory-overview.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="_images/pipeline-factory-overview.png"><img alt="PhenomeB `phenomedb.modules.PipelineFactory` Overview" src="_images/pipeline-factory-overview.png" style="width: 500px;" /></a>
 <figcaption>
 <p><span class="caption-text">Overview of how the <code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.modules.PipelineFactory</span></code> can be used to create Apache Airflow pipelines</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
 </figcaption>
@@ -130,7 +130,7 @@
 <figure class="align-default" id="id4">
 <a class="reference internal image-reference" href="_images/pipeline-factory-ui-example.png"><img alt="PhenomeB PipelineFactory UI Example" src="_images/pipeline-factory-ui-example.png" style="width: 650px;" /></a>
 <figcaption>
-<p><span class="caption-text">Example of using a the PipelineFactory UI to create a parameterised pipeline</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Example of using a the <cite>phenomedb.modules.PipelineFactory</cite> UI to create a parameterised pipeline</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>

@@ -214,9 +214,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-phenomedb.compounds">
-<span id="phenomedb-compounds"></span><h1>phenomedb.compounds<a class="headerlink" href="#module-phenomedb.compounds" title="Permalink to this heading"></a></h1>
-<dl class="py class">
+  <section id="phenomedb-compounds">
+<h1>phenomedb.compounds<a class="headerlink" href="#phenomedb-compounds" title="Permalink to this heading"></a></h1>
+<p>PhenomeDB enables the storage of annotation metadata such as chemical references and classes, and has a data model and import processes capable of harmonising annotations to their analytical specificity.</p>
+<p>The minimum information required for import is compound name (as annotated) and InChI (if available). If the specificity of the annotation is low, multiple compounds and InChIs can be recorded per annotation. With this minimum information, PhenomeDB can lookup and record the following external references and classes and make them queryable and reportable.</p>
+<p>Databases: PubChem, ChEBI, ChEMBL, ChemSpider, LipidMAPS, HMDB</p>
+<p>Classes: LipidMAPS, HMDB, ClassyFIRE</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="_images/compound-task-overview.png"><img alt="PhenomeDB ImportCompoundTask overview" src="_images/compound-task-overview.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The ImportCompoundTask overview, which looks up compound metadata and populates the database</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Compound metadata can be imported from PeakPantheR region-of-interest files (ROI) files for LC-MS annotations. Recent versions for these can be found in ./phenomedb/data/compounds/.</p>
+<p>To import the ROI compound data use the tasks ImportROICompounds and ImportROILipids</p>
+<p>IVDr annotation metadata can be imported using ImportBrukerBiLISACompounds and ImportBrukerBiQuantCompounds,. The source data are available in ./phenomedb/data/compounds/</p>
+<p>Once imported, compounds and compound classes can be explored using the Compound View UI.</p>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="_images/compound-list-view.png"><img alt="PhenomeDB Compound List View" src="_images/compound-list-view.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The Compound List View, showing a searchable, paginated table of imported compounds</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id3">
+<a class="reference internal image-reference" href="_images/compound-view-example.png"><img alt="PhenomeDB Compound View" src="_images/compound-view-example.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">The Compound View, showing the imported information for one compound, with links to external databases</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<span class="target" id="module-phenomedb.compounds"></span><dl class="py class">
 <dt class="sig sig-object py" id="phenomedb.compounds.AddMissingClassyFireClasses">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">phenomedb.compounds.</span></span><span class="sig-name descname"><span class="pre">AddMissingClassyFireClasses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_task_run_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#phenomedb.compounds.AddMissingClassyFireClasses" title="Permalink to this definition"></a></dt>
 <dd><p>Update the Compound properties and external references from the InChI lookups</p>

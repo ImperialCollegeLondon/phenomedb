@@ -48,6 +48,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#tasks">Tasks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-apache-airflow-interface">The Apache-Airflow interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tasks-and-pipelines">Tasks and Pipelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#importing-analytical-data-and-sample-metadata">Importing analytical data and sample metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#harmonising-sample-metadata">Harmonising sample metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#importing-compound-metadata">Importing compound metadata</a></li>
@@ -285,8 +286,21 @@
 </section>
 <section id="tasks-and-pipelines">
 <h2>Tasks and Pipelines<a class="headerlink" href="#tasks-and-pipelines" title="Permalink to this heading"></a></h2>
+<p>Tasks can be executed individually using command line interface (cli.py), or via Airflow as part of a Pipeline.</p>
 <p>Pipelines can be created, registered with Airflow, and executed via the PipelineFactory. Using this approach removes the requirements for manually writing Airflow DAG files.</p>
-<p>See the <a class="reference internal" href="pipeline_factory.html#phenomedb-pipeline-factory"><span class="std std-ref">phenomedb.pipeline_factory</span></a> for more information, including how to build and execute pipelines via the python API and the UI.</p>
+<p>The PipelineFactory UI can be used to created parameterised, hard-coded Pipelines/DAGs made of many tasks (executed sequentially).</p>
+<figure class="align-default" id="id7">
+<a class="reference internal image-reference" href="_images/pipeline-factory-ui-example.png"><img alt="PhenomeB PipelineFactory UI Example" src="_images/pipeline-factory-ui-example.png" style="width: 650px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of using a the <cite>phenomedb.modules.PipelineFactory</cite> UI to create a parameterised pipeline</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>See the <a class="reference internal" href="pipeline_factory.html#phenomedb-pipeline-factory"><span class="std std-ref">phenomedb.pipeline_factory</span></a> for more information, including how to build and execute pipelines via the python API.</p>
+</section>
+<section id="command-line-interface">
+<h2>Command line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading"></a></h2>
+<p>The cli.py provides a way of running individual tasks. To use it either install a local Python installation or inside the scheduler docker container.</p>
+<p>From the project root:</p>
 </section>
 <section id="importing-analytical-data-and-sample-metadata">
 <h2>Importing analytical data and sample metadata<a class="headerlink" href="#importing-analytical-data-and-sample-metadata" title="Permalink to this heading"></a></h2>
@@ -296,8 +310,8 @@
 <li><p>Feature metadata: CSV files containing feature metadata such as RT, m/z, and other feature-specific analytical metadata.</p></li>
 <li><p>Study data files: CSV files containing analytical features (measurements) relating to the samples and features/annotated compounds.</p></li>
 </ol>
-<table class="docutils align-default" id="id7">
-<caption><span class="caption-text">Title</span><a class="headerlink" href="#id7" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id8">
+<caption><span class="caption-text">Title</span><a class="headerlink" href="#id8" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -337,12 +351,13 @@
 </tr>
 </tbody>
 </table>
+<p>See the <a class="reference internal" href="imports.html#phenomedb-imports"><span class="std std-ref">phenomedb.imports</span></a> for more information, and use the CLI or <a class="reference internal" href="pipeline_factory.html#phenomedb-pipeline-factory"><span class="std std-ref">phenomedb.pipeline_factory</span></a> to run them.</p>
 </section>
 <section id="harmonising-sample-metadata">
 <h2>Harmonising sample metadata<a class="headerlink" href="#harmonising-sample-metadata" title="Permalink to this heading"></a></h2>
-<p>In order to compare, integrate, and stratify data across multiple cohorts, the sample metadata must be harmonised. To do this, it is recommended to use the CurateMetadataTask, which enables the curation of unharmonised ‘raw’ metadata fields and values into harmonised ‘curated’ metadata fields and values. Please see the <a class="reference internal" href="metadata.html#metadata"><span class="std std-ref">phenomedb.metadata</span></a> module for more information.</p>
-<table class="docutils align-default" id="id8">
-<caption><span class="caption-text">Title</span><a class="headerlink" href="#id8" title="Permalink to this table"></a></caption>
+<p>In order to compare, integrate, and stratify data across multiple cohorts, the sample metadata must be harmonised. To do this, it is recommended to use the <cite>phenomedb.metadata.HarmoniseMetadataField</cite>, which enables the curation of unharmonised ‘raw’ metadata fields and values into harmonised ‘curated’ metadata fields and values. Please see the <a class="reference internal" href="metadata.html#metadata"><span class="std std-ref">phenomedb.metadata</span></a> module for more information.</p>
+<table class="docutils align-default" id="id9">
+<caption><span class="caption-text">Title</span><a class="headerlink" href="#id9" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -353,7 +368,7 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="metadata.html#phenomedb.metadata.HarmoniseMetadataField" title="phenomedb.metadata.HarmoniseMetadataField"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.metadata.HarmoniseMetadataField()</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="metadata.html#phenomedb.metadata.HarmoniseMetadataField" title="phenomedb.metadata.HarmoniseMetadataField"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.metadata.HarmoniseMetadataField</span></code></a></p></td>
 <td><p>Harmonise/curate a metadata field</p></td>
 </tr>
 </tbody>
@@ -362,33 +377,17 @@
 <section id="importing-compound-metadata">
 <h2>Importing compound metadata<a class="headerlink" href="#importing-compound-metadata" title="Permalink to this heading"></a></h2>
 <p>PhenomeDB enables the storage of annotation metadata such as chemical references and classes, and has a data model and import processes capable of harmonising annotations to their analytical specificity.</p>
-<p>The minimum information required for import is compound name (as annotated) and InChI (if available). If the specificity of the annotation is low, multiple compounds and InChIs can be recorded per annotation. With this minimum information, PhenomeDB can lookup and record the following external references and classes and make them queryable and reportable.</p>
-<p>Databases: PubChem, ChEBI, ChEMBL, ChemSpider, LipidMAPS, HMDB</p>
-<p>Classes: LipidMAPS, HMDB, ClassyFIRE</p>
-<figure class="align-default" id="id9">
-<a class="reference internal image-reference" href="_images/compound-task-overview.png"><img alt="PhenomeDB ImportCompoundTask overview" src="_images/compound-task-overview.png" style="width: 600px;" /></a>
-<figcaption>
-<p><span class="caption-text">The ImportCompoundTask overview, which looks up compound metadata and populates the database</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
-<p>Compound metadata can be imported from PeakPantheR region-of-interest files (ROI) files for LC-MS annotations. Recent versions for these can be found in ./data/compounds/.</p>
-<p>To import the ROI compound data use the tasks ImportROICompounds and ImportROILipids</p>
-<p>IVDr annotation metadata can be imported using ImportBrukerBiLISACompounds and ImportBrukerBiQuantCompounds,. The source data are available in ./data/compounds/</p>
-<p>Once imported, compounds and compound classes can be explored using the Compound View UI.</p>
+<p>Compound metadata can be imported from PeakPantheR region-of-interest files (ROI) files for LC-MS annotations. Recent versions for these can be found in ./phenomedb/data/compounds/.</p>
+<p>To import the ROI compound data use the tasks ImportROICompounds and ImportROILipids.</p>
+<p>IVDr annotation metadata can be imported using ImportBrukerBiLISACompounds and ImportBrukerBiQuantCompounds,. The source data are available in ./phenomedb/data/compounds/</p>
 <figure class="align-default" id="id10">
-<a class="reference internal image-reference" href="_images/compound-list-view.png"><img alt="PhenomeDB Compound List View" src="_images/compound-list-view.png" style="width: 600px;" /></a>
-<figcaption>
-<p><span class="caption-text">The Compound List View, showing a searchable, paginated table of imported compounds</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
-<figure class="align-default" id="id11">
 <a class="reference internal image-reference" href="_images/compound-view-example.png"><img alt="PhenomeDB Compound View" src="_images/compound-view-example.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">The Compound View, showing the imported information for one compound, with links to external databases</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
+<p><span class="caption-text">The Compound View, showing the imported information for one compound, with links to external databases</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
-<table class="docutils align-default" id="id12">
-<caption><span class="caption-text">Title</span><a class="headerlink" href="#id12" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id11">
+<caption><span class="caption-text">Title</span><a class="headerlink" href="#id11" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -432,10 +431,10 @@
 <section id="harmonising-annotation-metadata">
 <h2>Harmonising annotation metadata<a class="headerlink" href="#harmonising-annotation-metadata" title="Permalink to this heading"></a></h2>
 <p>In order to integrate annotations across projects, the annotations must be harmonised. PhenomeDB will attempt to do this automatically where possible, however in some cases it is necessary to manually harmonise annotations. To do this use the ‘Harmonise Annotations’ view.</p>
-<figure class="align-default" id="id13">
+<figure class="align-default" id="id12">
 <a class="reference internal image-reference" href="_images/manual-annotation-harmonisation-view.png"><img alt="PhenomeDB manual annotation harmonisation" src="_images/manual-annotation-harmonisation-view.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">The Harmonise Annotations View, where unharmonised annotations can be harmonised manually to enable cross-project comparisons</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
+<p><span class="caption-text">The Harmonise Annotations View, where unharmonised annotations can be harmonised manually to enable cross-project comparisons</span><a class="headerlink" href="#id12" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
@@ -444,20 +443,21 @@
 <p>PhenomeDB has a complex and rich querying system that enables users to define queries as a collection of filters and the conversion of the results of those filters to a dataset, enabling cross-project integration and stratification. For more information on the QueryFactory, including its Python API and UI, please head over to <a class="reference internal" href="imports.html#phenomedb-imports"><span class="std std-ref">phenomedb.imports</span></a>.</p>
 <p>In short, users define queries, build the dataframe cache, and then that cache can be used in downstream analyses/tasks.</p>
 <p>Creating queries can be done either via the Query Factory view or the QueryFactory Python API. In PhenomeDB Queries are created by chaining QueryFilter objects containing boolean operators and QueryMatches, which specifying the fields and comparison operators and values. An overview of this can be seen below. With the collection of QueryFilters and QueryMatches, the QueryFactory then calculates/transpiles the query definition into an SQLAlchemy query, and executes the query. The QueryFactory can then construct a combined-format and 3-file format dataset of the results, and store them in the PhenomeDB Cache, an extended version of Redis that enables file-system persistency of objects. Generating the dataframes can currently take a long time depending on the number of records the query returns, for this reason once the query has been defined the user should run the CreateSavedQueryDataframeCache task to execute the query and set it into the cache. This can be run manually via the interface or via the QueryFactory UI.</p>
-<figure class="align-default" id="id14">
+<figure class="align-default" id="id13">
 <a class="reference internal image-reference" href="_images/query-filters-overview.png"><img alt="PhenomeDB QueryFactory QueryFilters and QueryMatches" src="_images/query-filters-overview.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">The QueryFilter and QueryMatch architecture. Multiple QueryFilters can be added, each with AND or OR boolean operators. Each QueryFilter can have multiple QueryMatches, targeting a specific Model.property, with a specific comparison operator and value.</span><a class="headerlink" href="#id14" title="Permalink to this image"></a></p>
+<p><span class="caption-text">The QueryFilter and QueryMatch architecture. Multiple QueryFilters can be added, each with AND or OR boolean operators. Each QueryFilter can have multiple QueryMatches, targeting a specific Model.property, with a specific comparison operator and value.</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
+<p>See the <a class="reference internal" href="query_factory.html#phenomedb.query_factory.QueryFactory" title="phenomedb.query_factory.QueryFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.query_factory.QueryFactory</span></code></a> for more information, including using the Python API.</p>
 </section>
 <section id="scaling-normalisation-and-batch-correction">
 <h2>Scaling, normalisation, and batch correction<a class="headerlink" href="#scaling-normalisation-and-batch-correction" title="Permalink to this heading"></a></h2>
 <p>In order to compare metabolite levels across different batches, projects, or assays, scaling/normalisation, transformation, and batch correction must be undertaken. The aim of these methods is to minimise inter-batch technical variation while maintaining inter-sample biological variation.</p>
 <p>Two kinds of intensity values are stored in the database, raw, and SR-corrected. Raw are the ‘raw’, peak-picked intensities from the instruments. ‘SR-corrected’ is data that has been run-order corrected using study-reference QC-based LOWESS correction. Typically LC-MS data will need to be run-order corrected so it is advisable to use this SR-corrected data for LC-MS datasets.</p>
 <p>Batch correction can be undertaken using the following tasks:</p>
-<table class="docutils align-default" id="id15">
-<caption><span class="caption-text">Title</span><a class="headerlink" href="#id15" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id14">
+<caption><span class="caption-text">Title</span><a class="headerlink" href="#id14" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -483,8 +483,8 @@
 </tbody>
 </table>
 <p>When running analyses, the following scaling and transformations can be executed as options to the analysis methods.</p>
-<table class="docutils align-default" id="id16">
-<caption><span class="caption-text">Title</span><a class="headerlink" href="#id16" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id15">
+<caption><span class="caption-text">Title</span><a class="headerlink" href="#id15" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -510,8 +510,8 @@
 <section id="running-analyses">
 <h2>Running analyses<a class="headerlink" href="#running-analyses" title="Permalink to this heading"></a></h2>
 <p>Implemented analysis functions include:</p>
-<table class="docutils align-default" id="id17">
-<caption><span class="caption-text">Title</span><a class="headerlink" href="#id17" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id16">
+<caption><span class="caption-text">Title</span><a class="headerlink" href="#id16" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -540,42 +540,42 @@
 </tbody>
 </table>
 <p>Individual analyses can be run via the AnalysisView page, where task runs can be parameterised and scheduled, and the results can be explored.</p>
-<figure class="align-default" id="id18">
+<figure class="align-default" id="id17">
 <a class="reference internal image-reference" href="_images/analysis-view-list.png"><img alt="PhenomeDB AnalysisView list" src="_images/analysis-view-list.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">Analyses can be executed against queries (and upstream task runs) using the AnalysisView. Parameters for the task run can be specified using the html form, including scaling and transformation steps and task-specific options. Previous task runs can be explored via a table.</span><a class="headerlink" href="#id18" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Analyses can be executed against queries (and upstream task runs) using the AnalysisView. Parameters for the task run can be specified using the html form, including scaling and transformation steps and task-specific options. Previous task runs can be explored via a table.</span><a class="headerlink" href="#id17" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <p>The results of each analysis can be explored via a dedicated UI, with panels common to all analysis tasks with options to rerun the task, and options to download the input and output datasets.</p>
-<figure class="align-default" id="id19">
+<figure class="align-default" id="id18">
 <a class="reference internal image-reference" href="_images/analysis-view-common.png"><img alt="PhenomeDB AnalysisView common" src="_images/analysis-view-common.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">Each task run output view has the ability to re-run the task with new parameters, and explore and download the input and output datasets.</span><a class="headerlink" href="#id19" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Each task run output view has the ability to re-run the task with new parameters, and explore and download the input and output datasets.</span><a class="headerlink" href="#id18" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <p>Each AnalysisTask also has specific charts and figures available to explore the results.</p>
-<figure class="align-default" id="id20">
+<figure class="align-default" id="id19">
 <a class="reference internal image-reference" href="_images/pca-view.png"><img alt="PhenomeDB RunPCA visualisation" src="_images/pca-view.png" style="width: 650px;" /></a>
 <figcaption>
-<p><span class="caption-text">Interactive visualisation of PCA outputs, including A: Scree plot, B: control panel to control the chart options, C: 2D scores plots, D, E, F: loadings plots.</span><a class="headerlink" href="#id20" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Interactive visualisation of PCA outputs, including A: Scree plot, B: control panel to control the chart options, C: 2D scores plots, D, E, F: loadings plots.</span><a class="headerlink" href="#id19" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id20">
+<a class="reference internal image-reference" href="_images/pcpr2-view-1.png"><img alt="PhenomeDB RunPCPr2 visualisation" src="_images/pcpr2-view-1.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Visualisation of PCPR2 results</span><a class="headerlink" href="#id20" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id21">
-<a class="reference internal image-reference" href="_images/pcpr2-view-1.png"><img alt="PhenomeDB RunPCPr2 visualisation" src="_images/pcpr2-view-1.png" style="width: 500px;" /></a>
+<a class="reference internal image-reference" href="_images/MWAS-view-example.png"><img alt="PhenomeDB RunMWAS visualisation" src="_images/MWAS-view-example.png" style="width: 650px;" /></a>
 <figcaption>
-<p><span class="caption-text">Visualisation of PCPR2 results</span><a class="headerlink" href="#id21" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Interactive visualisation of 1D MWAS outputs</span><a class="headerlink" href="#id21" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id22">
-<a class="reference internal image-reference" href="_images/MWAS-view-example.png"><img alt="PhenomeDB RunMWAS visualisation" src="_images/MWAS-view-example.png" style="width: 650px;" /></a>
-<figcaption>
-<p><span class="caption-text">Interactive visualisation of 1D MWAS outputs</span><a class="headerlink" href="#id22" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
-<figure class="align-default" id="id23">
 <a class="reference internal image-reference" href="_images/example-lneg-mwas-sex-comparison-consistent.png"><img alt="PhenomeDB RunMWAS compare visualisation" src="_images/example-lneg-mwas-sex-comparison-consistent.png" style="width: 650px;" /></a>
 <figcaption>
-<p><span class="caption-text">Interactive visualisation of MWAS comparison heatmaps, where the results of two MWAS analyses can be compared, in this case comparing the age-associated metabolites of males and females</span><a class="headerlink" href="#id23" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Interactive visualisation of MWAS comparison heatmaps, where the results of two MWAS analyses can be compared, in this case comparing the age-associated metabolites of males and females</span><a class="headerlink" href="#id22" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>

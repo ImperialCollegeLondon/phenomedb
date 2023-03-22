@@ -115,7 +115,8 @@
 </section>
 <section id="adding-tasks">
 <h2>Adding tasks<a class="headerlink" href="#adding-tasks" title="Permalink to this heading"></a></h2>
-<p>To add new task, extend <a class="reference internal" href="task.html#phenomedb.task.Task" title="phenomedb.task.Task"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.task.Task()</span></code></a>, or for imports <a class="reference internal" href="imports.html#phenomedb.imports.ImportTask" title="phenomedb.imports.ImportTask"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.ImportTask()</span></code></a>, or for compounds the <code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.compounds.ImportCompounds()</span></code> task.</p>
+<p>To add new task, extend <a class="reference internal" href="task.html#phenomedb.task.Task" title="phenomedb.task.Task"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.task.Task()</span></code></a>, or for imports <a class="reference internal" href="imports.html#phenomedb.imports.ImportTask" title="phenomedb.imports.ImportTask"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.ImportTask()</span></code></a>, for annotation imports <a class="reference internal" href="imports.html#phenomedb.imports.AnnotationImportTask" title="phenomedb.imports.AnnotationImportTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.imports.AnnotationImportTask</span></code></a>, for compounds the <code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.compounds.ImportCompounds()</span></code> task.</p>
+<p>For new analysis methods, extend the <a class="reference internal" href="analysis.html#phenomedb.analysis.AnalysisTask" title="phenomedb.analysis.AnalysisTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.analysis.AnalysisTask</span></code></a>, and R-based tools, the <a class="reference internal" href="analysis.html#phenomedb.analysis.RAnalysisTask" title="phenomedb.analysis.RAnalysisTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">phenomedb.analysis.RAnalysisTask</span></code></a>. The method method_specific_steps should be implemented.</p>
 <p>Tasks are made available to the PipelineFactory, CLI, and UI via the ./phenomedb/data/config/task_spec.json file, a JSON file with parameters for each task option.</p>
 <p>Each option in the method has a type (str, float, dropdown, file_upload, project), a label, type-specific arguments, and whether the parameter is required or optional.</p>
 <p>For example, the entry for the <a class="reference internal" href="imports.html#phenomedb.imports.ImportPeakPantherAnnotations" title="phenomedb.imports.ImportPeakPantherAnnotations"><code class="xref py py-func docutils literal notranslate"><span class="pre">phenomedb.imports.ImportPeakPantherAnnotations()</span></code></a> method is:</p>
@@ -138,12 +139,13 @@
 </section>
 <section id="building-the-docker-images">
 <h2>Building the docker images<a class="headerlink" href="#building-the-docker-images" title="Permalink to this heading"></a></h2>
-<p>The docker/custom_images contains the docker files for building the images.</p>
+<p>The docker/custom_images folder contains the docker files for building the images.</p>
 <p>The docker images can be built using the docker build command. To target both arm64 and x86_64 chipsets use the buildx command.</p>
 <p>From the project root:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>cp<span class="w"> </span>./requirements.txt
 $<span class="w"> </span>cp<span class="w"> </span>requirements.txt<span class="w"> </span>./docker/custom_images/phenomedb-airflow/
-$<span class="w"> </span>docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64,linux/arm64<span class="w"> </span>-t<span class="w"> </span>phenomedb/phenomedb-airflow:latest<span class="w"> </span>./docker/custom_images/phenomedb-airflow/
+$<span class="w"> </span>docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64,linux/arm64<span class="w"> </span>-t<span class="w"> </span>phenomedb/phenomedb-airflow:latest<span class="w"> </span>--push<span class="w"> </span>./docker/custom_images/phenomedb-airflow/
+$<span class="w"> </span>docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64,linux/arm64<span class="w"> </span>-t<span class="w"> </span>phenomedb/phenomedb-api:latest<span class="w"> </span>--push<span class="w"> </span>./docker/custom_images/phenomedb-api/
 </pre></div>
 </div>
 </section>

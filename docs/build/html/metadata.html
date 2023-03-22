@@ -55,7 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="database.html">phenomedb.database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="imports.html">phenomedb.imports</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">phenomedb.metadata</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#overview-of-the-curatemetadata-task">Overview of the CurateMetadata task</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview-of-the-harmonisemetadatafield-task">Overview of the HarmoniseMetadataField task</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.call_inbuilt_transform"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.call_inbuilt_transform()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#phenomedb.metadata.HarmoniseMetadataField.call_lambda"><code class="docutils literal notranslate"><span class="pre">HarmoniseMetadataField.call_lambda()</span></code></a></li>
@@ -120,12 +120,12 @@
 <li><p>For each metadata field, run the CurateMetadata task, selecting either an in-built metadata curation function, or define a python lambda that will curate the raw value to the required curated/harmonised value.</p></li>
 </ol>
 <p>Once harmonised, the fields can then be used in integration and stratification queries via the QueryFactory.</p>
-<section id="overview-of-the-curatemetadata-task">
-<h2>Overview of the CurateMetadata task<a class="headerlink" href="#overview-of-the-curatemetadata-task" title="Permalink to this heading"></a></h2>
+<section id="overview-of-the-harmonisemetadatafield-task">
+<h2>Overview of the HarmoniseMetadataField task<a class="headerlink" href="#overview-of-the-harmonisemetadatafield-task" title="Permalink to this heading"></a></h2>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="_images/curate-metadata-task.png"><img alt="PhenomeDB CurateMetadata task" src="_images/curate-metadata-task.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/curate-metadata-task.png"><img alt="PhenomeDB HarmoniseMetadataField task" src="_images/curate-metadata-task.png" style="width: 600px;" /></a>
 <figcaption>
-<p><span class="caption-text">The CurateMetadataTask architecture, with methods for harmonising types, names, and values</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+<p><span class="caption-text">The HarmoniseMetadataField architecture, with methods for harmonising types, names, and values</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <span class="target" id="module-phenomedb.metadata"></span><dl class="py class">
