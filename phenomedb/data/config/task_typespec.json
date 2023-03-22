@@ -28,7 +28,7 @@
     "roi_version": {"type":"float","label": "ROI version (eg 1.0)","required": true},
     "update_names": {"type":"float","label": "Update the names to refmet?","required": false}
   },
-  "compounds.ImportBrukerBILISACompounds": {
+  "compounds.ImportBrukerBiLISACompounds": {
     "lipoprotein_file": {"type":"file_upload","label": "Lipoprotein long names file","remote_folder_path": "uploads","required": true,"project_folder": false},
     "version": {"type":"float","label": "Version (eg 1.0)","required": true}
   },

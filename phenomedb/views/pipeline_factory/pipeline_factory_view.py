@@ -146,7 +146,6 @@ class PipelineFactoryView(PhenomeDBBaseView):
 
             dag_def = param_dict['dag_def']          
             dag_json = json.loads(dag_def)
-            task_dir = config['DATA']['task_directory']
 
             self.logger.debug("Request %s", dag_json)
             json_spec = PipelineFactory.get_tasks_from_json()

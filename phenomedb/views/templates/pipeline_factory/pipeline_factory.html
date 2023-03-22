@@ -310,7 +310,7 @@ $(function() {
 
 					if (inputType == 'file_upload') {
 						taskRow.append($("<td/>").attr("class", "col-xs-5 table-value").html(editBox));
-						extra_input = "<input type='checkbox' name='overwrite-" + argName + "' value='overwrite' /> Overwrite";
+						extra_input = "<input type='checkbox' name='overwrite-" + argName + "' value='overwrite' checked/> Overwrite";
 						taskRow.append($("<td/>").attr("class", "col-xs-3 table-value").html(extra_input));
 					} else {
 						taskRow.append($("<td/>").attr("class", "col-xs-7 table-value").html(editBox));
