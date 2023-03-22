@@ -74,13 +74,13 @@ datestr=`date '+%Y-%m-%d-%H-%M'`
 
 pg_dump -h ${host} -p ${port} -U ${username} ${verbose}phenomedb > "${base_name}_${datestr}_backup.sql"
 
-pg_dump -h ${host} -p ${port} -U ${username} -a${verbose}phenomedb > "${base_name}_data.sql"
+#pg_dump -h ${host} -p ${port} -U ${username} -a${verbose}phenomedb > "${base_name}_data.sql"
 
-pg_dump -h ${host} -p ${port} -U ${username} -a --column-inserts${verbose}phenomedb -t compound -t compound_group -t compound_group_compound -t external_db -t compound_external_db -t metadata_harmonised_field > "${base_name}_min_data.sql"
+#pg_dump -h ${host} -p ${port} -U ${username} -a --column-inserts${verbose}phenomedb -t compound -t compound_group -t compound_group_compound -t external_db -t compound_external_db -t metadata_harmonised_field > "${base_name}_min_data.sql"
 
-pg_dump -h ${host} -p ${port} -U ${username} -a --column-inserts${verbose}phenomedb > "${base_name}_data_column_inserts.sql"
+#pg_dump -h ${host} -p ${port} -U ${username} -a --column-inserts${verbose}phenomedb > "${base_name}_data_column_inserts.sql"
 
-pg_dump -h ${host} -p ${port} -U ${username} -a --column-inserts${verbose}phenomedb > "${base_name}_data_column_inserts_test.sql"
+#pg_dump -h ${host} -p ${port} -U ${username} -a --column-inserts${verbose}phenomedb > "${base_name}_data_column_inserts_test.sql"
 
 pg_dump -h ${host} -p ${port} -U ${username}${verbose}airflow > "${output_folder}/airflow_${datestr}.sql"
 
