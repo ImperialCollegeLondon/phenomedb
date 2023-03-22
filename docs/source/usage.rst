@@ -166,7 +166,7 @@ The cli.py provides a way of running individual tasks. To use it either install 
 
 From the project root:
 
-.. code-block::console
+.. code-block:: console
 
     $ cd phenomedb
     $ python cli.py -h
