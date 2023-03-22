@@ -11,8 +11,7 @@ where:
 "
 
 output_path="./output"
-remote_path=$PHENOMEDB__DATA__BACKUP_PATH
-cache_path=$PHENOMEDB__DATA__CACHE
+cache_path="."
 
 while getopts ':h:o:d:v' option; do
   case "$option" in
@@ -48,7 +47,7 @@ if [ "${verbose}" = "v"  ]
 then
     echo "tar_path = ${tar_path}"
     echo "cache_path = ${cache_path}"
-    echo "tar -c${verbose}zpf ${output_path} ${cache_path}/SavedQuery*.cache"
+    echo "tar -c${verbose}zf ${output_path} ${cache_path}/SavedQuery*.cache"
 fi
 
 tar -c${verbose}f ${tar_path} ${cache_path}/SavedQuery*.cache

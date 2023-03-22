@@ -50,6 +50,6 @@ then
     echo "tar -c${verbose}zpf ${output_path}/phenomedb_reports_backup_${datestr}.tar.gz ${app_data_path}/reports/*"
 fi
 
-tar -c${verbose}zpf ${output_path}phenomedb_output_backup_${datestr}.tar.gz ${app_data_path}/output/*
-tar -c${verbose}zpf ${output_path}phenomedb_uploads_backup_${datestr}.tar.gz ${app_data_path}/uploads/*
-tar -c${verbose}zpf ${output_path}phenomedb_reports_backup_${datestr}.tar.gz ${app_data_path}/reports/*
+tar -c${verbose}zf ${output_path}phenomedb_output_backup_${datestr}.tar.gz ${app_data_path}/output/*
+tar -c${verbose}zf ${output_path}phenomedb_uploads_backup_${datestr}.tar.gz ${app_data_path}/uploads/*
+tar -c${verbose}zf ${output_path}phenomedb_reports_backup_${datestr}.tar.gz ${app_data_path}/reports/*
